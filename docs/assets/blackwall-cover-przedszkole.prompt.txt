@@ -1,0 +1,9 @@
+Generator: built-in image_gen
+Source image: docs/assets/blackwall-cover.png
+
+Use case: style-transfer.
+Edit target: the attached BLACKWALL cover.
+Transform this entire image into a sincere, hilariously crude drawing made by an actual five-year-old child using wax crayons and a little messy poster paint on white paper. Keep the subject and rough arrangement recognizable: enormous black and red wall, giant scary skull face with two red eyes, red lightning, one tiny person underneath, large BLACKWALL title.
+Make every part genuinely preschool-level: wobbly outlines, wildly lopsided shapes, patchy scribble fills with white gaps, oversized round eye blobs, awkward rectangle teeth, crooked zigzag lightning, the human a very simple stick figure with an oversized head. The wall is a clumsy scribbled black rectangle with red lines. No realistic perspective, no controlled anatomy, no realistic lighting, no sophisticated graphic design. The skull should be the child's proud attempt at the scariest thing ever, accidentally goofy and adorable. Black and red crayons dominate with lots of visible white paper. Flat scanned-paper view, paper fills the full frame, no hands or drawing supplies in frame.
+Text verbatim: "BLACKWALL". All nine letters present, written in huge uneven childish capital letters along a wonky baseline, different letter sizes, hand-drawn shakily, legible but very unpolished. No additional text.
+Preserve landscape cover format approximately 16:9, the central wall/skull/title/stick-person relationship, and the project's name. Change all rendering to authentic five-year-old scribbling. Absolutely no professional cartoon illustration, polished children's-book art, digital gradients, clean vector strokes, or remnants of photorealism. Opaque white paper background.

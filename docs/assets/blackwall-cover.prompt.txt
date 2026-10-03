@@ -1,0 +1,10 @@
+Generator: built-in image_gen
+
+Use case: stylized-concept.
+Asset type: widescreen 16:9 cover image for the hackathon project BLACKWALL, an AI security control layer.
+Primary request: Create an outrageously edgy, gloriously cringe, visually spectacular photorealistic cinematic image of the Blackwall from Cyberpunk 2077. Push the forbidden rogue-AI cyber-horror aesthetic to the absolute maximum, like a ridiculously intense AAA game expansion cover.
+Scene: an immense impenetrable black digital wall across cyberspace, a vertical curtain of blood-red cascading code, fractured red glyphs, black obsidian data architecture, violent crimson electrical arcs and volumetric red fog. An ominous enormous skull-like AI face emerges within the wall itself, constructed entirely from corrupted red data and black negative space, with two blazing red digital eyes. The wall is the main subject and feels colossal, oppressive and terrifying. Fine glitch streaks and ruined wireframe structures dissolve into the dark foreground.
+Style: cinematic photorealistic game key art, intricate physically convincing materials, deep black shadows, extreme red rim lighting, subtle analog scanlines and chromatic aberration, dramatic low-angle perspective, wet reflective black ground, breathtaking scale. Earnest maximum-edgelord 2000s hacker-metal-album energy, technically polished and deliberately over-the-top.
+Composition: landscape 16:9, cover-ready, instantly readable silhouette, central looming wall, a strong designed title area across the lower middle. Preserve clean margins and don't drown the title in small details.
+Text verbatim: "BLACKWALL". Spell B L A C K W A L L correctly. Enormous custom sharp angular condensed futuristic lettering, cold white metal with red luminous edges and restrained glitch cuts; legible, integrated into the composition.
+Constraints: only the word BLACKWALL, no tagline, no additional logos, no watermark, no stock-photo appearance, no ordinary brick wall, no cute cartoon style. Opaque background.
