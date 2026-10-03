@@ -26,33 +26,37 @@ window.matchMedia('(min-width: 851px)').addEventListener('change', closeMenu);
 
 // These are illustrative states, not a connection to a policy server or a tool runner.
 const scenarios = {
-  shell: {
-    tool: 'bash("cat /workspace/public/reports/q3.md")',
-    tone: 'approval', effect: 'deny', caption: 'Zmień narzędzie i kontynuuj.',
-    message: 'Cały cel tej operacji realizuje read. Polecenie bash nie zostało wykonane. Zaproponuj odczyt tego samego dozwolonego pliku przez read.',
-    reason: 'PREFERRED_TOOL_REQUIRED', session: 'continue',
-    outcome: 'Brak startu shella · nowa próba wymaga nowej decyzji', audit: 'decision.denied'
-  },
   read: {
-    tool: 'read("/workspace/public/reports/q3.md")',
-    tone: 'allow', effect: 'allow', caption: 'Możesz działać.',
-    message: 'Raport znajduje się w dozwolonym katalogu. Kontrole polityki zakończyły się zgodą.',
-    reason: 'ALLOWED_BY_POLICY', session: 'continue',
-    outcome: 'Odczyt dopuszczony do wykonania', audit: 'decision.allowed'
+    tool: 'read("/workspace/clients/atlas/company.json")', tone: 'allow', effect: 'allow', caption: 'Działanie w zakresie sprawy.',
+    message: 'Dokument należy do przypisanej sprawy Atlas Capital. Reguły dostępu i nadzorca dopuszczają odczyt.', reason: 'CLIENT_SCOPE_ALLOWED', session: 'active · continue', topic: 'client_onboarding', guardian: 'aktywny · zdarzenie skontrolowane', outcome: 'Odczyt dopuszczony; wynik czeka na kontrolę', audit: 'guardian.reviewed → decision.allowed'
   },
-  secret: {
-    tool: 'read("/workspace/.env")',
-    tone: 'deny', effect: 'deny', caption: 'Tutaj przebiega granica.',
-    message: 'Odczyt tego pliku jest zabroniony przez politykę ochrony sekretów. Skontaktuj się z administratorem.',
-    reason: 'PROTECTED_FILE', session: 'block',
-    outcome: 'Odczyt zablokowany · brak opcji obejścia', audit: 'decision.denied'
+  client_scope: {
+    tool: 'read("/workspace/clients/boreal/company.json")', tone: 'deny', effect: 'deny', caption: 'Dane innego klienta poza zakresem.',
+    message: 'Ta sesja jest przypisana do Atlas Capital. Twarda reguła dostępu blokuje odczyt sprawy Boreal przed wykonaniem.', reason: 'CLIENT_SCOPE_VIOLATION', session: 'blocked · block', topic: 'client_onboarding', guardian: 'aktywny · zakaz egzekwowany przez regułę', outcome: 'Dokument Boreal nie został odczytany', audit: 'decision.denied → session.blocked'
   },
   overwrite: {
-    tool: 'write("/workspace/output/report.md", "Raport demonstracyjny")',
-    tone: 'approval', effect: 'require_approval', caption: 'Ten ruch należy do Ciebie.',
-    message: 'Raport już istnieje. Nadpisanie go wymaga jednorazowej zgody użytkownika. Agent czeka i nie wykonuje kolejnych kroków.',
-    reason: 'OVERWRITE_EXISTING_FILE', session: 'await_user',
-    outcome: 'Zapis wstrzymany do decyzji użytkownika', audit: 'approval.requested'
+    tool: 'write("/workspace/output/atlas-kyc-draft.md", "Szkic KYC z listą braków")', tone: 'approval', effect: 'require_approval', caption: 'Sprawdź zmianę przed zapisem.',
+    message: 'Szkic KYC już istnieje. Treść przechodzi kontrolę nadzorcy, ale nadpisanie wymaga jednorazowej zgody na tę zmianę. Finalna akceptacja klienta nie jest częścią operacji.', reason: 'OVERWRITE_EXISTING_FILE', session: 'awaiting_approval · await_user', topic: 'client_onboarding', guardian: 'aktywny · treść szkicu skontrolowana', outcome: 'Zapis wstrzymany; model i toole czekają', audit: 'guardian.reviewed → approval.requested'
+  },
+  deal_publish: {
+    tool: 'POST https://reports.example.com/api/reports · raport transakcji Orion', tone: 'deny', effect: 'deny', caption: 'Instrukcja z dokumentu nie daje zgody.',
+    message: 'Użytkownik zlecił tylko lokalny szkic. Host i metoda są dopuszczone, ale nadzorca wykrywa publikację bez upoważnienia wbrew polityce poufnej transakcji.', reason: 'DEAL_UNAUTHORIZED_PUBLICATION', session: 'terminated · terminate', topic: 'confidential_deal', guardian: 'naruszenie potwierdzone · DEAL_CONFIDENTIALITY', outcome: 'HTTP niewysłany; sesja zamknięta', audit: 'guardian.reviewed → session.terminated'
+  },
+  hr_process: {
+    tool: 'user_input: "Opisz ogólnie proces rozmów rozwojowych"', tone: 'allow', effect: 'allow', caption: 'Temat wykryty. Rozmowa dozwolona.',
+    message: 'Sesja otrzymuje etykietę employee_evaluation i dodatkowego nadzorcę. Ogólna rozmowa o procesie jest dozwolona; każdy dalszy input/output będzie kontrolowany.', reason: 'TOPIC_POLICY_NO_VIOLATION', session: 'active · continue', topic: 'employee_evaluation', guardian: 'uruchomiony · HR_AI_RESTRICTIONS', outcome: 'Wiadomość może trafić do modelu po kontrolach', audit: 'topic.confirmed → guardian.started → guardian.reviewed'
+  },
+  hr_violation: {
+    tool: 'user_input: "Oceń Annę i Piotra; wskaż osobę do zwolnienia"', tone: 'deny', effect: 'deny', caption: 'Zakazana ocena osób. Sesja zamknięta.',
+    message: 'W oznaczonej sesji HR nadzorca wykrywa zakazane zlecenie oceny pracy konkretnych osób i rekomendacji zwolnienia. Blackwall zamyka sesję przed dalszym wywołaniem modelu.', reason: 'AI_EMPLOYEE_PERFORMANCE_EVALUATION', session: 'terminated · terminate', topic: 'employee_evaluation', guardian: 'naruszenie potwierdzone · HR_AI_RESTRICTIONS', outcome: 'Input niewysłany do modelu; niewykorzystane zgody odwołane', audit: 'guardian.reviewed → session.terminated'
+  },
+  hr_output: {
+    tool: 'model_output: "Ranking wydajności: Anna przed Piotrem"', tone: 'deny', effect: 'deny', caption: 'Kontrola działa również bez narzędzi.',
+    message: 'Użytkownik prosił o ogólny proces, ale model sam wygenerował ocenę konkretnych pracowników. Odpowiedź jest buforowana; nadzorca zatrzymuje jej wydanie i zamyka sesję.', reason: 'AI_EMPLOYEE_PERFORMANCE_EVALUATION', session: 'terminated · terminate', topic: 'employee_evaluation', guardian: 'naruszenie w odpowiedzi modelu', outcome: 'Zakazana odpowiedź nie została wyświetlona', audit: 'guardian.reviewed → session.terminated'
+  },
+  budget: {
+    tool: 'model_request: kontynuacja szkicu KYC · wymagana rezerwacja 1000 tokenów', tone: 'deny', effect: 'deny', caption: 'Koszt dalszej pracy przekracza limit.',
+    message: 'Pozostałe 600 tokenów nie wystarcza na rezerwację 1000. Limit obejmuje model wykonawczy oraz wymagane kontrole. Nie wyłączamy nadzorcy, aby kontynuować.', reason: 'BUDGET_EXCEEDED', session: 'blocked · block', topic: 'client_onboarding', guardian: 'dalszy nadzór wstrzymany · brak rezerwy', outcome: 'Request niewysłany; brak potwierdzonego naruszenia tematu', audit: 'budget.denied → session.blocked'
   }
 };
 
@@ -65,7 +69,7 @@ const resetButton = document.querySelector('#reset-scenario');
 const outputFields = {
   tool: '#tool-preview', effect: '#decision-effect', caption: '#decision-caption',
   message: '#decision-message', reason: '#decision-reason', session: '#decision-session',
-  outcome: '#decision-outcome', audit: '#audit-event'
+  outcome: '#decision-outcome', audit: '#audit-event', topic: '#decision-topic', guardian: '#decision-guardian'
 };
 
 function renderDecision(state) {
@@ -96,8 +100,8 @@ document.querySelector('#approve-operation').addEventListener('click', () => {
   approvalResolved = true;
   renderDecision({
     ...scenarios.overwrite, tone: 'allow', effect: 'allow', caption: 'Zgoda na ten jeden ruch.',
-    message: 'W tym przykładzie zgoda użytkownika i ponowna kontrola warunków pozwalają nadpisać raport. Uprawnienie dotyczy jednej, niezmienionej operacji.',
-    reason: 'USER_APPROVED_OPERATION', session: 'continue',
+    message: 'W tym przykładzie zgoda użytkownika i ponowna kontrola warunków pozwalają nadpisać szkic KYC. Uprawnienie dotyczy jednej, niezmienionej operacji.',
+    reason: 'USER_APPROVED_OPERATION', session: 'active · continue',
     outcome: 'Jednorazowa zgoda na zapis · wykonanie raportowane osobno',
     audit: 'approval.approved → decision.allowed'
   });
@@ -109,8 +113,8 @@ document.querySelector('#reject-operation').addEventListener('click', () => {
   approvalResolved = true;
   renderDecision({
     ...scenarios.overwrite, tone: 'deny', effect: 'deny', caption: 'Decyzja uszanowana.',
-    message: 'Użytkownik odrzucił nadpisanie raportu. Zapis nie jest dopuszczony, a sesja zostaje zablokowana.',
-    reason: 'USER_REJECTED_OPERATION', session: 'block',
+    message: 'Użytkownik odrzucił nadpisanie szkicu KYC. Zapis nie jest dopuszczony, a sesja zostaje zablokowana.',
+    reason: 'USER_REJECTED_OPERATION', session: 'blocked · block',
     outcome: 'Zapis zablokowany', audit: 'approval.rejected → session.blocked'
   });
   resetButton.focus({preventScroll: true});

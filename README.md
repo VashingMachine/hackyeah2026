@@ -28,6 +28,7 @@ Pierwszą integracją będzie **Pi**. Docelowe demo składa się z pluginu, serw
 4. Plugin otrzymuje **allow, deny albo require_approval**, z powodem dla modelu, identyfikatorem decyzji i instrukcją dalszego zachowania sesji.
 5. Zgoda pozwala wykonać konkretną operację. Twarda odmowa blokuje sesję, a błąd możliwy do poprawienia może pozwolić na ograniczone ponowienie. Wybrane operacje czekają na jednorazowe potwierdzenie użytkownika w granicach polityki.
 6. Decyzja i wynik wykonania trafiają do audytu. Wywołania modelu przechodzą dodatkowo przez bramkę pilnującą treści i budżetu.
+7. Każde obsługiwane wejście/wyjście przechodzi detektor wrażliwych tematów. Dopasowanie oznacza sesję i uruchamia dodatkowego nadzorcę; potwierdzone naruszenie polityki zamyka ją jako `terminated` przed udostępnieniem odpowiedzi lub wykonaniem operacji.
 
 ```mermaid
 flowchart LR
@@ -39,6 +40,11 @@ flowchart LR
     Pi -->|Po zgodzie| Tools[Kontrolowane narzędzia]
     Pi --> Gateway[Bramka modelu i budżetów]
     Gateway --> Model[Model wykonawczy]
+    Gateway --> Topics[Detektor tematów: embeddingi]
+    Tools -->|Argumenty i wyniki przed ujawnieniem| Topics
+    Topics --> Catalog[(Katalog tematów i polityk)]
+    Topics -->|Oznacz sesję i uruchom nadzór| Guardian[Agent nadzorujący sesję]
+    Guardian -->|Werdykt; polityka egzekwuje zamknięcie| Policy
     Policy --> Audit[(Audyt)]
     Tools --> Audit
     Gateway --> Audit
@@ -55,6 +61,7 @@ flowchart LR
 | **Sieć** | Hosty, adresy IP, porty, metody HTTP i docelowe endpointy. |
 | **Treść** | Blokowanie sekretów oraz redakcja wybranych danych przed przekazaniem dalej. |
 | **Semantyka** | Ocena zgodności działania z zadaniem i instrukcji pochodzących z niezaufanych dokumentów. |
+| **Tematy wrażliwe** | Embeddingowy katalog, etykiety sesji, dodatkowy nadzorca całego obsługiwanego ruchu i zamknięcie sesji po naruszeniu polityki. |
 | **Modele i zasoby** | Allowlista modeli, rezerwacje budżetu, limity tokenów, czasu i liczby operacji. |
 | **Audyt** | Reguła, wersja polityki, powód decyzji, wynik wykonania, koszty i eksport zdarzeń. |
 
@@ -64,7 +71,7 @@ Demo korzysta z przygotowanego środowiska i syntetycznych danych. Bez sandboxa 
 
 ## Plan dema
 
-Roboczy plan zakłada **4 osoby i 24 godziny**. Pełny dokument zawiera podział pracy, zależności, wariant dla mniejszego zespołu oraz 24 grupy testów.
+Roboczy plan zakłada **4 osoby i 24 godziny**. Pełny dokument zawiera podział pracy, zależności, wariant dla mniejszego zespołu oraz 32 grupy testów. Dodanie nadzoru tematycznego rozszerza zakres i wymaga sprawdzenia harmonogramu.
 
 - [ ] Plugin Pi przechwytuje tool call i respektuje kontynuację, oczekiwanie albo blokadę sesji.
 - [ ] Użytkownik jednorazowo zatwierdza wybrane operacje; twarde zakazy nie podlegają obejściu.
@@ -72,13 +79,18 @@ Roboczy plan zakłada **4 osoby i 24 godziny**. Pełny dokument zawiera podział
 - [ ] Działają reguły deterministyczne i rzeczywisty model oceniający.
 - [ ] Bramka modelu rezerwuje budżet przed wywołaniem i rozlicza usage.
 - [ ] Kontrola treści blokuje sekret i pokazuje przykład redakcji.
+- [ ] Detektor oznacza sesję wrażliwym tematem, dodatkowy nadzorca kontroluje wejścia/wyjścia, a naruszenie zamyka sesję przed niedozwolonym skutkiem.
 - [ ] Dashboard pokazuje zdarzenia, powody decyzji, zużycie i zmiany polityki.
 - [ ] Testy potwierdzają dozwolone operacje oraz brak skutku po odmowie.
 - [ ] Bezpieczny replay historycznej podatności sprawdza regułę feedu w adapterze testowym.
 
-**Trzy rozmowy na prezentację:** agent poprawia wybór narzędzia, edytuje kod i uruchamia testy; Jev zatrzymuje publikację zasugerowaną przez niezaufany dokument; człowiek zatwierdza jeden zapis, a gateway blokuje późniejsze wywołanie modelu z powodu budżetu. Każda historia ma diagram procesu w planie i na stronie. Są to scenariusze projektowanego działania.
+**Trzy rozmowy na prezentację:** onboarding KYC z kontrolą zakresu klienta i jednorazowym zapisem szkicu; analiza poufnej transakcji M&A z blokadą publikacji zasugerowanej przez dokument; ogólna rozmowa HR, która uruchamia nadzorcę, a po zakazanej ocenie osób kończy się zamknięciem sesji. Każda historia ma diagram w planie i na stronie. To scenariusze projektowanego działania na syntetycznych danych.
 
 Pierwszy krok implementacji to potwierdzenie dwóch rzeczy: **odmowa zatrzymuje tool przed skutkiem**, a **wywołania modelu przechodzą przez własną bramkę**.
+
+**Scenariusz HR:** ogólna rozmowa o procesie ocen uruchamia etykietę `employee_evaluation` i nadzorcę. Późniejsza prośba o ocenę konkretnej osoby albo wskazanie jej do zwolnienia zamyka sesję. Odpowiedź modelu również jest sprawdzana przed pokazaniem użytkownikowi, nawet gdy agent nie używa narzędzi. Sam temat nie jest naruszeniem; niepewność wstrzymuje sesję do przeglądu administratora.
+
+[Projekt nadzoru tematycznego](docs/blackwall-koncepcja-i-plan-dema.md#6a-tematy-wrażliwe-i-agent-nadzorujący-sesję) obejmuje PostgreSQL + pgvector, katalog i wersje polityk, kontrakt nadzorcy, audyt, testy T25–T32 oraz cele latencji do zmierzenia.
 
 ## Co jest w repo
 
