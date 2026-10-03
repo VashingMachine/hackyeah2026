@@ -8,9 +8,9 @@ Centralna kontrola działań agentów AI: uprawnienia do narzędzi, polityki org
 
 **HackYeah 2026 · AI Control Layer · wyzwanie Goldman Sachs**
 
-> **Status: koncepcja i plan dema.** W repo są briefy, projekt rozwiązania i materiały graficzne. Plugin, backend i dashboard są zaplanowane; nie ma jeszcze uruchamialnej aplikacji.
+> **Status: koncepcja i plan dema.** W repo są briefy, projekt rozwiązania, materiały graficzne i strona prezentacyjna z interaktywną symulacją. Plugin, backend i dashboard Blackwalla są zaplanowane.
 
-[Koncepcja i architektura](docs/blackwall-koncepcja-i-plan-dema.md) · [Brief konkursowy](docs/golden-sachs.pdf) · [Plan dema](#plan-dema) · [Wersja przedszkolna](#blackwall-junior)
+[Strona projektu i uruchomienie](website/README.md) · [Koncepcja i architektura](docs/blackwall-koncepcja-i-plan-dema.md) · [Brief konkursowy](docs/golden-sachs.pdf) · [Plan dema](#plan-dema) · [Wersja przedszkolna](#blackwall-junior)
 
 ## O co chodzi
 
@@ -25,8 +25,8 @@ Pierwszą integracją będzie **Pi**. Docelowe demo składa się z pluginu, serw
 1. Użytkownik uwierzytelnia plugin i rozpoczyna sesję.
 2. Przed każdym wywołaniem narzędzia plugin pyta Blackwalla o zgodę.
 3. Serwer sprawdza tożsamość, politykę, argumenty, limity i — tam, gdzie wymaga tego profil — ocenę modelu decyzyjnego.
-4. Plugin otrzymuje **tak albo nie**, z identyfikatorem decyzji w nagłówku odpowiedzi.
-5. Zgoda pozwala wykonać konkretną operację. Odmowa blokuje sesję, zatrzymuje pracę agenta i kieruje użytkownika do administratora.
+4. Plugin otrzymuje **allow, deny albo require_approval**, z powodem dla modelu, identyfikatorem decyzji i instrukcją dalszego zachowania sesji.
+5. Zgoda pozwala wykonać konkretną operację. Twarda odmowa blokuje sesję, a błąd możliwy do poprawienia może pozwolić na ograniczone ponowienie. Wybrane operacje czekają na jednorazowe potwierdzenie użytkownika w granicach polityki.
 6. Decyzja i wynik wykonania trafiają do audytu. Wywołania modelu przechodzą dodatkowo przez bramkę pilnującą treści i budżetu.
 
 ```mermaid
@@ -35,7 +35,7 @@ flowchart LR
     Pi -->|Każdy tool call| Policy[Centralny silnik polityk]
     Policy --> Rules[Reguły deterministyczne]
     Policy --> Judge[Ocena semantyczna]
-    Policy -->|Tak / Nie| Pi
+    Policy -->|Decyzja z powodem| Pi
     Pi -->|Po zgodzie| Tools[Kontrolowane narzędzia]
     Pi --> Gateway[Bramka modelu i budżetów]
     Gateway --> Model[Model wykonawczy]
@@ -58,13 +58,16 @@ flowchart LR
 | **Modele i zasoby** | Allowlista modeli, rezerwacje budżetu, limity tokenów, czasu i liczby operacji. |
 | **Audyt** | Reguła, wersja polityki, powód decyzji, wynik wykonania, koszty i eksport zdarzeń. |
 
-Twardego zakazu nie może uchylić model oceniający. Brak odpowiedzi wymaganej kontroli oznacza brak zgody. W MVP dowolny shell jest zablokowany; demo korzysta z kontrolowanych operacji plikowych i HTTP.
+Twardego zakazu nie może uchylić model oceniający. Brak odpowiedzi wymaganej kontroli oznacza brak zgody. Agent preferuje `read`, `write`, `edit`, kontrolowane `ls`/`find`/`grep` i HTTP. `bash` pozostaje dostępny do uruchamiania programów, ale każda zgoda wymaga oceny Jeva. Zwykły odczyt przez `cat` dostaje odmowę z instrukcją użycia `read` i możliwością kontynuacji.
+
+Demo korzysta z przygotowanego środowiska i syntetycznych danych. Bez sandboxa ocena Jeva nie gwarantuje ograniczenia wszystkich skutków uruchomionego kodu. Twarda izolacja plików i sieci wymaga osobnego wykonawcy.
 
 ## Plan dema
 
-Roboczy plan zakłada **4 osoby i 24 godziny**. Pełny dokument zawiera podział pracy, zależności, wariant dla mniejszego zespołu oraz 18 grup testów.
+Roboczy plan zakłada **4 osoby i 24 godziny**. Pełny dokument zawiera podział pracy, zależności, wariant dla mniejszego zespołu oraz 24 grupy testów.
 
-- [ ] Plugin Pi przechwytuje tool call i zatrzymuje run po odmowie.
+- [ ] Plugin Pi przechwytuje tool call i respektuje kontynuację, oczekiwanie albo blokadę sesji.
+- [ ] Użytkownik jednorazowo zatwierdza wybrane operacje; twarde zakazy nie podlegają obejściu.
 - [ ] Backend egzekwuje politykę globalną i użytkownika.
 - [ ] Działają reguły deterministyczne i rzeczywisty model oceniający.
 - [ ] Bramka modelu rezerwuje budżet przed wywołaniem i rozlicza usage.
@@ -73,7 +76,7 @@ Roboczy plan zakłada **4 osoby i 24 godziny**. Pełny dokument zawiera podział
 - [ ] Testy potwierdzają dozwolone operacje oraz brak skutku po odmowie.
 - [ ] Bezpieczny replay historycznej podatności sprawdza regułę feedu w adapterze testowym.
 
-**Historia na prezentację:** analityk tworzy raport. Normalny odczyt i zapis przechodzą. Próba dostępu do sekretu zostaje zablokowana. Instrukcja zaszyta w dokumencie wywołuje ocenę semantyczną. Administrator widzi powód, zmienia politykę, a kolejna próba korzysta z nowej wersji. Na koniec pokazujemy limit budżetu i wyniki testów.
+**Trzy rozmowy na prezentację:** agent poprawia wybór narzędzia, edytuje kod i uruchamia testy; Jev zatrzymuje publikację zasugerowaną przez niezaufany dokument; człowiek zatwierdza jeden zapis, a gateway blokuje późniejsze wywołanie modelu z powodu budżetu. Każda historia ma diagram procesu w planie i na stronie. Są to scenariusze projektowanego działania.
 
 Pierwszy krok implementacji to potwierdzenie dwóch rzeczy: **odmowa zatrzymuje tool przed skutkiem**, a **wywołania modelu przechodzą przez własną bramkę**.
 
@@ -82,6 +85,7 @@ Pierwszy krok implementacji to potwierdzenie dwóch rzeczy: **odmowa zatrzymuje 
 ```text
 docs/
 ├── blackwall-koncepcja-i-plan-dema.md   # wymagania, architektura, API, polityki i plan
+├── blackwall-koncepcja-i-plan-dema-dla-5latka.md # ten sam plan prostymi słowami
 ├── golden-sachs.pdf                   # brief AI Control Layer
 ├── huawei.pdf                         # drugi brief konkursowy
 └── assets/
@@ -102,6 +106,8 @@ Decyzja `allow` nie dowodzi wykonania operacji. `confidence` modelu nie jest gwa
 ## Blackwall Junior
 
 Ten sam firewall, budżet artystyczny: dwie kredki.
+
+[Przeczytaj plan prostymi słowami](docs/blackwall-koncepcja-i-plan-dema-dla-5latka.md).
 
 <details>
 <summary>Otwórz edycję przedszkolną</summary>
