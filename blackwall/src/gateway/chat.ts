@@ -101,7 +101,10 @@ async function handleChatLocked(core: Core, sessionId: string, req: ChatRequest,
     if (!text || core.hasRecorded(session.id, text)) continue;
     const r = await core.inspectContent(session, kind, text);
     session = store.getSession(session.id)!;
-    if (r.supervision.action !== 'pass') return supervisionResult(r.supervision.action, r.supervision.reason_codes[0] ?? 'GUARDIAN_UNAVAILABLE', session.status);
+    if (r.supervision.action !== 'pass') {
+      audit('model.denied', { reason: r.supervision.reason_codes[0], stage: 'supervision', input_kind: kind }, { reason_codes: r.supervision.reason_codes, effect: 'deny' });
+      return supervisionResult(r.supervision.action, r.supervision.reason_codes[0] ?? 'GUARDIAN_UNAVAILABLE', session.status);
+    }
     if (r.action === 'block') return err(403, 'SECRET_IN_CONTENT', 'The message contains a secret and was not sent to the model.');
     if (r.action === 'redact') m.content = r.text;
   }

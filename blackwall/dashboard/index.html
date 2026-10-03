@@ -36,7 +36,17 @@
     </section>
 
     <section id="tab-events" hidden>
-      <div class="toolbar"><label>Sesja <select id="f-session"><option value="">wszystkie</option></select></label><label>Typ <input id="f-type" placeholder="np. decision.*"></label><label class="chk"><input type="checkbox" id="f-hide"> ukryj szum (content.*, budget.*)</label><button id="export">Eksport JSONL</button></div>
+      <div class="toolbar">
+        <label>Sesja <select id="f-session"><option value="">wszystkie</option></select></label>
+        <label>Stan sesji <select id="f-status"><option value="">wszystkie</option><option value="failed">tylko nieudane (zablokowane, zamknięte, w przeglądzie)</option><option value="terminated">terminated</option><option value="blocked">blocked</option><option value="reviewing">reviewing</option><option value="awaiting_approval">awaiting_approval</option><option value="active">active</option></select></label>
+        <label>Powód <select id="f-reason"><option value="">wszystkie</option></select></label>
+        <label>Efekt <select id="f-effect"><option value="">wszystkie</option><option value="deny">deny</option><option value="require_approval">require_approval</option><option value="allow">allow</option></select></label>
+        <label>Typ <input id="f-type" placeholder="np. decision.*"></label>
+        <label class="chk"><input type="checkbox" id="f-hide"> ukryj szum (content.*, budget.*)</label>
+        <button id="f-reset">Wyczyść filtry</button>
+        <button id="export">Eksport JSONL</button>
+        <span id="f-count" class="note"></span>
+      </div>
       <div class="split">
         <ol id="timeline" class="timeline"></ol>
         <aside id="detail" class="card detail"><p class="empty">Wybierz zdarzenie, aby zobaczyć powód, wersje i dowód.</p></aside>

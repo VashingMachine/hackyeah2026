@@ -127,7 +127,12 @@ export class Core {
     const redacted = scanText(rawText, { pii: false }).redacted;
     const rec = this.store.appendEvent(session.id, `content.${kind}`, { kind, text: clip(redacted, 4000), chars: rawText.length, sha: sha256(rawText).slice(0, 16) }, { user_name: session.user_name });
     const seq = rec.seq;
-    const out = (o: Omit<SupervisionOutcome, 'seq' | 'timings_ms'>): SupervisionOutcome => ({ ...o, seq, timings_ms: timings });
+    // The event is "cleared" only when supervision actually let it through. A failed, uncertain or refused review leaves it
+    // uncleared, so a resend after an admin resumes the session is inspected again instead of being skipped as already seen.
+    const out = (o: Omit<SupervisionOutcome, 'seq' | 'timings_ms'>): SupervisionOutcome => {
+      if (o.action === 'pass') this.store.markEventCleared(rec.id);
+      return { ...o, seq, timings_ms: timings };
+    };
     const ts = this.policy.topic_supervision;
     if (!ts.enabled || seq === null) return out({ action: 'pass', reason_codes: [], topic_ids: [] });
 
@@ -236,10 +241,10 @@ export class Core {
     return { action, text: action === 'block' ? '' : outText, findings: scan.findings, supervision };
   }
 
-  /** Dedupe user messages that the gateway sees again on every request. */
+  /** Dedupe messages the gateway sees again on every request: only those that were reviewed and passed. */
   hasRecorded(sessionId: string, text: string): boolean {
     const sha = sha256(text).slice(0, 16);
-    return this.store.sessionHistory(sessionId, SUPERVISION_KINDS.map((k) => `content.${k}`), 400).some((r) => (JSON.parse(r.data) as { sha: string }).sha === sha);
+    return this.store.sessionHistory(sessionId, SUPERVISION_KINDS.map((k) => `content.${k}`), 400).some((r) => { const d = JSON.parse(r.data) as { sha: string; cleared?: boolean }; return d.sha === sha && d.cleared === true; });
   }
 
   // ------------------------------------------------------------------ tool decisions

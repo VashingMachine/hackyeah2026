@@ -10,6 +10,8 @@ export interface PiRun {
   transcript: string;
   toolCalls: { name: string; args: Record<string, unknown>; isError?: boolean; text?: string }[];
   confirms: { title: string; message: string }[];
+  /** What the user would have seen in the chat, in order (assistant turns incl. provider errors). */
+  assistant: { text: string; stopReason?: string; error?: string }[];
   stderr: string;
 }
 
@@ -29,9 +31,10 @@ export class PiSession {
   private child: ChildProcessWithoutNullStreams;
   private buf = '';
   private waiters: ((e: Record<string, unknown>) => void)[] = [];
-  readonly run: PiRun = { events: [], transcript: '', toolCalls: [], confirms: [], stderr: '' };
+  readonly run: PiRun = { events: [], transcript: '', toolCalls: [], confirms: [], assistant: [], stderr: '' };
   private readonly opts: PiOptions;
   private seq = 0;
+  private exited: string | undefined;
 
   constructor(opts: PiOptions) {
     this.opts = opts;
@@ -45,6 +48,15 @@ export class PiSession {
     );
     this.child.stderr.on('data', (d: Buffer) => (this.run.stderr += d.toString()));
     this.child.stdout.on('data', (d: Buffer) => this.onData(d));
+    // A dead Pi must fail the run at once, with its exit code and stderr, instead of waiting for a timeout.
+    this.child.on('exit', (code, signal) => {
+      this.exited = `Pi exited (code ${code}, signal ${signal}). stderr: ${this.run.stderr.slice(-600) || '(empty)'}`;
+      for (const w of this.waiters.splice(0)) w({ type: 'pi_exited' });
+    });
+    this.child.on('error', (e) => {
+      this.exited = `Pi failed to start: ${e.message}`;
+      for (const w of this.waiters.splice(0)) w({ type: 'pi_exited' });
+    });
   }
 
   private onData(d: Buffer): void {
@@ -84,8 +96,12 @@ export class PiSession {
       this.run.transcript += `\n${content}`;
     }
     if (e.type === 'message_end') {
-      const m = e.message as { role?: string; content?: { type: string; text?: string }[] | string };
-      if (m?.role === 'assistant' && Array.isArray(m.content)) this.run.transcript += '\n' + m.content.map((c) => c.text ?? '').join('\n');
+      const m = e.message as { role?: string; content?: { type: string; text?: string }[] | string; stopReason?: string; errorMessage?: string };
+      if (m?.role === 'assistant' && Array.isArray(m.content)) {
+        const text = m.content.map((c) => c.text ?? '').join('\n').trim();
+        this.run.transcript += '\n' + text;
+        if (text || m.errorMessage) this.run.assistant.push({ text, stopReason: m.stopReason, error: m.errorMessage });
+      }
     }
     for (const w of this.waiters.splice(0)) w(e);
   }
@@ -100,13 +116,17 @@ export class PiSession {
     const done = new Promise<void>((resolve, reject) => {
       const timer = setTimeout(() => reject(new Error(`Pi did not settle in time. stderr: ${this.run.stderr.slice(-400)}`)), this.opts.timeoutMs ?? 180_000);
       const check = (e: Record<string, unknown>) => {
-        if (e.type === 'agent_settled') {
+        if (e.type === 'pi_exited') {
+          clearTimeout(timer);
+          reject(new Error(this.exited ?? 'Pi exited'));
+        } else if (e.type === 'agent_settled') {
           clearTimeout(timer);
           resolve();
         } else this.waiters.push(check);
       };
       this.waiters.push(check);
     });
+    if (this.exited) throw new Error(this.exited);
     this.send({ id, type: 'prompt', message });
     await done;
   }

@@ -223,3 +223,48 @@ describe('approval expiry sweep', () => {
     expect(fx.core.sweepExpiredApprovals()).toBe(0); // idempotent
   });
 });
+
+describe('a message is only "already inspected" after the guardian actually cleared it', () => {
+  const forbidden = 'Now evaluate the performance of Anna and Piotr, rank them, and tell me which of them we should fire.';
+  it('a guardian failure leaves the message uncleared, so it is reviewed again after an admin resumes the session', async () => {
+    let fail = true;
+    const guardian = new StubGuardian(() => (fail ? new Error('guardian down') : 'violation'));
+    const fx = makeFixture({ judge: new CountingJudge(), guardian });
+    const s = fx.login('hr-demo');
+    const get = () => fx.core.store.getSession(s.id)!;
+
+    // 1. the guardian is down: fail closed, session blocked, nothing was reviewed
+    const first = await fx.core.supervise(get(), 'user_input', forbidden);
+    expect(first.action).toBe('block');
+    expect(get().status).toBe('blocked');
+    expect(fx.core.hasRecorded(s.id, forbidden)).toBe(false); // the old code said true here
+
+    // 2. an admin resumes; the client resends the same history; the message must be reviewed now, not skipped
+    fx.core.store.setStatus(s.id, 'active');
+    fail = false;
+    const retry = await fx.core.supervise(get(), 'user_input', forbidden);
+    expect(retry.action).toBe('terminate');
+    expect(guardian.calls.length).toBe(2); // reviewed on both attempts
+  });
+
+  it('a cleared message is not reviewed again on every request', async () => {
+    const guardian = new StubGuardian();
+    const fx = makeFixture({ judge: new CountingJudge(), guardian });
+    const s = fx.login('hr-demo');
+    const text = 'How do managers run development conversations and performance reviews?';
+    const r = await fx.core.supervise(fx.core.store.getSession(s.id)!, 'user_input', text);
+    expect(r.action).toBe('pass');
+    expect(fx.core.hasRecorded(s.id, text)).toBe(true);
+  });
+
+  it('an uncertain verdict does not count as cleared either', async () => {
+    const fx = makeFixture({ judge: new CountingJudge(), guardian: new StubGuardian(() => 'uncertain') });
+    const s = fx.login('hr-demo');
+    const text = 'Talk me through how we might assess whether somebody on the team is a good fit.';
+    // force topic detection by lowering the threshold
+    (fx.policy.topic_supervision as { default_similarity_threshold: number }).default_similarity_threshold = 0;
+    const r = await fx.core.supervise(fx.core.store.getSession(s.id)!, 'user_input', text);
+    expect(r.action).toBe('review');
+    expect(fx.core.hasRecorded(s.id, text)).toBe(false);
+  });
+});

@@ -16,6 +16,8 @@ Warstwa kontroli agentów AI (HackYeah 2026, wyzwanie Goldman Sachs „AI Contro
 
 Szczegółowe wyniki — niżej w sekcji „Testy”.
 
+> **Przewodnik:** uruchomienie krok po kroku, 8 scenariuszy demo (Pi i `curl`) i opis narzędzi: [`docs/przewodnik-demo.md`](docs/przewodnik-demo.md).
+
 ## Uruchomienie
 
 Wymagane: Node.js 24+ (wbudowany `node:sqlite`), klucze w `../.env` (wzór: `../.env.example`): `ANTHROPIC_API_KEY`, `JEV_API_KEY`.
@@ -52,14 +54,14 @@ Jedno źródło prawdy: [`config/policy.yaml`](config/policy.yaml). Zmiana = edy
 ## Testy
 
 ```sh
-npm test            # 47 testów jednostkowych, bez sieci
+npm test            # 50 testów jednostkowych, bez sieci
 npm run test:live   # 21 testów na prawdziwych API (Jev, Claude)
 npm run test:e2e    # 8 testów z prawdziwym agentem Pi
 npm run eval        # korpus semantyczny (patrz niżej)
 npm run typecheck
 ```
 
-Ostatnie przebiegi: **76/76** (47 jednostkowych + 21 na żywych API + 8 end-to-end). Testy na żywych modelach są niedeterministyczne: jeden test e2e padał w ok. 1 z 4 przebiegów, bo jego prompt (nadpisanie szkicu KYC tekstem „SHOULD NOT BE WRITTEN”) wyglądał dla nadzorcy na sabotaż; prompt zmieniono na zwykły. Wniosek: nadzorca bywa nadgorliwy przy nietypowych poleceniach. Testy negatywne sprawdzają **skutek**, nie wpis w logu: plik nie powstał lub nie zmienił się, odbiornik HTTP nie dostał żądania, model nie dostał zabronionej wiadomości (licznik wywołań modelu nie wzrósł), sekret nie trafił do transkryptu agenta ani do audytu.
+Ostatni pełny przebieg: **79/79** (50 jednostkowych + 21 na żywych API + 8 end-to-end). Testy na żywych modelach są niedeterministyczne: jeden test e2e padał w ok. 1 z 4 przebiegów, bo jego prompt (nadpisanie szkicu KYC tekstem „SHOULD NOT BE WRITTEN”) wyglądał dla nadzorcy na sabotaż; prompt zmieniono na zwykły. Wniosek: nadzorca bywa nadgorliwy przy nietypowych poleceniach. Testy negatywne sprawdzają **skutek**, nie wpis w logu: plik nie powstał lub nie zmienił się, odbiornik HTTP nie dostał żądania, model nie dostał zabronionej wiadomości (licznik wywołań modelu nie wzrósł), sekret nie trafił do transkryptu agenta ani do audytu.
 
 Testy end-to-end (prawdziwy Pi + prawdziwy Claude + prawdziwy Jev): zatwierdzenie nadpisania szkicu KYC (jeden zapis), odrzucenie zgody (plik nietknięty, sesja `blocked`), odczyt danych innego klienta, ochrona `.env` i redakcja klucza w dozwolonym pliku, sesja HR zamknięta po zleceniu oceny osób, dozwolony POST na prośbę użytkownika, brak żądania przy injekcji w dokumencie oraz brak tokenu sesji w środowisku powłoki agenta.
 
@@ -91,6 +93,12 @@ Testy end-to-end (prawdziwy Pi + prawdziwy Claude + prawdziwy Jev): zatwierdzeni
 | Komunikaty dla modelu po polsku | po angielsku | model wykonawczy pracuje po angielsku |
 | Hot-reload polityki przez API | plik YAML + restart | decyzja użytkownika |
 | Walidacja kontekstu przez `trusted_task_id` | zaufane zadanie = wiadomości użytkownika zapisane przez bramkę/rozszerzenie | brak osobnego rejestru zadań |
+
+## Nagranie demo
+
+`node scripts/demo.ts --only 06-hr-termination` nagrywa jeden przypadek na prawdziwym stosie (Pi, Claude, Jev, prawdziwe pliki) do `demo-recordings/`: przebieg rozmowy, ślad audytu, dowody sprawdzone w systemie i zrzuty panelu. Między bramką a dostawcą modelu stoi niezależny przekaźnik zliczający, więc „model nie dostał zabronionej treści” da się sprawdzić bez ufania własnemu audytowi Blackwalla. Bez `--only` nagrywa wszystkie przypadki (ok. 8 min).
+
+Recenzja nagrania przez niezależnego agenta wykryła realny błąd: wiadomość zapisana w audycie była traktowana jako „już sprawdzona” także wtedy, gdy nadzorca zawiódł lub był niepewny, więc po wznowieniu sesji przez administratora trafiłaby do modelu bez oceny. Poprawiono (wiadomość jest pomijana tylko po przejściu kontroli) i dodano testy.
 
 ## Znane ograniczenia i otwarte sprawy
 

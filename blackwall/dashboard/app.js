@@ -117,15 +117,36 @@ function describe(e) {
 const summarizeArgs = (a) => (a ? JSON.stringify(a).slice(0, 110) : '');
 const tone = (e) => (e.effect === 'deny' || e.type === 'session.terminated' ? 'deny' : e.effect === 'require_approval' ? 'require_approval' : e.effect === 'allow' ? 'allow' : 'info');
 
+const FAILED = new Set(['blocked', 'terminated', 'reviewing']);
 function renderTimeline() {
   const hide = $('#f-hide').checked; const sid = $('#f-session').value; const ty = $('#f-type').value.trim();
+  const status = $('#f-status').value; const reason = $('#f-reason').value; const effect = $('#f-effect').value;
   const re = ty ? new RegExp('^' + ty.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*') + '$') : null;
-  const rows = state.events.filter((e) => (!sid || e.session_id === sid) && (!hide || !NOISE.test(e.type)) && (!re || re.test(e.type)));
+  const statusOf = new Map(state.sessions.map((x) => [x.id, x.status]));
+  // the reason list is built from what the log actually contains, so it never offers an empty choice
+  const reasons = [...new Set(state.events.flatMap((e) => e.reason_codes))].sort();
+  const rsel = $('#f-reason');
+  if (rsel.options.length - 1 !== reasons.length) { const cur = rsel.value; clear(rsel).append(el('option', { value: '' }, 'wszystkie')); for (const r of reasons) rsel.append(el('option', { value: r }, r)); rsel.value = cur; }
+  const ok = (e) => {
+    if (sid && e.session_id !== sid) return false;
+    if (hide && NOISE.test(e.type)) return false;
+    if (re && !re.test(e.type)) return false;
+    if (reason && !e.reason_codes.includes(reason)) return false;
+    if (effect && e.effect !== effect) return false;
+    if (status) {
+      const st = statusOf.get(e.session_id);
+      if (!st) return false;
+      if (status === 'failed' ? !FAILED.has(st) : st !== status) return false;
+    }
+    return true;
+  };
+  const rows = state.events.filter(ok);
+  $('#f-count').textContent = `${rows.length} z ${state.events.length} zdarzeń`;
   const ol = clear($('#timeline'));
   for (const e of rows.slice(0, 400)) {
     const [t, sub] = describe(e);
     ol.append(el('li', { class: state.selected === e.id ? 'sel' : '', tabindex: 0, onclick: () => { state.selected = e.id; renderTimeline(); renderDetail(e); }, onkeydown: (k) => { if (k.key === 'Enter') k.target.click(); } },
-      el('time', {}, fmtTime(e.ts)), el('span', { class: `dot ${tone(e)}` }), el('div', {}, el('strong', {}, t), el('small', {}, `${short(e.session_id)} ${sub || ''}`))));
+      el('time', {}, fmtTime(e.ts)), el('span', { class: `dot ${tone(e)}` }), el('div', {}, el('strong', {}, t), el('small', {}, `${short(e.session_id)} ${statusOf.get(e.session_id) ? '· ' + statusOf.get(e.session_id) : ''} ${sub || ''}`))));
   }
   if (!rows.length) ol.append(el('li', {}, el('span', {}), el('span', {}), el('small', {}, 'Brak zdarzeń dla filtra.')));
 }
@@ -167,7 +188,7 @@ async function stream() {
   }
 }
 let timer;
-function schedule() { clearTimeout(timer); timer = setTimeout(() => { if (state.tab === 'events') renderTimeline(); if (state.tab === 'overview') loadOverview().catch(() => {}); }, 400); }
+function schedule() { clearTimeout(timer); timer = setTimeout(() => { if (state.tab === 'events') loadOverview().catch(() => {}).then(renderTimeline); if (state.tab === 'overview') loadOverview().catch(() => {}); }, 400); }
 
 // ---------------------------------------------------------------- policies
 async function loadPolicies() {
@@ -196,24 +217,28 @@ async function refresh() {
   try {
     showError('');
     if (state.tab === 'overview') await loadOverview();
-    if (state.tab === 'events') { if (!state.events.length) await loadEvents(); else renderTimeline(); await loadOverview().catch(() => {}); }
+    if (state.tab === 'events') { if (!state.events.length) await loadEvents(); await loadOverview().catch(() => {}); renderTimeline(); }
     if (state.tab === 'policies') await loadPolicies();
   } catch (e) { showError(e.message); }
 }
 for (const b of document.querySelectorAll('.tabs button')) b.addEventListener('click', () => selectTab(b.dataset.tab));
 $('#token').value = token;
 $('#save-token').addEventListener('click', () => { token = $('#token').value.trim(); try { sessionStorage.setItem('bw-admin', token); } catch { /* ignore */ } state.events = []; refresh(); });
-for (const id of ['#f-session', '#f-type', '#f-hide']) $(id).addEventListener('input', renderTimeline);
+for (const id of ['#f-session', '#f-type', '#f-hide', '#f-status', '#f-reason', '#f-effect']) $(id).addEventListener('input', renderTimeline);
+$('#f-reset').addEventListener('click', () => { for (const id of ['#f-session', '#f-type', '#f-status', '#f-reason', '#f-effect']) $(id).value = ''; $('#f-hide').checked = false; renderTimeline(); });
 $('#eff-user').addEventListener('change', loadPolicies);
 $('#export').addEventListener('click', async () => {
   try { const r = await api('/v1/admin/export'); const url = URL.createObjectURL(await r.blob()); const a = el('a', { href: url, download: 'blackwall-audit.jsonl' }); a.click(); URL.revokeObjectURL(url); } catch (e) { showError(e.message); }
 });
 if (!token) { token = 'demo-admin-token'; $('#token').value = token; }
 // Deep links: #events, #policies, #events/<session id> (filters the timeline to one session)
-const [initialTab, initialSession] = location.hash.slice(1).split('/');
+const [hashPath, hashQuery] = location.hash.slice(1).split('?');
+const [initialTab, initialSession] = hashPath.split('/');
+const hq = new URLSearchParams(hashQuery || '');
 if (['events', 'policies'].includes(initialTab)) {
   selectTab(initialTab);
-  if (initialSession) setTimeout(() => { const sel = $('#f-session'); if (![...sel.options].some((o) => o.value === initialSession)) sel.append(el('option', { value: initialSession }, initialSession)); sel.value = initialSession; $('#f-hide').checked = true; renderTimeline(); }, 1500);
+  if (hq.size) setTimeout(() => { if (hq.get('status')) $('#f-status').value = hq.get('status'); if (hq.get('effect')) $('#f-effect').value = hq.get('effect'); if (hq.get('reason')) { const r = $('#f-reason'); if (![...r.options].some((o) => o.value === hq.get('reason'))) r.append(el('option', { value: hq.get('reason') }, hq.get('reason'))); r.value = hq.get('reason'); } renderTimeline(); }, 1800);
+  if (initialSession) setTimeout(() => { const sel = $('#f-session'); if (![...sel.options].some((o) => o.value === initialSession)) sel.append(el('option', { value: initialSession }, initialSession)); sel.value = initialSession; renderTimeline(); }, 1500);
 } else refresh();
 loadEvents().catch(() => {}).finally(() => stream());
 setInterval(() => { if (state.tab === 'overview') loadOverview().catch(() => {}); }, 10000);

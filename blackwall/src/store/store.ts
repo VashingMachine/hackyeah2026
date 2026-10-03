@@ -250,6 +250,11 @@ export class Store {
     });
   }
 
+  /** Mark a recorded content event as reviewed-and-passed. Only such events may be skipped on a resend. */
+  markEventCleared(id: number): void {
+    this.db.prepare(`UPDATE events SET data = json_set(data, '$.cleared', json('true')) WHERE id = ?`).run(id);
+  }
+
   listEvents(f: { sessionId?: string; type?: string; sinceId?: number; limit?: number } = {}): EventRow[] {
     const where: string[] = [];
     const args: (string | number)[] = [];
