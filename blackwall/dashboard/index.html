@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blackwall — panel administratora</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23080909'/%3E%3Cpath d='M17 15h8v34h-8zm13 0h8v34h-8zm13 0h8v34h-8z' fill='%23ff493e'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/dashboard/styles.css">
+  <script src="/dashboard/app.js" defer></script>
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="mark"><i></i><i></i><i></i></span>BLACKWALL <small>panel administratora</small></div>
+    <div class="policy" id="policy-line">…</div>
+    <div class="auth"><input id="token" type="password" placeholder="token administratora" autocomplete="off" aria-label="Token administratora"><button id="save-token">Połącz</button><span id="live" class="live" title="strumień zdarzeń">○</span></div>
+  </header>
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="overview">Przegląd</button>
+    <button role="tab" aria-selected="false" data-tab="events">Zdarzenia</button>
+    <button role="tab" aria-selected="false" data-tab="policies">Polityki</button>
+  </nav>
+  <main>
+    <p id="error" class="error" hidden></p>
+
+    <section id="tab-overview">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid2">
+        <div class="card"><h2>Opóźnienia (ms)</h2><table id="latency"><thead><tr><th>Etap</th><th>n</th><th>p50</th><th>p95</th><th>max</th></tr></thead><tbody></tbody></table><p class="note">Z ostatnich zdarzeń w dzienniku audytu. Czas oczekiwania na człowieka nie jest wliczany.</p></div>
+        <div class="card"><h2>Najczęstsze powody odmów</h2><table id="reasons"><tbody></tbody></table></div>
+      </div>
+      <div class="card"><h2>Sesje</h2><table id="sessions"><thead><tr><th>Sesja</th><th>Użytkownik</th><th>Stan</th><th>Tematy</th><th>Tokeny</th><th>Narzędzia</th><th></th></tr></thead><tbody></tbody></table></div>
+      <div class="grid2">
+        <div class="card"><h2>Oczekujące zgody</h2><div id="approvals" class="empty">brak</div></div>
+        <div class="card"><h2>Przeglądy do rozstrzygnięcia</h2><div id="reviews" class="empty">brak</div></div>
+      </div>
+    </section>
+
+    <section id="tab-events" hidden>
+      <div class="toolbar"><label>Sesja <select id="f-session"><option value="">wszystkie</option></select></label><label>Typ <input id="f-type" placeholder="np. decision.*"></label><label class="chk"><input type="checkbox" id="f-hide"> ukryj szum (content.*, budget.*)</label><button id="export">Eksport JSONL</button></div>
+      <div class="split">
+        <ol id="timeline" class="timeline"></ol>
+        <aside id="detail" class="card detail"><p class="empty">Wybierz zdarzenie, aby zobaczyć powód, wersje i dowód.</p></aside>
+      </div>
+    </section>
+
+    <section id="tab-policies" hidden>
+      <div class="grid2">
+        <div class="card"><h2>Obowiązująca polityka</h2><dl id="policy-facts"></dl></div>
+        <div class="card"><h2>Poziomy restrykcyjności</h2><table id="profiles"></table><p class="note">Aktywny poziom jest podświetlony; różnice dotyczą m.in. zakresu oceny semantycznej i progów. Zmiana: edycja <code>config/policy.yaml</code> i restart.</p></div>
+      </div>
+      <div class="card"><h2>Zakres użytkownika (po połączeniu z polityką organizacji)</h2><label>Użytkownik <select id="eff-user"></select></label><pre id="effective"></pre></div>
+      <div class="card"><h2>Tematy wrażliwe</h2><table id="topics"></table></div>
+    </section>
+  </main>
+</body>
+</html>

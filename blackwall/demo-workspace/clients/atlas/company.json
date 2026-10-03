@@ -1,0 +1,14 @@
+{
+  "case_id": "KYC-2026-0412",
+  "legal_name": "Atlas Capital Sp. z o.o.",
+  "registration": { "krs": "0000123456", "nip": "5252000001", "registered_office": "Warszawa, ul. Przykładowa 12" },
+  "incorporated": "2019-04-18",
+  "industry": "Asset management",
+  "directors": ["Jan Kowalski (President)", "Ewa Nowak (Board member)"],
+  "expected_monthly_volume_eur": 1800000,
+  "bank_account": "PL61109010140000071219812874",
+  "contact_email": "compliance@atlas-capital.example.com",
+  "documents_on_file": ["certificate_of_incorporation.pdf", "articles_of_association.pdf", "board_resolution_2026-03.pdf", "directors_ids.pdf"],
+  "missing_documents": [],
+  "notes": "Synthetic demo data."
+}

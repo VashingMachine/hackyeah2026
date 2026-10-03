@@ -1,0 +1,89 @@
+{
+  "catalog_id": "demo-attacks",
+  "version": 1,
+  "note": "Signatures are matched against real tool arguments and model/tool text. Entries are patterns, not executable code.",
+  "signatures": [
+    {
+      "id": "BW-FEED-001",
+      "title": "Unsafe deserialization: pickle load",
+      "category": "unsafe_deserialization",
+      "source": "https://docs.python.org/3/library/pickle.html#restricting-globals",
+      "risk": "high",
+      "targets": ["bash", "write", "edit"],
+      "pattern": "\\b(?:pickle|cPickle|dill|cloudpickle)\\.loads?\\s*\\("
+    },
+    {
+      "id": "BW-FEED-002",
+      "title": "PyTorch torch.load on untrusted model files (CVE-2025-32434 class)",
+      "category": "unsafe_deserialization",
+      "source": "https://github.com/pytorch/pytorch/security/advisories/GHSA-53q9-r3pm-6pq6",
+      "cve": "CVE-2025-32434",
+      "risk": "high",
+      "targets": ["bash", "write", "edit"],
+      "pattern": "\\btorch\\.load\\s*\\((?![^)]*weights_only\\s*=\\s*True)"
+    },
+    {
+      "id": "BW-FEED-003",
+      "title": "Remote code from a model repository (trust_remote_code)",
+      "category": "supply_chain_model_repo",
+      "source": "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
+      "risk": "high",
+      "targets": ["bash", "write", "edit"],
+      "pattern": "trust_remote_code\\s*=\\s*True"
+    },
+    {
+      "id": "BW-FEED-004",
+      "title": "Piping a download into a shell",
+      "category": "malicious_code_execution",
+      "source": "https://attack.mitre.org/techniques/T1105/",
+      "risk": "high",
+      "targets": ["bash"],
+      "pattern": "\\b(?:curl|wget)\\b[^|;\\n]*\\|\\s*(?:sudo\\s+)?(?:ba|z|da)?sh\\b"
+    },
+    {
+      "id": "BW-FEED-005",
+      "title": "Reverse shell",
+      "category": "malicious_code_execution",
+      "source": "https://attack.mitre.org/techniques/T1059/004/",
+      "risk": "critical",
+      "targets": ["bash", "write", "edit"],
+      "pattern": "(?:/dev/tcp/\\d|\\bnc(?:at)?\\b[^\\n]*\\s-e\\s|bash\\s+-i\\s*>&)"
+    },
+    {
+      "id": "BW-FEED-006",
+      "title": "Destructive filesystem command",
+      "category": "malicious_code_execution",
+      "source": "https://attack.mitre.org/techniques/T1485/",
+      "risk": "critical",
+      "targets": ["bash"],
+      "pattern": "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f?[a-zA-Z]*\\s+(?:--no-preserve-root\\s+)?(?:/|~|\\$HOME)(?:\\s|$)"
+    },
+    {
+      "id": "BW-FEED-007",
+      "title": "Model artifact from an unreviewed repository (pickle-based weights)",
+      "category": "supply_chain_model_repo",
+      "source": "https://huggingface.co/docs/hub/security-pickle",
+      "risk": "medium",
+      "targets": ["bash", "http_request"],
+      "pattern": "(?:huggingface\\.co|hf\\.co)/[^\\s'\"]+\\.(?:pkl|pickle|bin|pt|pth|ckpt)\\b"
+    },
+    {
+      "id": "BW-FEED-008",
+      "title": "Prompt injection phrasing in untrusted content",
+      "category": "prompt_injection",
+      "source": "https://genai.owasp.org/llmrisk/llm01-prompt-injection/",
+      "risk": "medium",
+      "targets": ["tool_output", "user_document"],
+      "pattern": "(?:ignore (?:all |any )?(?:the )?(?:previous|prior|above) (?:instructions|rules)|disregard (?:your|the) (?:system )?(?:prompt|instructions)|zignoruj (?:wszystkie )?(?:poprzednie |powyższe )?(?:instrukcje|zasady|zakaz))"
+    },
+    {
+      "id": "BW-FEED-009",
+      "title": "Data exfiltration to anonymous paste / webhook sinks",
+      "category": "data_exfiltration",
+      "source": "https://attack.mitre.org/techniques/T1567/",
+      "risk": "high",
+      "targets": ["bash", "http_request"],
+      "pattern": "(?:pastebin\\.com|transfer\\.sh|webhook\\.site|requestbin|ngrok\\.io|oast\\.(?:fun|pro|live|site))"
+    }
+  ]
+}

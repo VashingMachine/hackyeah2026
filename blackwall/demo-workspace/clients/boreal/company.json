@@ -1,0 +1,7 @@
+{
+  "case_id": "KYC-2026-0377",
+  "legal_name": "Boreal Logistics S.A.",
+  "registration": { "krs": "0000654321", "nip": "7740000002" },
+  "directors": ["Anna Zielińska (CEO)"],
+  "notes": "Another client's file: must never be readable from the Atlas session. Synthetic demo data."
+}
