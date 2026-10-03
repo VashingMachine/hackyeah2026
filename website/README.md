@@ -1,32 +1,32 @@
-# Blackwall — strona projektu
+# Blackwall — the project website
 
-Statyczna strona prezentacyjna po polsku: opis rozwiązania, interaktywna symulacja decyzji, trzy rozmowy KYC/M&A/HR z diagramami procesu oraz nadzór nad tematami sesji, schemat architektury, makieta audytu, harmonogram 24 godzin, kryteria gotowości i plan skalowania.
+A static presentation website in English: a description of the solution, an interactive decision simulation, three KYC/M&A/HR conversations with process diagrams and topic supervision of sessions, an architecture diagram, an audit mockup, a 24-hour schedule, readiness criteria and a scaling plan.
 
-## Uruchomienie
+## Running it
 
-Otwórz `dist/index.html` w przeglądarce albo uruchom z katalogu repozytorium:
+Open `dist/index.html` in a browser, or run from the repository directory:
 
 ```sh
 python3 -m http.server 4173 --bind 127.0.0.1 --directory website/dist
 ```
 
-Następnie wejdź na <http://127.0.0.1:4173>. Strona nie wymaga instalacji pakietów ani procesu budowania; działa także offline po otwarciu pliku HTML. Link do GitHuba wymaga internetu.
+Then go to <http://127.0.0.1:4173>. The site needs no package installation or build process; it also works offline after opening the HTML file. The GitHub link requires the internet.
 
-## Pliki
+## Files
 
-- `dist/index.html` — kompletna treść i semantyczny układ strony.
-- `dist/styles.css` — styl oraz układy desktop, tablet i telefon.
-- `dist/app.js` — scenariusze decyzji, zakładki rozmów, zatwierdzenie/odrzucenie, menu mobilne i Blackwall Junior.
-- `dist/assets/` — oba covery projektu.
-- `dist/docs/` — kopia koncepcji i brief PDF dostępne ze strony.
-- `.openai/hosting.json` — konfiguracja publikacji w Sites (strona ma publiczny dostęp).
+- `dist/index.html` — the complete content and the semantic layout of the page.
+- `dist/styles.css` — styling and the desktop, tablet and phone layouts.
+- `dist/app.js` — the decision scenarios, the conversation tabs, approval/rejection, the mobile menu and Blackwall Junior.
+- `dist/assets/` — both covers of the project.
+- `dist/docs/` — a copy of the concept and the PDF brief, available from the page.
+- `.openai/hosting.json` — the publishing configuration for Sites (the site is publicly accessible).
 
-Źródłem treści jest `../docs/blackwall-koncepcja-i-plan-dema.md`. Po zmianie dokumentu zaktualizuj opis na stronie oraz jego kopię w `dist/docs/`. Covery pochodzą z `../docs/assets/`.
+The source of the content is `../docs/blackwall-koncepcja-i-plan-dema.md`. After changing the document, update the description on the page and its copy in `dist/docs/`. The covers come from `../docs/assets/`.
 
-## Zakres demonstracji
+## Scope of the demonstration
 
-Symulacja działa wyłącznie w przeglądarce: nie wykonuje narzędzi, nie wysyła danych do modelu i nie łączy się z backendem Blackwalla. Zgoda na nadpisanie, jej odrzucenie i reset to przykładowe stany interfejsu. Widok audytu zawiera oznaczone dane demonstracyjne. Harmonogram oraz architektura opisują plan MVP.
+The simulation runs only in the browser: it does not execute tools, send data to a model or connect to a Blackwall backend. The approval to overwrite, its rejection and the reset are example interface states. The audit view contains data marked as demonstration data. The schedule and the architecture describe the MVP plan; the working implementation is in `../blackwall/`, and this page does not reflect its state.
 
-Treść jest czytelna bez JavaScript; interakcje wymagają jego włączenia. Strona ma obsługę klawiatury, widoczny fokus, komunikaty decyzji dla czytników ekranu i respektuje preferencję ograniczenia animacji.
+The content is readable without JavaScript; the interactions require it. The site supports the keyboard, shows a visible focus, provides decision messages for screen readers and respects the preference for reduced motion.
 
-Agent preferuje kontrolowane narzędzia plikowe i HTTP, a każda zgoda na shell wymaga oceny Jeva. Scenariusze pokazują onboarding KYC w zakresie klienta i jednorazowy zapis, próbę nieuprawnionej publikacji analizy M&A oraz zamknięcie sesji po zakazanym zleceniu HR. Interaktywna symulacja pokazuje także kontrolę odpowiedzi bez toola i odmowę budżetową. Diagramy są zbudowane w HTML/CSS i nie potrzebują zewnętrznego renderera. Dokument koncepcji obejmuje 32 grupy testów projektowanego backendu, w tym nadzór nad wrażliwymi tematami sesji; nie są to wyniki testów tej statycznej strony. Projekt modułu tematycznego jest w `dist/docs/blackwall-koncepcja-i-plan-dema.md`, w sekcji 6a. Strona opisuje detekcję, etykiety, jednego dodatkowego nadzorcę na sesję oraz stany reviewing/terminated. Symulacja nie uruchamia embeddingów ani modelu nadzorującego.
+The agent prefers the controlled file and HTTP tools, and every approval of the shell requires Jev's assessment. The scenarios show KYC onboarding within the client's scope and a one-time write, an attempted unauthorized publication of an M&A analysis, and the closure of a session after a prohibited HR request. The interactive simulation also shows control of a response without a tool and a budget refusal. The diagrams are built in HTML/CSS and need no external renderer. The concept document covers 32 groups of tests of the designed backend, including supervision of sensitive session topics; these are not test results of this static site. The design of the topic module is in `dist/docs/blackwall-koncepcja-i-plan-dema.md`, in section 6a. The site describes detection, labels, one additional supervisor per session and the reviewing/terminated states. The simulation runs neither embeddings nor a supervising model.

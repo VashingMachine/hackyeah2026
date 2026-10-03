@@ -1,23 +1,23 @@
 <!doctype html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Blackwall — panel administratora</title>
+  <title>Blackwall — administrator dashboard</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23080909'/%3E%3Cpath d='M17 15h8v34h-8zm13 0h8v34h-8zm13 0h8v34h-8z' fill='%23ff493e'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="/dashboard/styles.css">
   <script src="/dashboard/app.js" defer></script>
 </head>
 <body>
   <header class="top">
-    <div class="brand"><span class="mark"><i></i><i></i><i></i></span>BLACKWALL <small>panel administratora</small></div>
+    <div class="brand"><span class="mark"><i></i><i></i><i></i></span>BLACKWALL <small>administrator dashboard</small></div>
     <div class="policy" id="policy-line">…</div>
-    <div class="auth"><input id="token" type="password" placeholder="token administratora" autocomplete="off" aria-label="Token administratora"><button id="save-token">Połącz</button><span id="live" class="live" title="strumień zdarzeń">○</span></div>
+    <div class="auth"><input id="token" type="password" placeholder="administrator token" autocomplete="off" aria-label="Administrator token"><button id="save-token">Connect</button><span id="live" class="live" title="event stream">○</span></div>
   </header>
   <nav class="tabs" role="tablist">
-    <button role="tab" aria-selected="true" data-tab="overview">Przegląd</button>
-    <button role="tab" aria-selected="false" data-tab="events">Zdarzenia</button>
-    <button role="tab" aria-selected="false" data-tab="policies">Polityki</button>
+    <button role="tab" aria-selected="true" data-tab="overview">Overview</button>
+    <button role="tab" aria-selected="false" data-tab="events">Events</button>
+    <button role="tab" aria-selected="false" data-tab="policies">Policies</button>
   </nav>
   <main>
     <p id="error" class="error" hidden></p>
@@ -25,41 +25,41 @@
     <section id="tab-overview">
       <div class="kpis" id="kpis"></div>
       <div class="grid2">
-        <div class="card"><h2>Opóźnienia (ms)</h2><table id="latency"><thead><tr><th>Etap</th><th>n</th><th>p50</th><th>p95</th><th>max</th></tr></thead><tbody></tbody></table><p class="note">Z ostatnich zdarzeń w dzienniku audytu. Czas oczekiwania na człowieka nie jest wliczany.</p></div>
-        <div class="card"><h2>Najczęstsze powody odmów</h2><table id="reasons"><tbody></tbody></table></div>
+        <div class="card"><h2>Latency (ms)</h2><table id="latency"><thead><tr><th>Stage</th><th>n</th><th>p50</th><th>p95</th><th>max</th></tr></thead><tbody></tbody></table><p class="note">From the most recent events in the audit log. Time spent waiting for a human is not included.</p></div>
+        <div class="card"><h2>Most frequent reasons for refusals</h2><table id="reasons"><tbody></tbody></table></div>
       </div>
-      <div class="card"><h2>Sesje</h2><table id="sessions"><thead><tr><th>Sesja</th><th>Użytkownik</th><th>Stan</th><th>Tematy</th><th>Tokeny</th><th>Narzędzia</th><th></th></tr></thead><tbody></tbody></table></div>
+      <div class="card"><h2>Sessions</h2><table id="sessions"><thead><tr><th>Session</th><th>User</th><th>State</th><th>Topics</th><th>Tokens</th><th>Tools</th><th></th></tr></thead><tbody></tbody></table></div>
       <div class="grid2">
-        <div class="card"><h2>Oczekujące zgody</h2><div id="approvals" class="empty">brak</div></div>
-        <div class="card"><h2>Przeglądy do rozstrzygnięcia</h2><div id="reviews" class="empty">brak</div></div>
+        <div class="card"><h2>Pending approvals</h2><div id="approvals" class="empty">none</div></div>
+        <div class="card"><h2>Reviews to resolve</h2><div id="reviews" class="empty">none</div></div>
       </div>
     </section>
 
     <section id="tab-events" hidden>
       <div class="toolbar">
-        <label>Sesja <select id="f-session"><option value="">wszystkie</option></select></label>
-        <label>Stan sesji <select id="f-status"><option value="">wszystkie</option><option value="failed">tylko nieudane (zablokowane, zamknięte, w przeglądzie)</option><option value="terminated">terminated</option><option value="blocked">blocked</option><option value="reviewing">reviewing</option><option value="awaiting_approval">awaiting_approval</option><option value="active">active</option></select></label>
-        <label>Powód <select id="f-reason"><option value="">wszystkie</option></select></label>
-        <label>Efekt <select id="f-effect"><option value="">wszystkie</option><option value="deny">deny</option><option value="require_approval">require_approval</option><option value="allow">allow</option></select></label>
-        <label>Typ <input id="f-type" placeholder="np. decision.*"></label>
-        <label class="chk"><input type="checkbox" id="f-hide"> ukryj szum (content.*, budget.*)</label>
-        <button id="f-reset">Wyczyść filtry</button>
-        <button id="export">Eksport JSONL</button>
+        <label>Session <select id="f-session"><option value="">all</option></select></label>
+        <label>Session state <select id="f-status"><option value="">all</option><option value="failed">failed only (blocked, terminated, in review)</option><option value="terminated">terminated</option><option value="blocked">blocked</option><option value="reviewing">reviewing</option><option value="awaiting_approval">awaiting_approval</option><option value="active">active</option></select></label>
+        <label>Reason <select id="f-reason"><option value="">all</option></select></label>
+        <label>Effect <select id="f-effect"><option value="">all</option><option value="deny">deny</option><option value="require_approval">require_approval</option><option value="allow">allow</option></select></label>
+        <label>Type <input id="f-type" placeholder="e.g. decision.*"></label>
+        <label class="chk"><input type="checkbox" id="f-hide"> hide noise (content.*, budget.*)</label>
+        <button id="f-reset">Clear filters</button>
+        <button id="export">Export JSONL</button>
         <span id="f-count" class="note"></span>
       </div>
       <div class="split">
         <ol id="timeline" class="timeline"></ol>
-        <aside id="detail" class="card detail"><p class="empty">Wybierz zdarzenie, aby zobaczyć powód, wersje i dowód.</p></aside>
+        <aside id="detail" class="card detail"><p class="empty">Select an event to see the reason, the versions and the evidence.</p></aside>
       </div>
     </section>
 
     <section id="tab-policies" hidden>
       <div class="grid2">
-        <div class="card"><h2>Obowiązująca polityka</h2><dl id="policy-facts"></dl></div>
-        <div class="card"><h2>Poziomy restrykcyjności</h2><table id="profiles"></table><p class="note">Aktywny poziom jest podświetlony; różnice dotyczą m.in. zakresu oceny semantycznej i progów. Zmiana: edycja <code>config/policy.yaml</code> i restart.</p></div>
+        <div class="card"><h2>The policy in force</h2><dl id="policy-facts"></dl></div>
+        <div class="card"><h2>Strictness levels</h2><table id="profiles"></table><p class="note">The active level is highlighted; the differences concern, among other things, the scope of the semantic assessment and the thresholds. To change it: edit <code>config/policy.yaml</code> and restart.</p></div>
       </div>
-      <div class="card"><h2>Zakres użytkownika (po połączeniu z polityką organizacji)</h2><label>Użytkownik <select id="eff-user"></select></label><pre id="effective"></pre></div>
-      <div class="card"><h2>Tematy wrażliwe</h2><table id="topics"></table></div>
+      <div class="card"><h2>A user's scope (after combining with the organization policy)</h2><label>User <select id="eff-user"></select></label><pre id="effective"></pre></div>
+      <div class="card"><h2>Sensitive topics</h2><table id="topics"></table></div>
     </section>
   </main>
 </body>

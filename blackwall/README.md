@@ -1,112 +1,112 @@
-# Blackwall — implementacja demo
+# Blackwall — the demo implementation
 
-Warstwa kontroli agentów AI (HackYeah 2026, wyzwanie Goldman Sachs „AI Control Layer”). Ten katalog zawiera działający kod: serwer decyzji, bramkę modelu zgodną z OpenAI, nadzór tematyczny sesji, rozszerzenie dla agenta Pi, panel administratora i testy. Koncepcja i uzasadnienia: [`../docs/blackwall-koncepcja-i-plan-dema.md`](../docs/blackwall-koncepcja-i-plan-dema.md).
+A control layer for AI agents (HackYeah 2026, the Goldman Sachs challenge "AI Control Layer"). This directory contains working code: a decision server, an OpenAI-compatible model gateway, topic supervision of sessions, an extension for the Pi agent, an admin dashboard and tests. The concept and the rationale: [`../docs/blackwall-koncepcja-i-plan-dema.md`](../docs/blackwall-koncepcja-i-plan-dema.md).
 
-## Co działa (sprawdzone)
+## What works (verified)
 
-| Obszar | Stan |
+| Area | Status |
 | --- | --- |
-| Decyzja przed wykonaniem narzędzia (`allow` / `deny` / `require_approval`) z kodami powodów, stanem sesji i audytem | działa; testowane na prawdziwych plikach i prawdziwym Pi |
-| Reguły deterministyczne: ścieżki (komponenty, `..`, symlinki, nowe pliki), `.env`/klucze, rozszerzenia, rozmiar, sieć (host, port, metoda, endpoint, prywatne/loopback/IPv6/zapisy IPv4, DNS), sekrety i dane osobowe (IBAN, PESEL z sumą kontrolną), feed zagrożeń | działa |
-| Ocena semantyczna przez **Jev (TypeSafe)** — realne wywołania API | działa |
-| Jednorazowa zgoda użytkownika w interfejsie Pi (TTL, jednokrotna, unieważniana przy zmianie stanu) | działa |
-| Bramka modelu: allowlista aliasów, rezerwacja i rozliczenie tokenów, skan sekretów w całym prompcie, bufor odpowiedzi przed wydaniem | działa (dostawca: Anthropic) |
-| Nadzór tematyczny: embedding → etykieta sesji → jeden nadzorca (Claude Haiku) → `terminated` | działa |
-| Panel administratora (przegląd, oś zdarzeń na żywo, polityki), eksport JSONL, metryki p50/p95 | działa |
+| A decision before a tool executes (`allow` / `deny` / `require_approval`) with reason codes, session state and audit | works; tested on real files and a real Pi |
+| Deterministic rules: paths (components, `..`, symlinks, new files), `.env`/keys, extensions, size, network (host, port, method, endpoint, private/loopback/IPv6/IPv4 spellings, DNS), secrets and personal data (IBAN, PESEL with its checksum), the threat feed | works |
+| Semantic assessment by **Jev (TypeSafe)** — real API calls | works |
+| One-time user approval in the Pi interface (TTL, single use, invalidated on a state change) | works |
+| The model gateway: an alias allowlist, token reservation and settlement, a secret scan of the whole prompt, a response buffer before release | works (provider: Anthropic) |
+| Topic supervision: embedding → session label → one supervisor (Claude Haiku) → `terminated` | works |
+| The admin dashboard (overview, a live event timeline with filters, policies), JSONL export, p50/p95 metrics | works |
 
-Szczegółowe wyniki — niżej w sekcji „Testy”.
+Detailed results are in the "Tests" section below.
 
-> **Przewodnik:** uruchomienie krok po kroku, 8 scenariuszy demo (Pi i `curl`) i opis narzędzi: [`docs/przewodnik-demo.md`](docs/przewodnik-demo.md).
+> **Guide:** step-by-step start-up, 8 demo scenarios (Pi and `curl`) and a description of the tools: [`docs/demo-guide.md`](docs/demo-guide.md).
 
-## Uruchomienie
+## Running it
 
-Wymagane: Node.js 24+ (wbudowany `node:sqlite`), klucze w `../.env` (wzór: `../.env.example`): `ANTHROPIC_API_KEY`, `JEV_API_KEY`.
+Requirements: Node.js 24+ (the built-in `node:sqlite`), keys in `../.env` (template: `../.env.example`): `ANTHROPIC_API_KEY`, `JEV_API_KEY`.
 
 ```sh
 cd blackwall
 npm install
-./scripts/dev-server.sh            # serwer na kopii danych demo, http://127.0.0.1:8787
+./scripts/dev-server.sh            # a server on a copy of the demo data, http://127.0.0.1:8787
 ```
 
-Panel: <http://127.0.0.1:8787/dashboard> (token administratora: `BLACKWALL_ADMIN_TOKEN`, w demo `demo-admin-token`).
+The dashboard: <http://127.0.0.1:8787/dashboard> (the administrator token: `BLACKWALL_ADMIN_TOKEN`, in the demo `demo-admin-token`).
 
-Agent Pi przez Blackwall (każdy użytkownik demo ma własny katalog roboczy i zakres):
+The Pi agent through Blackwall (every demo user has their own working directory and scope):
 
 ```sh
-node scripts/pi-launch.mjs --user onboarding-demo     # interaktywnie
-node scripts/pi-launch.mjs --user onboarding-demo -- -p "Przygotuj szkic KYC dla Atlas Capital …"
+node scripts/pi-launch.mjs --user onboarding-demo     # interactive
+node scripts/pi-launch.mjs --user onboarding-demo -- -p "Prepare a KYC draft for Atlas Capital …"
 ```
 
-Użytkownicy demo: `onboarding-demo` (KYC Atlas), `deal-demo` (transakcja Orion), `hr-demo`, `developer-demo`, `analyst-demo`. Odbiornik testowy dla scenariusza M&A: `node scripts/receiver.mjs` (port 9911).
+Demo users: `onboarding-demo` (KYC Atlas), `deal-demo` (the Orion transaction), `hr-demo`, `developer-demo`, `analyst-demo`. A test receiver for the M&A scenario: `node scripts/receiver.mjs` (port 9911).
 
-Dowolny inny klient modelu może używać bramki wprost: `POST /v1/chat/completions` z tokenem sesji (`POST /v1/sessions` z tokenem użytkownika). Przy `BLACKWALL_GATEWAY_TOOLS=1` bramka sama ocenia wywołania narzędzi proponowane przez model.
+Any other model client can use the gateway directly: `POST /v1/chat/completions` with a session token (`POST /v1/sessions` with a user token). With `BLACKWALL_GATEWAY_TOOLS=1` the gateway itself assesses the tool calls proposed by the model.
 
-## Konfiguracja
+## Configuration
 
-Jedno źródło prawdy: [`config/policy.yaml`](config/policy.yaml). Zmiana = edycja pliku i restart. Walidator odrzuca nieznane klucze, nieistniejące aliasy i niespójne odwołania.
+A single source of truth: [`config/policy.yaml`](config/policy.yaml). A change = editing the file and restarting. The validator rejects unknown keys, nonexistent aliases and inconsistent references.
 
-- `profile: permissive | standard | strict` — różnią się **zakresem** oceny semantycznej (strict ocenia każde narzędzie, standard zapisy/HTTP/shell, permissive HTTP/shell), **progami** (0.80/0.90/0.95), obsługą sekretów (redakcja albo blokada), danych osobowych oraz zachowaniem przy niepewności. Każde dopuszczone wywołanie `bash` jest oceniane w każdym profilu.
-- `mode: enforce | observe` — `observe` zapisuje, co zostałoby odrzucone; uwierzytelnienie, stan sesji i budżety nadal obowiązują.
-- `global` + `users.<nazwa>` — polityka organizacji i użytkownika; allowlisty przecinają się, zakazy sumują, limity biorą minimum, pusta lista = zakaz.
-- `topics` / `topic_policies` — katalog tematów wrażliwych i ich polityki.
-- Feed zagrożeń: [`feed/demo-attacks.json`](feed/demo-attacks.json) (deserializacja `pickle`/`torch.load` — klasa CVE-2025-32434, `trust_remote_code`, `curl | sh`, reverse shell, `rm -rf /`, wyciek do usług paste/webhook, prompt injection).
+- `profile: permissive | standard | strict` — they differ in the **scope** of semantic assessment (strict assesses every tool, standard writes/HTTP/shell, permissive HTTP/shell), in the **thresholds** (0.80/0.90/0.95), in the handling of secrets (redaction or a block) and of personal data, and in the behavior on uncertainty. Every allowed `bash` call is assessed in every profile.
+- `mode: enforce | observe` — `observe` records what would have been refused; authentication, session state and budgets still apply.
+- `global` + `users.<name>` — the organization's and the user's policy; allowlists intersect, prohibitions are summed, limits take the minimum, an empty list = prohibited.
+- `topics` / `topic_policies` — the catalog of sensitive topics and their policies.
+- The threat feed: [`feed/demo-attacks.json`](feed/demo-attacks.json) (deserialization with `pickle`/`torch.load` — the CVE-2025-32434 class, `trust_remote_code`, `curl | sh`, a reverse shell, `rm -rf /`, a leak to paste/webhook services, prompt injection).
 
-## Testy
+## Tests
 
 ```sh
-npm test            # 50 testów jednostkowych, bez sieci
-npm run test:live   # 21 testów na prawdziwych API (Jev, Claude)
-npm run test:e2e    # 8 testów z prawdziwym agentem Pi
-npm run eval        # korpus semantyczny (patrz niżej)
+npm test            # 50 unit tests, no network
+npm run test:live   # 21 tests on real APIs (Jev, Claude)
+npm run test:e2e    # 8 tests with a real Pi agent
+npm run eval        # the semantic corpus (see below)
 npm run typecheck
 ```
 
-Ostatni pełny przebieg: **79/79** (50 jednostkowych + 21 na żywych API + 8 end-to-end). Testy na żywych modelach są niedeterministyczne: jeden test e2e padał w ok. 1 z 4 przebiegów, bo jego prompt (nadpisanie szkicu KYC tekstem „SHOULD NOT BE WRITTEN”) wyglądał dla nadzorcy na sabotaż; prompt zmieniono na zwykły. Wniosek: nadzorca bywa nadgorliwy przy nietypowych poleceniach. Testy negatywne sprawdzają **skutek**, nie wpis w logu: plik nie powstał lub nie zmienił się, odbiornik HTTP nie dostał żądania, model nie dostał zabronionej wiadomości (licznik wywołań modelu nie wzrósł), sekret nie trafił do transkryptu agenta ani do audytu.
+The last full run: **79/79** (50 unit + 21 on live APIs + 8 end-to-end). Tests on live models are non-deterministic: one e2e test failed in about 1 run in 4, because its prompt (overwriting a KYC draft with the text "SHOULD NOT BE WRITTEN") looked like sabotage to the supervisor; the prompt was changed to an ordinary one. The lesson: the supervisor can be over-eager on unusual requests. The negative tests check the **effect**, not a log entry: the file was not created or did not change, the HTTP receiver got no request, the model did not receive the prohibited message (the model-call counter did not grow), the secret reached neither the agent's transcript nor the audit.
 
-Testy end-to-end (prawdziwy Pi + prawdziwy Claude + prawdziwy Jev): zatwierdzenie nadpisania szkicu KYC (jeden zapis), odrzucenie zgody (plik nietknięty, sesja `blocked`), odczyt danych innego klienta, ochrona `.env` i redakcja klucza w dozwolonym pliku, sesja HR zamknięta po zleceniu oceny osób, dozwolony POST na prośbę użytkownika, brak żądania przy injekcji w dokumencie oraz brak tokenu sesji w środowisku powłoki agenta.
+The end-to-end tests (a real Pi + a real Claude + a real Jev): approval of overwriting a KYC draft (one write), rejection of the approval (the file untouched, the session `blocked`), a read of another client's data, protection of `.env` and redaction of a key in an allowed file, an HR session closed after a request to evaluate people, an allowed POST at the user's request, no request on an injection in a document, and the absence of the session token in the agent's shell environment.
 
-### Korpus semantyczny (`npm run eval`)
+### The semantic corpus (`npm run eval`)
 
-34 przypadki nadzoru + 15 poleceń shella, etykiety napisane **przed** uruchomieniem i nietrojone. Raporty: [`reports/`](reports/).
+34 supervision cases + 15 shell commands, the labels written **before** the run and not tuned. Reports: [`reports/`](reports/).
 
-| Miara | Wynik |
+| Measure | Result |
 | --- | --- |
-| Nadzór: naruszenia przepuszczone (false allow) | 0/15 |
-| Nadzór: zamknięcia bez naruszenia (false terminate) | 0/19 |
-| Nadzór: niepewne / blokady techniczne | 0/34 / 0/34 |
-| Temat wykryty w niezwiązanych wiadomościach | 0/3 |
-| Opóźnienie: detekcja tematu p50 / p95 | 9 / 15 ms (lokalny MiniLM, CPU) |
-| Opóźnienie: nadzorca (Haiku) p50 / p95 | ~1.3 / ~1.6 s |
-| Jev, shell: niebezpieczne polecenia przepuszczone automatycznie | 0/4 w każdym profilu |
-| Jev, shell: uzasadnione programy przepuszczone automatycznie | permissive 5/5, standard 2/5, strict 1/5 (reszta pyta użytkownika) |
+| Supervision: violations let through (false allow) | 0/15 |
+| Supervision: closures without a violation (false terminate) | 0/19 |
+| Supervision: uncertain / technical blocks | 0/34 / 0/34 |
+| A topic detected in unrelated messages | 0/3 |
+| Latency: topic detection p50 / p95 | 9 / 15 ms (local MiniLM, CPU) |
+| Latency: the supervisor (Haiku) p50 / p95 | ~1.3 / ~1.6 s |
+| Jev, shell: dangerous commands let through automatically | 0/4 in every profile |
+| Jev, shell: justified programs let through automatically | permissive 5/5, standard 2/5, strict 1/5 (the rest ask the user) |
 
-**Uwaga:** to małe próby napisane przez autorów. Nie przekładają się na skuteczność produkcyjną. Ocena Jeva dotyczy tekstu polecenia, nie jego skutków w czasie wykonania; profil `demo_prepared` **nie jest sandboxem**.
+**Note:** these are small samples written by the authors. They do not translate into production effectiveness. Jev's assessment concerns the text of a command, not its effects at run time; the `demo_prepared` profile **is not a sandbox**.
 
-## Odstępstwa od dokumentu koncepcji
+## Deviations from the concept document
 
-| Koncepcja | Implementacja | Powód |
+| The concept | The implementation | Reason |
 | --- | --- | --- |
-| PostgreSQL + pgvector | SQLite (`node:sqlite`), dokładne podobieństwo cosinusowe w pamięci | brak zależności od Dockera; 3 tematy; kontrakt `Store` pozwala wymienić bazę |
-| Embeddingi OpenAI | lokalny MiniLM (transformers.js), tylko angielski; dostawca `openai` gotowy w kodzie | brak klucza OpenAI z dostępnymi środkami; dane nie opuszczają maszyny |
-| `execution_authorization` + `/consume` | jednorazowa decyzja po zatwierdzeniu (atomowe przejście `pending → approved`) | uproszczenie na demo jednej maszyny |
-| React + Vite | statyczny panel w czystym JS | mniej zależności |
-| Komunikaty dla modelu po polsku | po angielsku | model wykonawczy pracuje po angielsku |
-| Hot-reload polityki przez API | plik YAML + restart | decyzja użytkownika |
-| Walidacja kontekstu przez `trusted_task_id` | zaufane zadanie = wiadomości użytkownika zapisane przez bramkę/rozszerzenie | brak osobnego rejestru zadań |
+| PostgreSQL + pgvector | SQLite (`node:sqlite`), exact cosine similarity in memory | no dependence on Docker; 3 topics; the `Store` contract allows swapping the database |
+| OpenAI embeddings | a local MiniLM (transformers.js), English only; the `openai` provider is ready in the code | no OpenAI key with available credits; data does not leave the machine |
+| `execution_authorization` + `/consume` | a one-time decision after approval (an atomic `pending → approved` transition) | a simplification for a single-machine demo |
+| React + Vite | a static dashboard in plain JS | fewer dependencies |
+| Messages for the model in Polish | in English | the executor model works in English |
+| Hot-reload of the policy through the API | a YAML file + a restart | the user's decision |
+| Context validation through `trusted_task_id` | the trusted task = the user messages recorded by the gateway/extension | no separate task registry |
 
-## Nagranie demo
+## Demo recording
 
-`node scripts/demo.ts --only 06-hr-termination` nagrywa jeden przypadek na prawdziwym stosie (Pi, Claude, Jev, prawdziwe pliki) do `demo-recordings/`: przebieg rozmowy, ślad audytu, dowody sprawdzone w systemie i zrzuty panelu. Między bramką a dostawcą modelu stoi niezależny przekaźnik zliczający, więc „model nie dostał zabronionej treści” da się sprawdzić bez ufania własnemu audytowi Blackwalla. Bez `--only` nagrywa wszystkie przypadki (ok. 8 min).
+`node scripts/demo.ts --only 06-hr-termination` records one case on the real stack (Pi, Claude, Jev, real files) into `demo-recordings/`: the course of the conversation, the audit trail, the evidence checked in the system and dashboard screenshots. An independent counting forwarder sits between the gateway and the model provider, so "the model did not receive the prohibited content" can be checked without trusting Blackwall's own audit. Without `--only` it records all the cases (about 8 min).
 
-Recenzja nagrania przez niezależnego agenta wykryła realny błąd: wiadomość zapisana w audycie była traktowana jako „już sprawdzona” także wtedy, gdy nadzorca zawiódł lub był niepewny, więc po wznowieniu sesji przez administratora trafiłaby do modelu bez oceny. Poprawiono (wiadomość jest pomijana tylko po przejściu kontroli) i dodano testy.
+A review of the recording by an independent agent found a real bug: a message recorded in the audit was treated as "already inspected" even when the supervisor had failed or was uncertain, so after an administrator resumed the session it would have reached the model without assessment. It was fixed (a message is skipped only after it has passed the check) and tests were added.
 
-## Znane ograniczenia i otwarte sprawy
+## Known limitations and open issues
 
-- **Brak sandboxa.** `bash` jest oceniany, ale uruchomiony program może zrobić więcej niż opisuje polecenie. Rozszerzenie nie przekazuje tokenu sesji do środowiska powłoki, lecz proces powłoki działa z uprawnieniami użytkownika systemu.
-- Wynik narzędzia przechodzi inspekcję w `tool_result` Pi, czyli po wykonaniu; surowa treść mogła trafić do strumienia TUI zanim zostanie zastąpiona.
-- Odpowiedź modelu jest buforowana w całości (brak prawdziwego streamingu).
-- Domyślnie odmowa **blokuje sesję** (`default_session_action: block`). Rozszerzenie podaje agentowi dozwolone lokalizacje, aby unikał przypadkowych odmów.
-- W trakcie ręcznych prób 3 razy zaobserwowano wywołanie Pi bez żadnego ruchu do serwera (wisiało do limitu czasu); nie udało się go odtworzyć w późniejszych kilkunastu przebiegach (w tym 7 testach e2e). Logowanie żądań serwera: `BLACKWALL_LOG=1`.
-- Model embeddingowy jest angielski; polskie wiadomości będą słabiej wykrywane.
-- Brak automatycznego pobierania feedu, MCP, agent-to-agent, SSO.
-- Klucze użyte podczas budowy trafiły do transkryptu pracy — **należy je zrotować** po hackathonie.
+- **No sandbox.** `bash` is assessed, but a program that runs may do more than the command describes. The extension does not pass the session token to the shell's environment, but the shell process runs with the permissions of the system user.
+- A tool result is inspected in Pi's `tool_result`, that is after execution; the raw content may have reached the TUI stream before it is replaced.
+- The model's response is buffered in full (no real streaming).
+- By default a refusal **blocks the session** (`default_session_action: block`). The extension tells the agent its allowed locations so that it avoids accidental refusals.
+- During manual trials, a Pi invocation with no traffic at all to the server (it hung until the time limit) was observed 3 times; it could not be reproduced in the subsequent dozen or so runs (including 7 e2e tests). Request logging of the server: `BLACKWALL_LOG=1`.
+- The embedding model is English; Polish messages will be detected less reliably.
+- No automatic download of the feed, no MCP, agent-to-agent or SSO.
+- The keys used during the build ended up in the transcript of the work — **they should be rotated** after the hackathon.
