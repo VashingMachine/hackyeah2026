@@ -1,0 +1,36 @@
+{
+  "checks": [
+    {
+      "name": "hr: native embedded session data unchanged",
+      "pass": true
+    },
+    {
+      "name": "hr: original export hash",
+      "pass": true
+    },
+    {
+      "name": "hr: public export hash",
+      "pass": true
+    },
+    {
+      "name": "hr: zero model requests for blocked prompt",
+      "pass": true
+    },
+    {
+      "name": "client: native embedded session data unchanged",
+      "pass": true
+    },
+    {
+      "name": "client: original export hash",
+      "pass": true
+    },
+    {
+      "name": "client: public export hash",
+      "pass": true
+    },
+    {
+      "name": "client: zero model requests for blocked prompt",
+      "pass": true
+    }
+  ]
+}

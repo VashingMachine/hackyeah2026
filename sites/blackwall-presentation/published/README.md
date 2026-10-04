@@ -25,10 +25,17 @@ Open `http://127.0.0.1:8790/`. This static site requires no package installation
 - `dist/assets/evidence.json`: selected recorded audit events and their provenance. Sequence numbers have gaps because intermediate events were omitted.
 - `dist/assets/videos/` and `posters/`: web copies of original recordings, with unchanged durations; H.264, 1280×720, 25 fps, no audio.
 - `dist/assets/screens/`: original dashboard screenshots.
+- `dist/assets/user-view/`: two new real Pi session exports, desktop/mobile screenshots of the blocked requests, and checked evidence. The official Pi dark theme is used; display-only CSS wraps long errors. The session data and messages remain unchanged.
 - `dist/assets/blackwall-demo.pptx`: nine English slides with original screenshots explicitly labeled as Polish UI.
 - `.openai/hosting.json`: retained Site identity and static directory.
 
-The original recordings and screenshots remain in Polish and are labeled accordingly. English explanatory copy does not alter the underlying recorded evidence. `app.js` and `styles.css` are historical assets; the current HTML does not load them.
+The original recordings and dashboard screenshots remain in Polish and are labeled accordingly. The new Pi conversation exports are in English. English explanatory copy does not alter the underlying recorded evidence. `app.js` and `styles.css` are historical assets; the current HTML does not load them.
+
+## User perspective screenshots
+
+The two user-facing conversations were recorded on 4 Oct 2026 with a real Pi process, OpenAI gpt-6-luna (low) and OpenAI embeddings against an isolated Blackwall server. A normal HR question used allowed find/read tools and received an answer; a later named-employee ranking request was stopped before any further agent-model request. A separate request to read another client’s file was stopped before the agent model or a file tool ran. These input checks use the Guardian, not Jev.
+
+The screenshots show the final user request and its actual gateway 403 in Pi’s official HTML session viewer. Full conversations are linked beside the screenshots. Original native session messages are preserved; only long JSON errors wrap for readability. `assets/user-view/evidence.json` records original prompts, reasons, model-request counts and source hashes.
 
 ## Interaction and evidence scope
 

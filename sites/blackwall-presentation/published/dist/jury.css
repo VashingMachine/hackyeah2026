@@ -185,3 +185,36 @@
 [data-effect='deny'] .decision-node::before { content: '×'; }
 
 .decision-node > strong { font-family: var(--display); }
+/* Real agent conversation screens, alongside the existing administrator audit. */
+.user-view-gallery { margin: 42px 0; scroll-margin-top: 100px; }
+.user-view-heading { display: flex; justify-content: space-between; gap: 24px; align-items: end; margin-bottom: 24px; }
+.user-view-heading .micro-label { color: var(--red); }
+.user-view-heading h3 { margin-top: 10px; font-size: clamp(26px,2.8vw,37px); }
+.user-view-heading > p { margin: 0; max-width: 250px; color: var(--muted); font-size: 12px; }
+.user-view-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 22px; }
+.user-view-card { margin: 0; min-width: 0; border: 1px solid var(--line-bright); border-radius: 12px; overflow: hidden; background: #10181e; }
+.user-view-card figcaption { padding: 24px; }
+.user-view-card figcaption .micro-label { color: var(--muted); font-size: 10px; }
+.user-view-card h4 { font-size: clamp(21px,2vw,27px); margin-top: 12px; }
+.user-view-image { display: block; position: relative; border-block: 1px solid var(--line); background: #161616; }
+.user-view-image picture, .user-view-image img { display: block; width: 100%; height: auto; }
+.user-view-image > span { display: block; padding: 9px 18px; font-size: 11px; text-align: right; background: #151c23; color: var(--muted); }
+.user-view-image:hover > span { color: var(--white); }
+.user-view-image:focus-visible { outline-offset: -3px; }
+.user-view-caption { padding: 22px 24px; }
+.user-view-caption p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+.user-view-caption strong { color: var(--white); }
+.user-view-caption .text-link { font-size: 12px; }
+.user-view-source { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin: 14px 0 0; color: var(--dim); font-size: 11px; }
+.user-view-source a { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 800px) {
+ .user-view-grid { grid-template-columns: 1fr; }
+ .user-view-heading { flex-direction: column; align-items: flex-start; gap: 14px; }
+ .user-view-heading > p { max-width: none; }
+}
+@media (max-width: 600px) {
+ .user-view-card figcaption, .user-view-caption { padding: 20px; }
+ .user-view-card h4 { font-size: 24px; }
+}
+.user-view-card { display: flex; flex-direction: column; }
+.user-view-caption { margin-top: auto; }
