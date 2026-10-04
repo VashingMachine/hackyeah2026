@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Blackwall pitch</title>
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  :root { --bg:#0b0c10; --panel:#14161c; --panel2:#191c24; --line:#2a2e39; --text:#f2f3f5; --muted:#9aa1ae; --red:#ff3b57; --green:#35d07f; --amber:#f5b942; --blue:#5aa2ff; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); }
+  body { font-family: "Liberation Sans", "DejaVu Sans", Arial, sans-serif; color: var(--text); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slide { position: relative; width: 1280px; height: 720px; overflow: hidden; page-break-after: always; padding: 52px 64px 44px; background: var(--bg); }
+  .slide:last-child { page-break-after: auto; }
+  .brand { position: absolute; top: 22px; left: 64px; font-size: 13px; letter-spacing: .22em; font-weight: 700; color: var(--muted); display:flex; align-items:center; gap:10px; }
+  .bars { display:inline-flex; gap:3px; } .bars i { width:4px; height:15px; background: var(--red); display:block; transform: skewX(-12deg); }
+  .pg { position: absolute; bottom: 16px; right: 64px; font-size: 13px; color: var(--muted); }
+  .note { position: absolute; bottom: 16px; left: 64px; font-size: 12px; color: var(--muted); max-width: 900px; }
+  h1 { font-size: 40px; line-height: 1.12; letter-spacing: -.01em; margin: 14px 0 22px; }
+  h1 em { font-style: normal; color: var(--red); }
+  h2 { font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  p, li { font-size: 20px; line-height: 1.38; }
+  ul { list-style: none; } li { padding-left: 20px; position: relative; margin-bottom: 7px; }
+  li::before { content: ""; position: absolute; left: 0; top: .6em; width: 8px; height: 8px; background: var(--red); transform: skewX(-12deg); }
+  .muted { color: var(--muted); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
+  .row { display: flex; gap: 20px; } .col { flex: 1; min-width: 0; }
+  .chip { display:inline-block; font-family: "DejaVu Sans Mono", monospace; font-size: 15px; padding: 3px 9px; border-radius: 5px; background: #261418; color: #ff8a9c; border: 1px solid #4a1f28; }
+  .chip.g { background:#10241a; color: var(--green); border-color:#1f4a34; } .chip.a { background:#2a2010; color: var(--amber); border-color:#4a3a1a; }
+  .shot { display:block; border: 1px solid var(--line); border-radius: 8px; }
+  .cap { font-size: 14px; color: var(--muted); margin-top: 6px; }
+  .tag { font-size: 13px; letter-spacing:.1em; text-transform: uppercase; font-weight:700; }
+  .red { color: var(--red); } .green { color: var(--green); } .amber { color: var(--amber); }
+  code { font-family: "DejaVu Sans Mono", monospace; font-size: .85em; color: #ffb3bf; }
+
+  /* 1 title: the cover image untouched, plain white text only */
+  .s1 { padding: 0; background: #000; }
+  .s1 img { position:absolute; inset:0; width:100%; height:100%; object-fit: cover; }
+  .s1 .top { position:absolute; top:26px; left:0; right:0; text-align:center; font-size:16px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:#fff; text-shadow: 0 2px 6px #000, 0 0 14px #000; }
+  .s1 .bottom { position:absolute; bottom:12px; left:0; right:0; text-align:center; color:#fff; text-shadow: 0 2px 6px #000, 0 0 14px #000; }
+  .s1 .tagline { font-size: 30px; font-weight: 700; line-height: 1.15; }
+  .s1 .team { font-size: 17px; font-weight: 700; margin-top: 5px; }
+
+  /* 2 problem */
+  .three { display:grid; grid-template-columns: repeat(3,1fr); gap:20px; margin-top: 10px; }
+  .three .card { padding: 30px 28px; height: 370px; }
+  .three .n { font-size: 68px; font-weight:800; color: var(--red); line-height:1; margin-bottom: 14px; }
+  .three h3 { font-size: 30px; margin-bottom: 14px; }
+  .three p { color: #c9cdd6; font-size: 23px; }
+  .banner { margin-top: 28px; border-left: 4px solid var(--red); padding: 18px 24px; background: var(--panel); font-size: 27px; border-radius: 0 8px 8px 0; }
+
+  /* 3 diagram */
+  .diag { display:grid; grid-template-columns: 250px 36px 1fr 36px 260px; align-items: center; gap: 0; margin-top: 14px; }
+  .arrow { text-align:center; font-size: 38px; color: var(--red); }
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .box h3 { font-size: 25px; margin-bottom: 8px; } .box p { font-size: 18px; color: var(--muted); line-height:1.35; }
+  .bw { border: 2px solid var(--red); background: #17121a; border-radius: 12px; padding: 20px 20px; }
+  .bw .ttl { font-size: 15px; letter-spacing:.14em; font-weight:700; color: var(--red); text-transform: uppercase; margin-bottom: 10px; }
+  .grid4 { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mini { background: var(--panel2); border:1px solid var(--line); border-radius:8px; padding: 14px 14px; font-size: 18px; line-height: 1.25; }
+  .mini b { display:block; font-size: 21px; margin-bottom: 4px; } .mini span { color: var(--muted); font-size: 16px; }
+  .outs { display:flex; flex-wrap: wrap; gap: 8px 10px; margin-top: 12px; align-items:center; }
+  .pill { white-space: nowrap; font-weight:800; font-size: 17px; padding: 6px 16px; border-radius: 20px; letter-spacing:.06em; }
+  .pill.g { background:#10241a; color:var(--green); border:1px solid #1f4a34; } .pill.a { background:#2a2010; color:var(--amber); border:1px solid #4a3a1a; } .pill.r { background:#2a1218; color:var(--red); border:1px solid #5a2330; }
+  .audit { margin-top: 30px; display:flex; align-items:center; gap: 14px; justify-content:center; font-size: 18px; }
+  .audit .box { padding: 10px 18px; font-size: 18px; }
+  .pts { display:flex; gap: 16px; margin-top: 30px; }
+  .pts .card { flex:1; padding: 16px 18px; font-size: 20px; line-height:1.3; } .pts b { color: var(--red); }
+
+  /* 4 hybrid */
+  .two { display:grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .two .card { padding: 24px 28px; height: 410px; }
+  .two h3 { font-size: 30px; margin-bottom: 4px; } .two .sub { color: var(--muted); font-size: 18px; margin-bottom: 16px; }
+  .two li { font-size: 24px; margin-bottom: 14px; }
+  .rules { display:grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 18px; }
+  .rules div { background:#17121a; border:1px solid #4a1f28; border-radius:8px; padding: 14px 18px; font-size: 20px; line-height:1.3; }
+  .rules b { color: var(--red); }
+
+  /* 5 scenarios */
+  .scen { display:grid; grid-template-columns: 1fr 480px; gap: 18px; align-items:center; padding: 10px 18px; margin-bottom: 11px; height: 168px; }
+  .scen h3 { font-size: 23px; margin-bottom: 6px; } .scen h3 span { color: var(--muted); font-size: 15px; font-weight: 400; margin-left: 8px; }
+  .scen .l { font-size: 18px; line-height: 1.32; margin-bottom: 4px; } .scen .l b { margin-right: 6px; }
+  .scen img { width: auto; max-width: 480px; max-height: 148px; }
+  .scen .imgwrap { display:flex; flex-direction:column; align-items:flex-start; }
+  .scen .imgwrap .cap { margin-top: 4px; }
+
+  /* 6 supervision */
+  .pipe { display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin: 6px 0 22px; }
+  .step { background: var(--panel); border:1px solid var(--line); border-radius: 9px; padding: 12px 14px; position:relative; }
+  .step b { display:block; font-size: 21px; margin-bottom: 4px; } .step span { font-size: 17px; color: var(--muted); line-height:1.3; display:block; }
+  .step .ms { color: var(--amber); font-size: 17px; margin-top: 4px; font-weight:700; }
+  .step.last { border-color: #5a2330; background: #1c1015; }
+  .quote { font-size: 20px; line-height:1.35; padding: 12px 18px; border-left: 4px solid var(--blue); background: var(--panel); border-radius: 0 8px 8px 0; margin-bottom: 14px; }
+  .quote small { display:block; color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+  /* 7 policy */
+  .strip { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .strip .card { padding: 14px 18px; height: 178px; } .strip h3 { font-size: 19px; margin-bottom: 6px; } .strip p { font-size: 16px; line-height: 1.32; color:#c9cdd6; }
+
+  /* 8 dashboard */
+  .chips { display:flex; flex-wrap:nowrap; gap: 8px; margin: -6px 0 14px; }
+  .chips span { font-size: 15px; padding: 6px 11px; white-space: nowrap; border-radius: 20px; background: var(--panel); border:1px solid var(--line); }
+
+  /* 9 tests */
+  .nums { display:grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 18px; }
+  .nums .card { text-align:center; padding: 20px 10px; }
+  .nums .v { font-size: 56px; font-weight: 800; color: var(--green); line-height:1; } .nums .v small { font-size: 28px; color: var(--muted); }
+  .nums .k { font-size: 18px; margin-top: 8px; font-weight:700; } .nums .d { font-size: 14px; color: var(--muted); margin-top: 4px; line-height:1.3; }
+
+  .s10 li { font-size: 22px; margin-bottom: 10px; }
+  .s9 .nums .card { padding: 30px 12px; } .s9 .nums .v { font-size: 72px; } .s9 .nums .v small { font-size: 34px; } .s9 .nums .k { font-size: 22px; margin-top: 12px; } .s9 .nums .d { font-size: 16px; margin-top: 6px; }
+  .s9 .row .card { min-height: 290px; padding: 24px 28px; } .s9 h2 { font-size: 17px; margin-bottom: 16px; } .s9 li { font-size: 26px; margin-bottom: 16px; }
+  /* 10 */
+  .cta { margin-top: 24px; background: linear-gradient(90deg, #2a0f16, #17121a); border: 1px solid #5a2330; border-radius: 12px; padding: 20px 28px; display:flex; justify-content:space-between; align-items:center; }
+  .cta .big { font-size: 32px; font-weight: 800; } .cta .links { text-align:right; font-size: 17px; color:#d5d8df; line-height:1.5; }
+</style>
+</head>
+<body>
+
+<!-- 1 TITLE -->
+<section class="slide s1">
+  <img src="assets/cover.png" alt="Blackwall">
+  <div class="top">HackYeah 2026 · AI Control Layer · Goldman Sachs challenge</div>
+  <div class="bottom">
+    <div class="tagline">Before the agent makes its move.</div>
+    <div class="team">Kacper Dondziak · Dominik Krajnik · Dariusz Kwiatkowski · Marcin Waloch</div>
+  </div>
+</section>
+
+<!-- 2 PROBLEM -->
+<section class="slide">
+  <div class="brand"><span class="bars"><i></i><i></i><i></i></span>BLACKWALL</div>
+  <h1>Agents don’t just talk. <em>They act.</em></h1>
+  <div class="three">
+    <div class="card"><div class="n">1</div><h3>Access without limits</h3><p>Read any file, call any API, impersonate a user, take actions that cannot be undone.</p></div>
+    <div class="card"><div class="n">2</div><h3>Instructions hidden in text</h3><p>Prompt injection turns a document into a command. Answers can leak secrets and personal data.</p></div>
+    <div class="card"><div class="n">3</div><h3>Runaway cost</h3><p>Loops and long autonomous runs burn tokens and money in ways nobody predicted.</p></div>
+  </div>
+  <div class="banner">In the banking industry we have to be the most cautious with client data, deal secrets and employee records.</div>
+  <div class="pg">2 / 10</div>
+</section>
+
+<!-- 3 IDEA / ARCHITECTURE -->
+<section class="slide">
+  <div class="brand"><span class="bars"><i></i><i></i><i></i></span>BLACKWALL</div>
+  <h1>Our idea: <em>decide before the effect</em></h1>
+  <div class="diag">
+    <div class="box"><h3>Agent or app</h3><p><b style="color:#f2f3f5">Pi plugin</b> checks every tool call.<br><b style="color:#f2f3f5">Gateway</b> serves any OpenAI-compatible client.</p></div>
+    <div class="arrow">→</div>
+    <div class="bw">
+      <div class="ttl">Blackwall · decision before execution</div>
+      <div class="grid4">
+        <div class="mini"><b>Central policy</b><span>one YAML file + threat feed</span></div>
+        <div class="mini"><b>Deterministic rules</b><span>files, network, secrets, budgets</span></div>
+        <div class="mini"><b>Semantic review</b><span>Jev judges each proposed action</span></div>
+        <div class="mini"><b>Topic supervision</b><span>embeddings → guardian verdict</span></div>
+      </div>
+      <div class="outs"><span class="pill g">ALLOW</span><span class="pill a">ASK USER</span><span class="pill r">DENY</span><span class="muted" style="font-size:16px">+ reason code, policy version</span></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="box"><h3>Tools and models</h3><p>Files, HTTP, shell, LLM calls. They run only after <b style="color:#35d07f">allow</b>, via a one-time grant checked again just before execution.</p></div>
+  </div>
+  <div class="audit"><div class="box">Audit trail (SQLite)</div><span class="arrow" style="font-size:28px">→</span><div class="box">Dashboard · JSONL export · metrics</div></div>
+  <div class="pts">
+    <div class="card"><b>Before, not after.</b> A refusal stops the tool before it has any effect.</div>
+    <div class="card"><b>Hybrid.</b> Fast deterministic rules plus AI where meaning matters.</div>
+    <div class="card"><b>One policy.</b> Changed centrally, applied to every session.</div>
+  </div>
+  <div class="pg">3 / 10</div>
+</section>
+
+<!-- 4 HYBRID -->
+<section class="slide">
+  <div class="brand"><span class="bars"><i></i><i></i><i></i></span>BLACKWALL</div>
+  <h1>Hybrid defense: rules for speed, <em>AI for meaning</em></h1>
+  <div class="two">
+    <div class="card">
+      <h3>Rules</h3><div class="sub">Fast, and always the same answer</div>
+      <ul>
+        <li>Limits which files an agent may touch</li>
+        <li>Limits where it may send data</li>
+        <li>Protects secrets and personal data</li>
+        <li>Caps token spending</li>
+        <li>Blocks known attacks</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>AI</h3><div class="sub">Understands what the agent is really trying to do</div>
+      <ul>
+        <li>Reviews risky actions before they run</li>
+        <li>Notices when a conversation turns sensitive</li>
+        <li>Judges whether policy is broken, and has to show evidence</li>
+        <li>Strictness: <span class="chip g">permissive</span> <span class="chip a">standard</span> <span class="chip">strict</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="rules">
+    <div><b>A model can’t lift a hard ban.</b> Hard rules always win.</div>
+    <div><b>No answer = no approval.</b> If a safety check can’t answer, the action doesn’t run.</div>
+    <div><b>Unsure? A human decides.</b> Unclear cases wait for a person to decide.</div>
+  </div>
+  <div class="pg">4 / 10</div>
+</section>
+
+<!-- 5 SCENARIOS -->
+<section class="slide" style="padding-top:44px">
+  <div class="brand"><span class="bars"><i></i><i></i><i></i></span>BLACKWALL</div>
+  <h1 style="margin-bottom:14px">Built for finance: <em>same agent, three conversations</em></h1>
+  <div class="card scen">
+    <div>
+      <h3>KYC onboarding <span>Atlas Capital</span></h3>
+      <div class="l"><b class="green">Can</b>draft the file, after a one-time user approval</div>
+      <div class="l"><b class="red">Stopped</b>reading another client’s data <span class="chip">PATH_OUTSIDE_WORKSPACE</span></div>
+    </div>
+    <div class="imgwrap"><img class="shot" src="assets/kyc_detail.png" alt=""></div>
+  </div>
+  <div class="card scen">
+    <div>
+      <h3>Confidential M&amp;A <span>Orion deal</span></h3>
+      <div class="l"><b class="green">Can</b>analyse the deal; an authorized POST goes through</div>
+      <div class="l"><b class="red">Stopped</b>a publication planted in a document <span class="chip">DEAL_UNAUTHORIZED_PUBLICATION</span></div>
+    </div>
+    <div class="imgwrap"><img class="shot" src="assets/ma_list.png" alt=""></div>
+  </div>
+  <div class="card scen" style="margin-bottom:0">
+    <div>
+      <h3>HR <span>general chat</span></h3>
+      <div class="l"><b class="green">Can</b>explain how performance reviews work</div>
+      <div class="l"><b class="red">Stopped</b>ranking named people and picking who to fire <span class="chip">AI_EMPLOYEE_PERFORMANCE_EVALUATION</span></div>
+    </div>
+    <div class="imgwrap"><img class="shot" src="assets/hr_card.png" alt=""></div>
+  </div>
+  <div class="pg">5 / 10</div>
+</section>
+
+<!-- 6 SUPERVISION -->
+<section class="slide" style="padding-top:44px">
+  <div class="brand"><span class="bars"><i></i><i></i><i></i></span>BLACKWALL</div>
+  <h1 style="margin-bottom:14px">Stopping a <em>conversation</em>, not just a call</h1>
+  <div class="pipe">
+    <div class="step"><b>1 · Embedding match</b><span>Text is compared with a topic catalog</span><div class="ms">p95 683 ms</div></div>
+    <div class="step"><b>2 · Session label</b><span>Session is labelled, supervision starts</span></div>
+    <div class="step"><b>3 · Guardian verdict</b><span>One AI call applies the policy and quotes evidence</span><div class="ms">p95 2316 ms</div></div>
+    <div class="step last"><b class="red">4 · Terminated</b><span>Closed before the answer is released or the action runs</span></div>
+  </div>
+  <div class="row">
+    <div class="col" style="flex:1.2">
+      <div class="quote">“Evaluate Anna’s and Piotr’s results, rank them by effectiveness and indicate whom to dismiss.”<small>Typed in Polish, translated here. A topic alone is not a violation; only this request is.</small></div>
+      <img class="shot" src="assets/hr_guardian.png" style="width:100%" alt="">
+      <div class="cap">Guardian verdict with the policy rule that fired.</div>
+    </div>
+    <div class="col" style="flex:1">
+      <img class="shot" src="assets/cascade.png" style="width:100%" alt="">
+      <div class="cap">Session terminated: every later model request is denied (SESSION_TERMINATED).</div>
+      <p style="font-size:20px; margin-top:16px; color:#c9cdd6">Uncertain? The session is held for an administrator, never auto-confirmed.</p>
+    </div>
+  </div>
+  <div class="pg">6 / 10</div>
+</section>
+
+<!-- 7 POLICY -->
+<section class="slide" style="padding-top:44px">
+  <div class="brand"><span class="bars"><i></i><i></i><i></i></span>BLACKWALL</div>
+  <h1 style="margin-bottom:14px">One policy, <em>changed live</em></h1>
+  <div class="strip">
+    <div class="card"><h3>Strictness and scope</h3><p><code>permissive</code> / <code>standard</code> / <code>strict</code>, <code>enforce</code> or <code>observe</code>. Organization and per-user policy combine: allowlists intersect, limits take the minimum.</p></div>
+    <div class="card"><h3>Budgets</h3><p>Reserved before every model call. Per session: 400k tokens, 40 tool attempts, 40 model requests, 30 min. Model allowlist. Unknown usage consumes the whole reserve.</p></div>
+    <div class="card"><h3>Threat feed · 9 signatures</h3><p>Unsafe <code>pickle</code> / <code>torch.load</code> deserialization, <code>trust_remote_code</code>, <code>curl | sh</code>, reverse shells, leaks to paste sites, prompt injection.</p></div>
+  </div>
+  <div class="row">
+    <div class="col"><img class="shot" src="assets/strictness.png" style="width:100%" alt=""><div class="cap">Strictness levels side by side; the active one is highlighted.</div></div>
+    <div class="col"><img class="shot" src="assets/publish_policy.png" style="width:100%" alt=""><div class="cap">Publish a rule or threshold: new version applies on the next decision, no restart. Old approvals expire.</div></div>
+  </div>
+  <div class="pg">7 / 10</div>
+</section>
+
+<!-- 8 DASHBOARD -->
+<section class="slide" style="padding-top:44px">
+  <div class="brand"><span class="bars"><i></i><i></i><i></i></span>BLACKWALL</div>
+  <h1 style="margin-bottom:12px">Dashboard and audit: <em>every decision explained</em></h1>
+  <div class="chips"><span>Live sessions per user</span><span>Reason code + policy version</span><span>Execution tracked separately</span><span>p50 / p95 latency</span><span>Tokens and cost</span><span>JSONL export</span></div>
+  <img class="shot" src="assets/tiles.png" style="width:100%" alt="">
+  <div class="row" style="margin-top:12px">
+    <div class="col"><img class="shot" src="assets/latency.png" style="width:100%; height:330px; object-fit:cover; object-position:top left" alt=""></div>
+    <div class="col"><img class="shot" src="assets/reasons.png" style="width:100%; height:330px; object-fit:cover; object-position:top left" alt=""></div>
+  </div>
+  <div class="pg">8 / 10</div>
+</section>
+
+<!-- 9 TESTS -->
+<section class="slide s9">
+  <div class="brand"><span class="bars"><i></i><i></i><i></i></span>BLACKWALL</div>
+  <h1>Tests that check <em>effects</em>, not just verdicts</h1>
+  <div class="nums">
+    <div class="card"><div class="v">143<small>/143</small></div><div class="k">Unit tests</div><div class="d">paths, symlinks, redaction, budgets, approvals</div></div>
+    <div class="card"><div class="v">33<small>/33</small></div><div class="k">Live API checks</div><div class="d">real OpenAI and Jev services</div></div>
+    <div class="card"><div class="v">12<small>/12</small></div><div class="k">Real Pi agent</div><div class="d">end to end, real files and HTTP receiver</div></div>
+    <div class="card"><div class="v">0<small>/19</small></div><div class="k">False terminations</div><div class="d">15/15 violations ended (34 guardian checks)</div></div>
+  </div>
+  <div class="row">
+    <div class="col card">
+      <h2>Negative tests: the effect</h2>
+      <ul>
+        <li>File not created or changed</li>
+        <li>Receiver got zero requests</li>
+        <li>Model never saw the prohibited content</li>
+        <li>Secret never reached the UI or the audit</li>
+      </ul>
+    </div>
+    <div class="col card">
+      <h2>Positive tests: usefulness</h2>
+      <ul>
+        <li>Approved write really changes the file</li>
+        <li>Authorized POST reaches the receiver</li>
+        <li>Allowed tool proposals: 0 of 5 refused</li>
+        <li>Forbidden proposals: 5 of 5 denied</li>
+      </ul>
+    </div>
+  </div>
+  <div class="pg">9 / 10</div>
+</section>
+
+<!-- 10 LIMITS + CLOSE -->
+<section class="slide s10">
+  <div class="brand"><span class="bars"><i></i><i></i><i></i></span>BLACKWALL</div>
+  <h1>Honest limits, <em>clear path to a pilot</em></h1>
+  <div class="row" style="margin-top:6px">
+    <div class="col card" style="min-height:330px">
+      <h2>Today</h2>
+      <ul>
+        <li>No OS sandbox: Jev reviews a command, it can’t contain it</li>
+        <li>Plugin and gateway are the enforcement point</li>
+        <li>Local MVP: SQLite, no SSO, no MCP, no agent-to-agent</li>
+        <li>Runs on OpenAI and Jev; no local-model backend yet</li>
+      </ul>
+    </div>
+    <div class="col card" style="min-height:330px">
+      <h2>Next</h2>
+      <ul>
+        <li>Sandboxed runner, credentials outside the agent</li>
+        <li>Central control plane with SSO, PostgreSQL + pgvector</li>
+        <li>MCP and agent-to-agent adapters</li>
+        <li>Local models behind the same gateway; automatic threat-feed ingestion</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cta">
+    <div><div class="big">Give us a prompt we’ve never seen.</div><div class="muted" style="font-size:19px; margin-top:4px">Or change the policy live and watch the next decision change.</div></div>
+    <div class="links">Interactive presentation<br><b>blackwall-hackyeah-2026.dariusz.chatgpt.site</b></div>
+  </div>
+  <div class="note">Kacper Dondziak · Dominik Krajnik · Dariusz Kwiatkowski · Marcin Waloch · HackYeah 2026</div>
+  <div class="pg">10 / 10</div>
+</section>
+
+</body>
+</html>

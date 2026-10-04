@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Blackwall presentation plan</title>
+<style>
+  @page { size: A4; margin: 12mm 13mm 14mm 13mm; }
+  :root { --ink:#16171b; --muted:#5b5f6a; --line:#dcdde2; --red:#c4122f; --soft:#f6f4f4; --dark:#0e0f13; }
+  * { box-sizing: border-box; }
+  body { font-family: "Liberation Sans", "DejaVu Sans", Arial, sans-serif; color: var(--ink); font-size: 9.2pt; line-height: 1.33; margin: 0; }
+  h1 { font-size: 26pt; margin: 0; letter-spacing: .02em; }
+  h2 { font-size: 13pt; margin: 0 0 6px; color: var(--ink); border-bottom: 2px solid var(--red); padding-bottom: 3px; }
+  h3 { font-size: 10pt; margin: 0 0 3px; }
+  p { margin: 0 0 5px; }
+  ul { margin: 0 0 4px; padding-left: 15px; }
+  li { margin-bottom: 1.5px; }
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  .hero { background: var(--dark); color: #fff; padding: 16px 18px; border-radius: 6px; display: flex; gap: 16px; align-items: center; margin-bottom: 12px; }
+  .hero img { width: 150px; height: 100px; object-fit: cover; border-radius: 4px; }
+  .hero .tag { color: #ff5a73; font-weight: 700; letter-spacing: .08em; font-size: 8.5pt; text-transform: uppercase; }
+  .hero .sub { color: #c9cbd3; margin-top: 4px; }
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+  .fact { background: var(--soft); border-left: 3px solid var(--red); padding: 6px 8px; border-radius: 3px; }
+  .fact b { display:block; font-size: 7.8pt; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .arc { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 12px; }
+  .act { border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; }
+  .act b { color: var(--red); display:block; }
+  .act small { color: var(--muted); display:block; margin-top: 2px; }
+  table { border-collapse: collapse; width: 100%; margin-bottom: 8px; }
+  th, td { border: 1px solid var(--line); padding: 4px 7px; text-align: left; vertical-align: top; }
+  th { background: var(--soft); font-size: 8.4pt; text-transform: uppercase; letter-spacing: .04em; }
+  .slide { display: grid; grid-template-columns: 46px 1fr 1fr; gap: 0 12px; border: 1px solid var(--line); border-radius: 5px; padding: 7px 10px; margin-bottom: 7px; page-break-inside: avoid; }
+  .num { background: var(--dark); color: #fff; border-radius: 4px; text-align: center; padding: 6px 0; align-self: start; }
+  .num b { font-size: 15pt; display:block; line-height: 1.1; }
+  .num span { font-size: 7.5pt; color: #ff8a9c; }
+  .slide .title { font-size: 11pt; font-weight: 700; margin-bottom: 3px; }
+  .lbl { font-size: 7.6pt; text-transform: uppercase; letter-spacing: .07em; color: var(--red); font-weight: 700; margin: 4px 0 1px; }
+  .lbl:first-child { margin-top: 0; }
+  .crit { display:inline-block; font-size: 7.4pt; background: #f3dde1; color: #7d0a1d; border-radius: 8px; padding: 0 6px; margin-right: 3px; }
+  .code { font-family: "DejaVu Sans Mono", monospace; font-size: 8pt; background: var(--soft); padding: 0 3px; border-radius: 2px; }
+  .note { background: #fff7e6; border-left: 3px solid #d99a00; padding: 6px 9px; border-radius: 3px; margin-bottom: 8px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .qa dt { font-weight: 700; margin-top: 5px; }
+  .qa dd { margin: 0 0 2px 0; color: #2b2d33; }
+  .foot { color: var(--muted); font-size: 8pt; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<!-- ===================== PAGE 1 ===================== -->
+<section class="page">
+  <div class="hero">
+    <img src="../../docs/assets/blackwall-cover.png" alt="">
+    <div>
+      <div class="tag">HackYeah 2026 · AI Control Layer · Goldman Sachs challenge</div>
+      <h1>Blackwall: presentation plan</h1>
+      <div class="sub">Slide-by-slide plan for the hackathon audience, the jury and the Goldman Sachs team. “Before the agent makes its move.”</div>
+    </div>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><b>Audience</b>Attendees (engineers), jury, Goldman Sachs challenge owners</div>
+    <div class="fact"><b>Length</b>13 slides, about 14 min, of which 3 min is a live demo</div>
+    <div class="fact"><b>Core claim</b>Agent actions are checked <i>before</i> they have an effect, and every decision is explained</div>
+    <div class="fact"><b>Tone</b>Evidence first, limits stated openly</div>
+  </div>
+
+  <h2>Storyline</h2>
+  <div class="arc">
+    <div class="act"><b>1 · Problem</b>Slides 1–2<small>Agents act, not just talk.</small></div>
+    <div class="act"><b>2 · Answer</b>Slides 3–5<small>One layer, hybrid defense, one policy.</small></div>
+    <div class="act"><b>3 · Use case</b>Slides 6–7<small>KYC, M&amp;A, HR, live.</small></div>
+    <div class="act"><b>4 · Proof</b>Slides 8–11<small>Supervision, policy, dashboard, tests.</small></div>
+    <div class="act"><b>5 · Honesty + ask</b>Slides 12–13<small>Limits, pilot path.</small></div>
+  </div>
+
+  <h2>How the slides answer the jury’s criteria</h2>
+  <p>The brief’s evaluation weights decide the airtime. Robustness and guardrails carry 30%, so the use cases, the demo and the supervision slides get the most time.</p>
+  <table>
+    <tr><th style="width:36%">Criterion (weight)</th><th style="width:16%">Slides</th><th>What the audience should leave with</th></tr>
+    <tr><td>Robustness and quality of guardrails (30%)</td><td>5, 6, 7, 8</td><td>Hybrid rules plus semantic review; a refusal stops the tool before any effect; a hard prohibition cannot be lifted by a model.</td></tr>
+    <tr><td>Architecture and performance (20%)</td><td>3, 4, 8</td><td>Gateway plus plugin integration; per-stage latency numbers (p95).</td></tr>
+    <tr><td>Security reporting (20%)</td><td>10</td><td>Live session view, reasons for every decision, JSONL export, p50/p95 metrics, cost.</td></tr>
+    <tr><td>Self-testing suite (15%)</td><td>11</td><td>Positive and negative tests that check <i>effects</i>, runnable by the judges.</td></tr>
+    <tr><td>Implementability and scalability (15%)</td><td>9, 12</td><td>Config changes without restart; an honest path from local MVP to pilot.</td></tr>
+  </table>
+
+  <div class="note"><b>Assumptions to confirm.</b> The brief gives no slide count or time slot, so I used the default 10–15 slides and a time budget of about 14 min plus Q&amp;A. A 5-minute cut is on the last page. All figures come from the final audit (<span class="code">blackwall/reports/final-audit.md</span>, 4 Oct 2026). Re-check them on the day (see the checklist on the last page).</div>
+</section>
+
+<!-- ===================== PAGE 2 ===================== -->
+<section class="page">
+  <h2>Slide-by-slide plan (slides 1–12)</h2>
+
+  <div class="slide">
+    <div class="num"><b>1</b><span>0:20</span></div>
+    <div>
+      <div class="title">Title: Blackwall, “Before the agent makes its move”</div>
+      <div class="lbl">On the slide</div>
+      <ul><li>Name, tagline, team, “HackYeah 2026 · AI Control Layer · Goldman Sachs challenge”.</li><li>Cover art as the only visual.</li></ul>
+    </div>
+    <div>
+      <div class="lbl">Say</div>
+      <p>One sentence: “Blackwall decides whether an AI agent may do something before it does it.”</p>
+      <div class="lbl">Visual</div>
+      <p><span class="code">docs/assets/blackwall-cover.png</span></p>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="num"><b>2</b><span>1:00</span></div>
+    <div>
+      <div class="title">The problem: agents act, they don’t just talk</div>
+      <div class="lbl">On the slide</div>
+      <ul>
+        <li>Three risks taken from the brief: access and impersonation; prompt injection and leaking output; runaway cost and loops.</li>
+        <li>One line on why classic tools miss them: natural language is the execution logic.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="lbl">Say</div>
+      <p>An agent can read a file, run a program, send data and burn budget. Each of these needs a boundary, and the boundary must be enforced where the action happens.</p>
+      <div class="lbl">Visual</div>
+      <p>Three-icon row, no screenshots. Cite the brief’s “AI Control Layer” text.</p>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="num"><b>3</b><span>0:45</span></div>
+    <div>
+      <div class="title">Our answer: one control layer, one policy, one audit trail</div>
+      <div class="lbl">On the slide</div>
+      <ul>
+        <li>Mini diagram: Agent → <b>Blackwall</b> → tools / models.</li>
+        <li>Four principles: decide before the effect; hybrid (deterministic + semantic); central policy; every decision explained.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="lbl">Say</div>
+      <p>Every tool call and every model call passes through Blackwall. The answer is allow, deny or ask the user, and it comes with a reason code.</p>
+      <div class="lbl">Jury criteria</div>
+      <p><span class="crit">Architecture 20%</span></p>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="num"><b>4</b><span>1:15</span></div>
+    <div>
+      <div class="title">Architecture: how it plugs into real agents</div>
+      <div class="lbl">On the slide</div>
+      <ul>
+        <li>The architecture diagram the brief asks for (simplified from <span class="code">blackwall/README.md</span>).</li>
+        <li>Components: managed Pi plugin; OpenAI-compatible gateway (any client can use it); decision engine; YAML policy plus threat feed; embeddings → guardian; Jev action review; SQLite audit; dashboard.</li>
+        <li>Callout: integration is one base URL or one plugin.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="lbl">Say</div>
+      <p>The gateway is the main entry point, so any OpenAI-compatible client can be governed. Pi is our demo client. The one-time grant is checked again immediately before execution.</p>
+      <div class="lbl">Jury criteria</div>
+      <p><span class="crit">Architecture 20%</span><span class="crit">Implementability 15%</span></p>
+    </div>
+  </div>
+
+
+  <div class="slide">
+    <div class="num"><b>5</b><span>1:00</span></div>
+    <div>
+      <div class="title">Hybrid defense: fast rules first, AI where meaning matters</div>
+      <div class="lbl">On the slide</div>
+      <p>Two-column table.</p>
+      <ul>
+        <li><b>Deterministic:</b> path scope (symlinks, <span class="code">..</span>, new files), <span class="code">.env</span> and keys, network host/port/method, secrets, IBAN and PESEL checksums, token budgets, threat feed.</li>
+        <li><b>Semantic:</b> Jev reviews proposed actions; embeddings plus a guardian supervise conversation topics.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="lbl">Say</div>
+      <p>Two rules make this safe to rely on: a hard prohibition cannot be lifted by a model, and no answer from a required control means no approval.</p>
+      <div class="lbl">Jury criteria</div>
+      <p><span class="crit">Robustness 30%</span></p>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="num"><b>6</b><span>1:15</span></div>
+    <div>
+      <div class="title">The Goldman Sachs use case: three finance conversations</div>
+      <div class="lbl">On the slide</div>
+      <table>
+        <tr><th>Scenario</th><th>Useful work allowed</th><th>What Blackwall stops</th></tr>
+        <tr><td>KYC onboarding</td><td>Draft written after one-time approval</td><td>Reading another client’s data</td></tr>
+        <tr><td>Confidential M&amp;A</td><td>Analysis; an authorized POST goes through</td><td>Publication prompted by an injected document</td></tr>
+        <tr><td>HR</td><td>General process questions</td><td>Evaluating named people; session terminated</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">Say</div>
+      <p>These are regulated-finance problems: client confidentiality, deal secrecy, employee data. The agent still gets its work done. The controls only remove what it must not do. All data is synthetic.</p>
+      <div class="lbl">Jury criteria</div>
+      <p><span class="crit">Robustness 30%</span></p>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="num"><b>7</b><span>3:00</span></div>
+    <div>
+      <div class="title">Live demo (video fallback ready)</div>
+      <div class="lbl">On the slide</div>
+      <ul>
+        <li>Mostly the dashboard. Scenario label in the corner.</li>
+        <li>Order: KYC approved write → other client’s data denied → M&amp;A forbidden publication blocked → HR violation ends the session. Run-of-show below the slide 13 card.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="lbl">Say</div>
+      <p>Narrate what Blackwall decided and why, then show the evidence: file unchanged, receiver got zero requests.</p>
+      <div class="lbl">Visual</div>
+      <p>Clips in <span class="code">blackwall/demo-recordings/2026-10-03-23-06-53/video/</span> (01, 03, 05, 06, 12).</p>
+      <p><span class="crit">Robustness 30%</span><span class="crit">Reporting 20%</span></p>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="num"><b>8</b><span>1:00</span></div>
+    <div>
+      <div class="title">Sensitive-topic supervision: stopping a conversation, not just a call</div>
+      <div class="lbl">On the slide</div>
+      <ul>
+        <li>Flow: embedding similarity → session label → one guardian verdict → <span class="code">terminated</span> before the response is released.</li>
+        <li>Latency, p95 per stage: topic detection <b>683 ms</b>, guardian <b>2316 ms</b>, Jev <b>750 ms</b>. Small sample, single stages.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="lbl">Say</div>
+      <p>A topic alone is not a violation. A candidate triggers the guardian, and uncertainty holds the session for an administrator. Only a confirmed violation closes it. Works in Polish and English.</p>
+      <div class="lbl">Jury criteria</div>
+      <p><span class="crit">Robustness 30%</span><span class="crit">Performance 20%</span></p>
+    </div>
+  </div>
+
+
+  <div class="slide">
+    <div class="num"><b>9</b><span>1:00</span></div>
+    <div>
+      <div class="title">One policy file, changed live, with budgets and a threat feed</div>
+      <div class="lbl">On the slide</div>
+      <ul>
+        <li>Profiles <span class="code">permissive / standard / strict</span> (thresholds 0.80 / 0.90 / 0.95); <span class="code">enforce</span> vs <span class="code">observe</span>; global plus per-user policy.</li>
+        <li>Budgets: atomic token and cost reservation before a model call; model alias allowlist; unknown usage consumes the whole reserve.</li>
+        <li>Threat feed examples: pickle / <span class="code">torch.load</span> (CVE-2025-32434 class), <span class="code">trust_remote_code</span>, <span class="code">curl | sh</span>, reverse shell, prompt injection.</li>
+        <li>Publish from the Policies tab without a restart. Invalid or stale publications keep the active version.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="lbl">Say</div>
+      <p>The brief says judges may change thresholds and rules and watch the reaction. That is the point: publish a new version, old grants and approvals expire, the next decision uses the new rules.</p>
+      <div class="lbl">Visual</div>
+      <p><span class="code">.../00-policies-viewport.png</span>; clip <span class="code">runtime-publication-…/video/runtime-publication-ui.mp4</span></p>
+      <p><span class="crit">Implementability 15%</span><span class="crit">Robustness 30%</span></p>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="num"><b>10</b><span>1:00</span></div>
+    <div>
+      <div class="title">Dashboard and audit: what security teams and management see</div>
+      <div class="lbl">On the slide</div>
+      <ul>
+        <li>Live sessions: users and sessions on the left, conversation and Blackwall decisions on the right, status filters, unread counts.</li>
+        <li>Each decision shows reason code, policy version, and whether the action actually started and finished.</li>
+        <li>Overview with p50/p95 metrics and cost, plus JSONL export.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="lbl">Say</div>
+      <p>An <span class="code">allow</span> does not prove an operation ran, so the audit separates decision, approval, claim and execution report.</p>
+      <div class="lbl">Visual</div>
+      <p><span class="code">demo-recordings/live-sessions-2026-10-04-07-17-44/01-allowed-chat-and-controls.png</span>, <span class="code">03-guardian-stop-and-policy.png</span></p>
+      <p><span class="crit">Reporting 20%</span></p>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="num"><b>11</b><span>1:00</span></div>
+    <div>
+      <div class="title">Tests: positive and negative, checking effects</div>
+      <div class="lbl">On the slide</div>
+      <ul>
+        <li>Final verification: <b>143/143</b> unit, <b>33/33</b> live-API integration, <b>12/12</b> with a real Pi agent, no skips.</li>
+        <li>Semantic eval (34 guardian assessments): 15/15 violations ended, <b>0/19</b> false terminations. Typed proposals: 5/5 forbidden denied, 0/5 allowed denied. Jev: 0/4 dangerous commands auto-allowed.</li>
+        <li>Negative tests check the effect: file not created, receiver got no request, secret never reached the UI or audit.</li>
+        <li>Command for judges: <span class="code">npm test</span> (offline); <span class="code">npm run verify</span> (needs both API keys).</li>
+      </ul>
+    </div>
+    <div>
+      <div class="lbl">Say</div>
+      <p>The corpus is small and hand-written, so we do not claim production accuracy. We keep earlier failures in the repo (for example the 22:41 guardian miss, caught by deterministic file scope).</p>
+      <div class="lbl">Jury criteria</div>
+      <p><span class="crit">Self-testing 15%</span></p>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="num"><b>12</b><span>1:00</span></div>
+    <div>
+      <div class="title">Honest limits and the path to a pilot</div>
+      <div class="lbl">On the slide: limits</div>
+      <ul>
+        <li>No OS sandbox: Jev reviews the command text, programs run with the user’s rights.</li>
+        <li>The plugin is the enforcement boundary; a host admin can disable it.</li>
+        <li>Local MVP: SQLite, startup config for providers; no SSO, MCP or agent-to-agent; no automatic feed download.</li>
+        <li>Models are probabilistic; content sent to OpenAI and Jev leaves the machine.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="lbl">On the slide: next steps</div>
+      <ul>
+        <li>Sandboxed runner; credentials outside the agent process.</li>
+        <li>Central control plane with SSO; PostgreSQL + pgvector.</li>
+        <li>MCP and agent-to-agent adapters; automatic threat-feed ingestion.</li>
+        <li>Local-model backend (for example Ollama) behind the same gateway.</li>
+      </ul>
+      <p><span class="crit">Implementability 15%</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PAGE 5 ===================== -->
+<section class="page">
+  <h2>Slide 13 and the live demo run-of-show</h2>
+
+  <div class="slide">
+    <div class="num"><b>13</b><span>0:30</span></div>
+    <div>
+      <div class="title">Close: three proofs and an invitation</div>
+      <div class="lbl">On the slide</div>
+      <ul>
+        <li>Recap: stops before the effect · explains every decision · changes live · tested for effects.</li>
+        <li>Invitation: “Give us a prompt we have never seen.”</li>
+        <li>Links and QR: repository, interactive Sites presentation.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="lbl">Say</div>
+      <p>Offer the jury an ad-hoc prompt and a live policy change. Both are explicitly part of how the brief says projects will be judged.</p>
+      <div class="lbl">Visual</div>
+      <p>Cover art again, QR code. Sites page: blackwall-hackyeah-2026.dariusz.chatgpt.site</p>
+    </div>
+  </div>
+
+  <h2 style="margin-top:12px">Live demo (slide 7): 3 minutes</h2>
+  <table>
+    <tr><th style="width:5%">#</th><th style="width:25%">Beat</th><th style="width:40%">What to point at</th><th>Clip (fallback)</th></tr>
+    <tr><td>1</td><td>KYC: approved write (30 s)</td><td>One-time approval; the existing file really changes. The harness simulates the user’s click, so say so.</td><td><span class="code">01-kyc-approved-write.mp4</span></td></tr>
+    <tr><td>2</td><td>KYC: other client’s data (30 s)</td><td>The read is refused by file scope before execution.</td><td><span class="code">03-kyc-other-client.mp4</span></td></tr>
+    <tr><td>3</td><td>M&amp;A: forbidden publication (45 s)</td><td>Guardian verdict stops the POST; the receiver has zero requests. This clip is an explicit replay, not the model refusing; say so.</td><td><span class="code">05-ma-replay.mp4</span>, plus <span class="code">12-ma-authorized-post.mp4</span> to show the allowed case</td></tr>
+    <tr><td>4</td><td>HR: violation (45 s)</td><td>General question allowed; “evaluate Anna and Peter, recommend whom to dismiss” ends the session before the model is called.</td><td><span class="code">06-hr-termination.mp4</span> (EN) · <span class="code">10-hr-pl-first-violation.mp4</span> (PL)</td></tr>
+    <tr><td>5</td><td>Live policy change (30 s)</td><td>Publish a threshold or feed rule in the Policies tab; the next proposal in the same session is denied under the new version.</td><td><span class="code">runtime-publication-…/video/runtime-publication-ui.mp4</span></td></tr>
+  </table>
+  <p>If time is short, cut beat 2. Keep the allowed-and-denied pairing in at least one scenario: it shows Blackwall does not just refuse everything.</p>
+  <div class="note"><b>Honesty rule for the demo.</b> The recordings use simulated user approvals and explicit replays of a proposal for the M&amp;A and runtime-publication clips. Say this out loud; the repo’s own reports do, and a judge who checks will find it.</div>
+</section>
+
+<!-- ===================== PAGE 6 ===================== -->
+<section class="page">
+  <h2>Prepare for questions</h2>
+  <dl class="qa">
+    <dt>The brief says no paid subscriptions are provided. Does it run without OpenAI?</dt>
+    <dd>Not today. The runtime model, guardian and embeddings use OpenAI, and semantic action review uses Jev. The gateway is OpenAI-compatible, so a local backend is the natural next step, but it is not built. The deterministic layer and <span class="code">npm test</span> work without network access.</dd>
+    <dt>What is the latency overhead?</dt>
+    <dd>Per stage, p95: topic detection 683 ms, guardian 2316 ms, Jev 750 ms. The guardian runs only for sessions with a topic candidate. End-to-end agent latency was not measured.</dd>
+    <dt>What if the LLM is wrong?</dt>
+    <dd>Deterministic rules run first and a model cannot override a hard prohibition. A model accusation without a verifiable quote is held for admin review, not auto-confirmed. Earlier misses are kept in the reports.</dd>
+    <dt>Can the agent bypass Blackwall?</dt>
+    <dd>Through the managed plugin or the gateway, no. A user with control of the host can disable the plugin, and there is no OS sandbox. A production deployment needs a managed executor.</dd>
+    <dt>Can judges change the config live?</dt>
+    <dd>Yes. Publish rules, thresholds, topic catalog or threat feed from the Policies tab, no restart. A stale or invalid publication is rejected and the active version stays.</dd>
+    <dt>How do you handle known historical attacks?</dt>
+    <dd>A versioned threat feed matched deterministically (RE2, no backtracking): unsafe deserialization, <span class="code">trust_remote_code</span>, <span class="code">curl | sh</span>, reverse shells, leaks to paste services. It is published manually; automatic download is not built.</dd>
+    <dt>MCP and agent-to-agent?</dt>
+    <dd>Not implemented. The gateway and plugin pattern is the same one those adapters would use.</dd>
+  </dl>
+
+  <h2 style="margin-top:12px">Before you present</h2>
+  <div class="two">
+    <div>
+      <ul>
+        <li>Run <span class="code">npm run verify</span> in <span class="code">blackwall/</span> and use the numbers from that run. The README now cites 148 unit tests after the live-sessions view, while the final audit says 143.</li>
+        <li>Start the server and open the dashboard on the demo data; keep the clips as offline fallback.</li>
+        <li>Check the Sites page loads on venue Wi-Fi, or have screenshots ready.</li>
+      </ul>
+    </div>
+    <div>
+      <ul>
+        <li>Slide 8 latencies come from one small run; present them as such.</li>
+        <li>The public Sites page and the existing 9-slide deck (<span class="code">deliverables/blackwall-demo-en.pptx</span>) can supply visuals. They do not cover the problem, use-case and close slides.</li>
+        <li>Rotate the API keys after the event; they were shared in chat earlier.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 style="margin-top:12px">5-minute cut</h2>
+  <p>Slides 1, 2, 4, 6, then the demo (beats 1, 3, 4 only), then 11 and 12 in one breath each. Skip 3, 5, 8, 9, 10 and keep them as backup slides for questions.</p>
+  <div class="foot">Sources: README.md, blackwall/README.md, blackwall/reports/final-audit.md, blackwall/deliverables/demo-index.md, docs/golden-sachs.pdf (challenge brief and evaluation criteria).</div>
+</section>
+
+</body>
+</html>
