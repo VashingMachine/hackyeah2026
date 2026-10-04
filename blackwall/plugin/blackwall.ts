@@ -11,8 +11,12 @@
  * nothing runs (fail closed).
  */
 import { Type } from '@earendil-works/pi-ai';
-import { defineTool, type ExtensionAPI } from '@earendil-works/pi-coding-agent';
+import { Text } from '@earendil-works/pi-tui';
+import { resolve } from 'node:path';
+import { defineTool, createReadToolDefinition, createWriteToolDefinition, createEditToolDefinition, createLsToolDefinition, createFindToolDefinition, createGrepToolDefinition, createBashToolDefinition, type ToolDefinition, type ExtensionAPI } from '@earendil-works/pi-coding-agent';
 import { controlledRequest } from './http-client.ts';
+import { controlledFileTool } from './file-tools.ts';
+import type { EffectiveScope } from '../src/config/effective.ts';
 
 interface Decision {
   decision_id: string;
@@ -22,9 +26,9 @@ interface Decision {
   retry_hint?: string;
   session_action: 'continue' | 'await_user' | 'block' | 'terminate';
   session_status: string;
-  approval: { id: string; expires_at: string } | null;
+  approval: { id: string; expires_at: string; cwd?: string } | null;
   sanitized_arguments?: Record<string, unknown>;
-  execution?: { allow_non_public_ips: boolean; follow_redirects: boolean; timeout_seconds: number; max_response_bytes: number };
+  execution?: { allow_non_public_ips: boolean; follow_redirects: boolean; timeout_seconds: number; shell_timeout_seconds?: number; max_response_bytes: number; file_scope?: EffectiveScope['files'] };
 }
 
 const GUIDANCE = `
@@ -43,6 +47,7 @@ export default function blackwall(pi: ExtensionAPI) {
 
   const configured = Boolean(baseUrl && token);
   const decisions = new Map<string, Decision>();
+  const inspectedOutputs = new Set<string>();
 
   async function api<T>(path: string, body?: unknown, method: 'GET' | 'POST' = body === undefined ? 'GET' : 'POST'): Promise<T> {
     const res = await fetch(`${baseUrl}${path}`, {
@@ -98,8 +103,11 @@ export default function blackwall(pi: ExtensionAPI) {
 
     if (d.effect === 'require_approval' && d.approval) {
       if (!ctx.hasUI) return { block: true, reason: `${refusal(d)} Approval needs a user interface, so the operation was not run.` };
-      const preview = JSON.stringify(args, null, 2).slice(0, 1500);
-      const ok = await ctx.ui.confirm('Blackwall: approve this one operation?', `${event.toolName}\n${preview}\n\nWhy it stopped: ${d.message}`);
+      if (d.sanitized_arguments) Object.assign(event.input, d.sanitized_arguments);
+      const approvalCwd = d.approval.cwd ?? ctx.cwd;
+      const target = typeof args.path === 'string' ? resolve(approvalCwd, args.path) : approvalCwd;
+      const preview = JSON.stringify(args, null, 2);
+      const ok = await ctx.ui.confirm('Blackwall: approve this one operation?', `${event.toolName}\nTarget: ${target}\nWorking directory: ${approvalCwd}\n${preview}\n\nWhy it stopped: ${d.message}`);
       try {
         d = await api<Decision>(`/v1/approvals/${d.approval.id}/resolve`, { resolution: ok ? 'approve' : 'reject', cwd: ctx.cwd });
       } catch (e) {
@@ -116,8 +124,14 @@ export default function blackwall(pi: ExtensionAPI) {
     }
 
     if (d.sanitized_arguments) Object.assign(event.input, d.sanitized_arguments);
+    try {
+      await api(`/v1/tool-decisions/${d.decision_id}/consume`, { request_id: event.toolCallId, tool: event.toolName, arguments: args, context: { cwd: ctx.cwd } });
+      await api('/v1/execution-events', { request_id: event.toolCallId, decision_id: d.decision_id, phase: 'started' });
+    } catch (e) {
+      return { block: true, reason: `Blackwall execution permission was not acquired (${(e as Error).message}). The operation was not run.` };
+    }
     decisions.set(event.toolCallId, d);
-    void api('/v1/execution-events', { request_id: event.toolCallId, decision_id: d.decision_id, phase: 'started' }).catch(() => undefined);
+
     return undefined;
   });
 
@@ -126,8 +140,9 @@ export default function blackwall(pi: ExtensionAPI) {
     const d = decisions.get(event.toolCallId);
     if (d) {
       decisions.delete(event.toolCallId);
-      void api('/v1/execution-events', { request_id: event.toolCallId, decision_id: d.decision_id, phase: event.isError ? 'failed' : 'completed' }).catch(() => undefined);
+      await api('/v1/execution-events', { request_id: event.toolCallId, decision_id: d.decision_id, phase: (event.details as { blackwall_execution_completed?: boolean } | undefined)?.blackwall_execution_completed || !event.isError ? 'completed' : 'failed' }).catch(() => ctx.ui.notify('Blackwall: execution receipt could not be recorded.', 'warning'));
     }
+    if (inspectedOutputs.delete(event.toolCallId)) return (event.details as { blackwall_withheld?: boolean } | undefined)?.blackwall_withheld ? { isError: true } : undefined;
     const text = event.content.map((c) => (c.type === 'text' ? c.text : '')).join('\n');
     if (!text) return undefined;
     try {
@@ -144,6 +159,49 @@ export default function blackwall(pi: ExtensionAPI) {
     }
     return undefined;
   });
+
+  // Buffer native tool updates and inspect the complete result before Pi publishes it to any UI/RPC sink.
+  const factories = [createReadToolDefinition, createWriteToolDefinition, createEditToolDefinition, createLsToolDefinition, createFindToolDefinition, createGrepToolDefinition, createBashToolDefinition] as unknown as ((cwd: string) => ToolDefinition<any, any>)[];
+  for (const factory of factories) {
+    const definition = factory(process.cwd());
+    pi.registerTool({
+      ...definition,
+      ...(['grep', 'find', 'ls'].includes(definition.name) ? {description: `${definition.name}: inspect permitted files only; protected names, disallowed extensions, oversized files and child symlinks are excluded. Discovery skips .git and node_modules.`, promptSnippet: `${definition.name}: policy-filtered file discovery/search`} : {}),
+      // Native edit renderers read the target to generate a preview before approval.
+      // Use Pi's generic renderer, which only shows arguments and inspected results.
+      // Explicit renderers are required: Pi substitutes built-in renderers for undefined.
+      renderCall(_args, theme) { return new Text(theme.fg('toolTitle', `${definition.name} · Blackwall`), 0, 0); },
+      renderResult(result, _options, theme) { return new Text(theme.fg('toolOutput', result.content.map(c => c.type === 'text' ? c.text : '').join('\n')), 0, 0); },
+      renderShell: 'default',
+      async execute(id, params, signal, _onUpdate, ctx) {
+        const grant = decisions.get(id);
+        if (!grant) throw new Error('Blackwall has no consumed execution permission for this call.');
+        const tool = factory(ctx.cwd);
+        const parameters = params as Record<string, unknown>;
+        const requestedTimeout = typeof parameters.timeout === 'number' && parameters.timeout > 0 ? parameters.timeout : Infinity;
+        const input = definition.name === 'bash' ? { ...parameters, timeout: Math.min(requestedTimeout, grant.execution?.shell_timeout_seconds ?? 30) } : parameters;
+        const search = ['grep', 'find', 'ls'].includes(definition.name);
+        if (search && !grant.execution?.file_scope) throw new Error('The server did not provide a file policy for this search.');
+        const result = search ? await controlledFileTool(definition.name as 'grep' | 'find' | 'ls', parameters, ctx.cwd, grant.execution!.file_scope!, signal, grant.execution?.timeout_seconds ?? 30)
+          : await tool.execute(id, input, signal, undefined, ctx);
+        // Pi also publishes metadata (for example edit diffs) in RPC/UI events.
+        const text = result.content.map((c: { type: string; text?: string }) => c.type === 'text' ? c.text ?? '' : '').join('\n');
+        const extra = JSON.stringify({ structuredContent: result.structuredContent, details: result.details });
+        try {
+          const checked = await api<{ action: 'allow' | 'block' | 'redact'; text: string; message: string; session_action: string }>('/v1/content/inspect', { kind: 'tool_output', text: extra ? text + '\n' + extra : text });
+          inspectedOutputs.add(id);
+          if (checked.action === 'allow') return result;
+          if (checked.action === 'redact') return { content: [{ type: 'text' as const, text: checked.text }], details: {} };
+          ctx.ui.notify(`Blackwall: ${checked.message}`, 'error');
+          queueMicrotask(() => ctx.abort());
+          return { content: [{ type: 'text' as const, text: `[Blackwall] ${checked.message}` }], details: { blackwall_withheld: true, blackwall_execution_completed: true } };
+        } catch {
+          inspectedOutputs.add(id);
+          return { content: [{ type: 'text' as const, text: '[Blackwall] The tool result could not be inspected and was withheld.' }], details: { blackwall_withheld: true, blackwall_execution_completed: true } };
+        }
+      },
+    });
+  }
 
   pi.registerTool(
     defineTool({

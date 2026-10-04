@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS — nie pozostały istotne błędy semantyczne w sprawdzonych sekwencjach.",
+  "audit": "Świeży, niezależny audyt wszystkich komunikatów diagramu sekwencji względem kodu. Nie edytowano source ani process-flow.json; nie wykonano wywołań modeli/API.",
+  "artifacts": [
+    {
+      "path": "sites/blackwall-presentation/content/process-flow.json",
+      "sha256": "78e0d5bced49d852469e2966c335a7e796391f631be12d9ec91fde0a1c8d4a87"
+    },
+    {
+      "path": "sites/blackwall-presentation/source/dist/assets/process-flow.json",
+      "sha256": "78e0d5bced49d852469e2966c335a7e796391f631be12d9ec91fde0a1c8d4a87"
+    }
+  ],
+  "copiesIdentical": true,
+  "expectedFinalSha256": "78e0d5bced49d852469e2966c335a7e796391f631be12d9ec91fde0a1c8d4a87",
+  "dimensions": {
+    "diagramType": "sequence",
+    "nodes": 10,
+    "edges": 27,
+    "scenarios": 8,
+    "sequenceMessages": 114
+  },
+  "sourceIntegrity": {
+    "sourceCount": 18,
+    "allPresentAndMatching": true,
+    "referenceCount": 56,
+    "allLineReferencesValid": true,
+    "sources": [
+      {
+        "path": "blackwall/plugin/blackwall.ts",
+        "expectedSha256": "bdf22f8ee012a86e3880ce79952f1f35a6d8082b4b565d2ed07e56692ff84a97",
+        "actualSha256": "bdf22f8ee012a86e3880ce79952f1f35a6d8082b4b565d2ed07e56692ff84a97",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/server/app.ts",
+        "expectedSha256": "23312c3c930f234ced219bc8bf5fbce48f4ef6aab974d2d9d5a57fe1ca7415d8",
+        "actualSha256": "23312c3c930f234ced219bc8bf5fbce48f4ef6aab974d2d9d5a57fe1ca7415d8",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/server/main.ts",
+        "expectedSha256": "47d6c0914f90ace01b772ec4a3c6d04dd25d56eefc461fdbfef1c48b000f8d15",
+        "actualSha256": "47d6c0914f90ace01b772ec4a3c6d04dd25d56eefc461fdbfef1c48b000f8d15",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/gateway/chat.ts",
+        "expectedSha256": "7f0300b8627547c83b98262b535f888a254668b0ba7d08dc94de0d4cef5ee523",
+        "actualSha256": "7f0300b8627547c83b98262b535f888a254668b0ba7d08dc94de0d4cef5ee523",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/engine/core.ts",
+        "expectedSha256": "c77e2126f0766d47b12bd16fb77f3d0dbdc5f7093dfd3608d14146e34c7e6fe0",
+        "actualSha256": "c77e2126f0766d47b12bd16fb77f3d0dbdc5f7093dfd3608d14146e34c7e6fe0",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/topics/detector.ts",
+        "expectedSha256": "0de415fc76ef26b07d89b15b4e70fae8f020ebf469b81a40820bbb3a56661e0e",
+        "actualSha256": "0de415fc76ef26b07d89b15b4e70fae8f020ebf469b81a40820bbb3a56661e0e",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/judge/guardian.ts",
+        "expectedSha256": "6acf9bbcad47397a485aacdd8a8daa060c9240d31627603c8e73a37c016fdba6",
+        "actualSha256": "6acf9bbcad47397a485aacdd8a8daa060c9240d31627603c8e73a37c016fdba6",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/judge/jev.ts",
+        "expectedSha256": "2ce54373b2d60f7905210a280366ffb895392f7fa8d36a8f916883cb9243fe14",
+        "actualSha256": "2ce54373b2d60f7905210a280366ffb895392f7fa8d36a8f916883cb9243fe14",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/config/publication.ts",
+        "expectedSha256": "2b2cc3e211bf2a18a3adb05cc81b26ce2275bb335c19a330439cf980e81a8e41",
+        "actualSha256": "2b2cc3e211bf2a18a3adb05cc81b26ce2275bb335c19a330439cf980e81a8e41",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/server/publication-gate.ts",
+        "expectedSha256": "c0f1b976a41a92612223c66c757a85435456f8707588e99ab54e344230aa78bd",
+        "actualSha256": "c0f1b976a41a92612223c66c757a85435456f8707588e99ab54e344230aa78bd",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/store/store.ts",
+        "expectedSha256": "8f9bb6be404cfc63bbd249809c1fa49d96c24ddabe835e22cbc758bc900bacf2",
+        "actualSha256": "8f9bb6be404cfc63bbd249809c1fa49d96c24ddabe835e22cbc758bc900bacf2",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/config/effective.ts",
+        "expectedSha256": "903e595d8096a5d19277f0987a882f814da40136e7d5c74648ac308a43999117",
+        "actualSha256": "903e595d8096a5d19277f0987a882f814da40136e7d5c74648ac308a43999117",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/engine/files.ts",
+        "expectedSha256": "505e9b5f3802646e6dc7bca294e6567945e0c9e62a4cb7905a650ae8286a70f0",
+        "actualSha256": "505e9b5f3802646e6dc7bca294e6567945e0c9e62a4cb7905a650ae8286a70f0",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/engine/network.ts",
+        "expectedSha256": "9e9e1781c870844da5397071e9ab551d63bed967b9bb08095b624f96ea41588d",
+        "actualSha256": "9e9e1781c870844da5397071e9ab551d63bed967b9bb08095b624f96ea41588d",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/engine/feed.ts",
+        "expectedSha256": "f58fe1ee3cc3ab404fd7797ca845173e00fdbace1f9d1f140347ae59cc294952",
+        "actualSha256": "f58fe1ee3cc3ab404fd7797ca845173e00fdbace1f9d1f140347ae59cc294952",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/engine/secrets.ts",
+        "expectedSha256": "bbdc9529aa18c452d8cf9e4889a22ad90bd9abd895a24d77bbe892fb4ada42c4",
+        "actualSha256": "bbdc9529aa18c452d8cf9e4889a22ad90bd9abd895a24d77bbe892fb4ada42c4",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/config/schema.ts",
+        "expectedSha256": "2fee8075e02d13715f74e0ecba2f99571f5fcc6e9331b59888e1325bd5aba362",
+        "actualSha256": "2fee8075e02d13715f74e0ecba2f99571f5fcc6e9331b59888e1325bd5aba362",
+        "present": true
+      },
+      {
+        "path": "blackwall/src/gateway/openai.ts",
+        "expectedSha256": "b724d19ce0148ccbcbded6fb4d0613d0111aa2a7b166d163ccb2ddfdc56932ac",
+        "actualSha256": "b724d19ce0148ccbcbded6fb4d0613d0111aa2a7b166d163ccb2ddfdc56932ac",
+        "present": true
+      }
+    ],
+    "invalidLineReferences": []
+  },
+  "resolvedFindings": [
+    "Model-safe ingress order now matches gateway: state/alias, new-message DLP and supervision, then whole-prompt secret scan.",
+    "Tool-call arguments are scanned and inspected before Pi receives the tool_call; conditional embeddings and Guardian checks are represented, with embedding vectors distinct from Blackwall similarity scoring.",
+    "Every Guardian request condition includes topic_supervision.enabled=true and an active assigned/candidate topic.",
+    "Admin review details are fetched from /v1/admin/sessions; the audit stream is not described as returning review objects.",
+    "Hard-deny decision audit is ordered and grouped in the same Core step before the deny response; the walkthrough step text states this ordering.",
+    "Guardian violation audit is split: guardian.reviewed precedes termination, and session.terminated follows it.",
+    "Runtime policy publication is initiated by the approval/admin lane; active policies are shown as local configuration.",
+    "The tool-output /v1/content/inspect exchange remains a collapsed internal subflow; its endpoint and allow/redact/block result are accurate, and component descriptions explain output inspection."
+  ],
+  "verifiedSemantics": [
+    "All 114 sequence messages have valid participants, kinds and step indexes; all 48 scenario steps are represented.",
+    "Tool execution routes preserve decision → grant consumption → started receipt → local executor → output inspection → completion/failure receipt.",
+    "Jev remains a conditional operation judge, distinct from embeddings and Guardian; no direct embeddings-to-Jev call is shown.",
+    "Policy publication keeps the HTTP request lease, persistence/invalidation and Core swap order; it does not claim to wait for a local Pi executor.",
+    "The selected hard-deny path records decision.denied before responding to Pi and shows that no grant or executor follows."
+  ]
+}

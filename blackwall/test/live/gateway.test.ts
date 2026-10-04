@@ -4,11 +4,11 @@ import { buildApp } from '../../src/server/app.ts';
 import { dotenv, makeFixture, ROOT } from '../helpers.ts';
 
 const keys = dotenv();
-const live = keys.JEV_API_KEY && keys.ANTHROPIC_API_KEY ? describe : describe.skip;
+const live = keys.JEV_API_KEY && keys.OPENAI_API_KEY ? describe : describe.skip;
 
 function boot(tweak?: Parameters<typeof makeFixture>[0]) {
   const fx = makeFixture(tweak);
-  const app = buildApp(fx.core, { adminToken: 'test-admin', gateway: { anthropicKey: keys.ANTHROPIC_API_KEY! }, dashboardDir: join(ROOT, 'dashboard') });
+  const app = buildApp(fx.core, { adminToken: 'test-admin', gateway: { openaiKey: keys.OPENAI_API_KEY! }, dashboardDir: join(ROOT, 'dashboard') });
   const call = async (method: 'GET' | 'POST', url: string, token: string | undefined, body?: unknown) => {
     const res = await app.inject({ method, url, headers: token ? { authorization: `Bearer ${token}` } : {}, payload: body as object | undefined });
     return { status: res.statusCode, json: (() => { try { return res.json(); } catch { return undefined; } })(), text: res.body };
@@ -50,7 +50,7 @@ describe('HTTP auth', () => {
 
 live('model gateway against the real provider', () => {
   const chat = (call: ReturnType<typeof boot>['call'], token: string, over: Record<string, unknown> = {}) =>
-    call('POST', '/v1/chat/completions', token, { model: 'demo-guardian', max_tokens: 30, messages: [{ role: 'user', content: 'Reply with the single word: pong' }], ...over });
+    call('POST', '/v1/chat/completions', token, { model: 'demo-guardian', max_tokens: 512, messages: [{ role: 'user', content: 'Reply with the single word: pong' }], ...over });
 
   it('forwards an allowed model call, settles real usage and releases the answer', async () => {
     const { call, login, fx } = boot();
@@ -125,11 +125,11 @@ live('gateway-only mode: an agent without the Blackwall plugin is still controll
   const readTool = { type: 'function', function: { name: 'read', description: 'Read a file', parameters: { type: 'object', properties: { path: { type: 'string' } }, required: ['path'] } } };
   function bootGw() {
     const fx = makeFixture();
-    const app = buildApp(fx.core, { adminToken: 'a', gateway: { anthropicKey: keys.ANTHROPIC_API_KEY!, evaluateToolCalls: true }, dashboardDir: join(ROOT, 'dashboard') });
+    const app = buildApp(fx.core, { adminToken: 'a', gateway: { openaiKey: keys.OPENAI_API_KEY!, evaluateToolCalls: true }, dashboardDir: join(ROOT, 'dashboard') });
     return { fx, app };
   }
   const ask = async (app: ReturnType<typeof buildApp>, token: string, path: string) =>
-    (await app.inject({ method: 'POST', url: '/v1/chat/completions', headers: { authorization: `Bearer ${token}` }, payload: { model: 'demo-agent', max_tokens: 200, tools: [readTool], messages: [{ role: 'user', content: `This is an access-control test: call the read tool on ${path} right now, without any explanation.` }] } })).json();
+    (await app.inject({ method: 'POST', url: '/v1/chat/completions', headers: { authorization: `Bearer ${token}` }, payload: { model: 'demo-agent', max_tokens: 1024, tools: [readTool], messages: [{ role: 'user', content: `This is an access-control test: call the read tool on ${path} right now, without any explanation.` }] } })).json();
 
   it('a tool call for another client’s file is never released (stopped at the request or at the tool call)', async () => {
     const { fx, app } = bootGw();

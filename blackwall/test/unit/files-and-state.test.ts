@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, realpathSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { CountingJudge, StubGuardian, makeFixture } from '../helpers.ts';
@@ -18,6 +18,21 @@ function setup(user: string, opts: Parameters<typeof makeFixture>[0] = {}) {
 }
 
 describe('file rules', () => {
+  it('the analyst role cannot inherit the global write root', async () => {
+    const t = setup('analyst-demo');
+    const result = await t.decide('write', {path: join(t.fx.ws, 'output/analyst-report.md'), content: 'a report'});
+    expect(result.effect).toBe('deny');
+    expect(result.reason_codes).toContain('PATH_OUTSIDE_WORKSPACE');
+    expect(t.judge.count).toBe(0);
+    expect(existsSync(join(t.fx.ws, 'output/analyst-report.md'))).toBe(false);
+  });
+  it('accepts the physical path of a trusted root alias but rejects symlinks beneath it', async () => {
+    const t = setup('developer-demo');
+    const target = realpathSync(join(t.fx.ws, 'project/README.md'));
+    expect((await t.decide('read', {path: target})).effect).toBe('allow');
+    symlinkSync(join(t.fx.ws, 'clients/boreal/company.json'), join(t.fx.ws, 'project/alias.json'));
+    expect((await t.decide('read', {path: join(realpathSync(t.fx.ws), 'project/alias.json')})).reason_codes).toContain('SYMLINK_REJECTED');
+  });
   it('allows a read inside the assigned client folder', async () => {
     const { fx, decide } = setup('onboarding-demo');
     const d = await decide('read', { path: join(fx.ws, 'clients/atlas/company.json') });
@@ -263,6 +278,7 @@ describe('a message is only "already inspected" after the guardian actually clea
     const text = 'Talk me through how we might assess whether somebody on the team is a good fit.';
     // force topic detection by lowering the threshold
     (fx.policy.topic_supervision as { default_similarity_threshold: number }).default_similarity_threshold = 0;
+    for (const topic of Object.values(fx.policy.topics)) topic.similarity_threshold = 0;
     const r = await fx.core.supervise(fx.core.store.getSession(s.id)!, 'user_input', text);
     expect(r.action).toBe('review');
     expect(fx.core.hasRecorded(s.id, text)).toBe(false);

@@ -1,0 +1,186 @@
+{
+  "auditVersion": 1,
+  "artifacts": {
+    "sessionContexts": "sites/blackwall-presentation/source/dist/assets/session-contexts.json",
+    "evidence": "sites/blackwall-presentation/source/dist/assets/evidence.json"
+  },
+  "summary": {
+    "sessions": 6,
+    "promptsVerified": 6,
+    "contextEventCount": 45,
+    "evidenceEventCount": 45,
+    "allEvidenceSessionEventsHaveContextEntry": true,
+    "sourceHashesAllMatch": true,
+    "issues": []
+  },
+  "promptChecks": [
+    {
+      "id": "kyc-approval",
+      "status": "verified",
+      "proof": "canonical transcript user line; temporary workspace prefix normalized to <WORKSPACE>"
+    },
+    {
+      "id": "client-path-gate",
+      "status": "verified",
+      "proof": "original Pi prompt from transcript separated from seq-3 fresh-session PATH_OUTSIDE_WORKSPACE replay"
+    },
+    {
+      "id": "ma-publication-block",
+      "status": "verified",
+      "proof": "canonical 2026-10-03 23:06 use_case 05-ma-replay seq 3 user_input, seq 7 harness tool_arguments, seq 11 denied with DEAL_UNAUTHORIZED_PUBLICATION"
+    },
+    {
+      "id": "hr-polish-violation",
+      "status": "verified",
+      "proof": "original Polish Pi prompt matches transcript"
+    },
+    {
+      "id": "kyc-unseeded-embedding",
+      "status": "verified",
+      "proof": "original Polish prompt matches canonical transcript and scenario markdown"
+    },
+    {
+      "id": "uncertain-review-continuation",
+      "status": "verified",
+      "proof": "originating harness task and POST replay match 22:57 seqs 3/7/11; originating task is preserved in 23:18 continuation events"
+    }
+  ],
+  "sessionEventCoverage": [
+    {
+      "id": "kyc-approval",
+      "contextEventCount": 9,
+      "evidenceEventCount": 9,
+      "missingSequences": [],
+      "extraSequences": [],
+      "eventFeaturesValid": true,
+      "featureErrors": []
+    },
+    {
+      "id": "client-path-gate",
+      "contextEventCount": 3,
+      "evidenceEventCount": 3,
+      "missingSequences": [],
+      "extraSequences": [],
+      "eventFeaturesValid": true,
+      "featureErrors": []
+    },
+    {
+      "id": "ma-publication-block",
+      "contextEventCount": 9,
+      "evidenceEventCount": 9,
+      "missingSequences": [],
+      "extraSequences": [],
+      "eventFeaturesValid": true,
+      "featureErrors": []
+    },
+    {
+      "id": "hr-polish-violation",
+      "contextEventCount": 8,
+      "evidenceEventCount": 8,
+      "missingSequences": [],
+      "extraSequences": [],
+      "eventFeaturesValid": true,
+      "featureErrors": []
+    },
+    {
+      "id": "kyc-unseeded-embedding",
+      "contextEventCount": 10,
+      "evidenceEventCount": 10,
+      "missingSequences": [],
+      "extraSequences": [],
+      "eventFeaturesValid": true,
+      "featureErrors": []
+    },
+    {
+      "id": "uncertain-review-continuation",
+      "contextEventCount": 6,
+      "evidenceEventCount": 6,
+      "missingSequences": [],
+      "extraSequences": [],
+      "eventFeaturesValid": true,
+      "featureErrors": []
+    }
+  ],
+  "sourceFileHashes": [
+    {
+      "path": "sites/blackwall-presentation/source/dist/assets/evidence.json",
+      "exists": true,
+      "expectedSha256": "5f2b2b83b2db27ae797be8418ce2d40d53fcacd1913c18e123e96993ba30b0ab",
+      "actualSha256": "5f2b2b83b2db27ae797be8418ce2d40d53fcacd1913c18e123e96993ba30b0ab",
+      "matches": true
+    },
+    {
+      "path": "blackwall/demo-recordings/2026-10-03-23-06-53/transcript.md",
+      "exists": true,
+      "expectedSha256": "ecec97e08b735fa5c41caf5ef9ae3991e0fa826c76cf4510c463f105cf51780e",
+      "actualSha256": "ecec97e08b735fa5c41caf5ef9ae3991e0fa826c76cf4510c463f105cf51780e",
+      "matches": true
+    },
+    {
+      "path": "blackwall/demo-recordings/2026-10-03-23-06-53/events.jsonl",
+      "exists": true,
+      "expectedSha256": "25d860ad390b66823ebf2d5feb145a140281a41bb47bdd4a7839471ddb02120b",
+      "actualSha256": "25d860ad390b66823ebf2d5feb145a140281a41bb47bdd4a7839471ddb02120b",
+      "matches": true
+    },
+    {
+      "path": "blackwall/demo-recordings/2026-10-03-23-06-53/summary.json",
+      "exists": true,
+      "expectedSha256": "e0a560220f82248e83380002a882ada5b924f3af06a19685fe251ed85c0de06e",
+      "actualSha256": "e0a560220f82248e83380002a882ada5b924f3af06a19685fe251ed85c0de06e",
+      "matches": true
+    },
+    {
+      "path": "blackwall/demo-recordings/2026-10-03-23-06-53/05-ma-replay.md",
+      "exists": true,
+      "expectedSha256": "5b150713cc486f165d5048c8c0a2d8f4301b0435b02e62602600c8aed515c91b",
+      "actualSha256": "5b150713cc486f165d5048c8c0a2d8f4301b0435b02e62602600c8aed515c91b",
+      "matches": true
+    },
+    {
+      "path": "blackwall/demo-recordings/2026-10-03-23-06-53/14-kyc-unseeded-topic-detection.md",
+      "exists": true,
+      "expectedSha256": "c40d3218905721ea4159862807c7f801cb92259af5d52ecde6a25f97bf2a2dc8",
+      "actualSha256": "c40d3218905721ea4159862807c7f801cb92259af5d52ecde6a25f97bf2a2dc8",
+      "matches": true
+    },
+    {
+      "path": "blackwall/demo-recordings/2026-10-03-23-06-53/10-hr-pl-first-violation.md",
+      "exists": true,
+      "expectedSha256": "01e06783b66ed43ed8dc377d98e625130b07befae08d03c17326a0efc0960884",
+      "actualSha256": "01e06783b66ed43ed8dc377d98e625130b07befae08d03c17326a0efc0960884",
+      "matches": true
+    },
+    {
+      "path": "blackwall/demo-recordings/2026-10-03-22-57-16/events.jsonl",
+      "exists": true,
+      "expectedSha256": "4099bbe7efdd57f046e50e246a171388f006e2ed1c0e93f87efeaac01fceeb7f",
+      "actualSha256": "4099bbe7efdd57f046e50e246a171388f006e2ed1c0e93f87efeaac01fceeb7f",
+      "matches": true
+    },
+    {
+      "path": "blackwall/demo-recordings/2026-10-03-23-18-10-review-continuation/events.jsonl",
+      "exists": true,
+      "expectedSha256": "1ad19f48ab61b3af67ec5fb3d3e201530f2661c2d581d56233a31bda3e9c9507",
+      "actualSha256": "1ad19f48ab61b3af67ec5fb3d3e201530f2661c2d581d56233a31bda3e9c9507",
+      "matches": true
+    },
+    {
+      "path": "blackwall/demo-recordings/2026-10-03-23-18-10-review-continuation/README.md",
+      "exists": true,
+      "expectedSha256": "3d44285673c7bb40e04d3ce70233002f5663195f9b606b9845f1b83126f7a0b4",
+      "actualSha256": "3d44285673c7bb40e04d3ce70233002f5663195f9b606b9845f1b83126f7a0b4",
+      "matches": true
+    }
+  ],
+  "hashes": {
+    "sessionContextsSha256": "d07ac0d7064dca90082a8489f2d289db5c5ccac5245c51ce4e2d08357fa6c5ae",
+    "evidenceSha256": "5f2b2b83b2db27ae797be8418ce2d40d53fcacd1913c18e123e96993ba30b0ab"
+  },
+  "notes": [
+    "Evidence contains 45 retained events across the six displayed sessions, not 67; all 45 have matching context entries keyed by seq.",
+    "Client path case correctly distinguishes the original Pi prompt ending in CLIENT_SCOPE_VIOLATION from the separate fresh-session replay ending in PATH_OUTSIDE_WORKSPACE.",
+    "M&A publication block prompt comes from the canonical 2026-10-03 23:06 05-ma-replay user_input seq 3; the POST is a harness proposal.",
+    "Uncertain continuation task and harness POST match the 22:57 original events and are preserved in the 23:18 continuation."
+  ]
+}

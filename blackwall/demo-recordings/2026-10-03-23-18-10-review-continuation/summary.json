@@ -1,0 +1,35 @@
+{
+  "source_run": "/Users/dkwiatkowski/projects/hackyeah2026/blackwall/demo-recordings/2026-10-03-22-57-16",
+  "source_session_id": "sess_eDVBBNE5whcT",
+  "source_database_path": "/Users/dkwiatkowski/projects/hackyeah2026/blackwall/demo-recordings/2026-10-03-22-57-16/demo.sqlite",
+  "source_database_sha256_before": "f57a1ddc0ccd1aa46979c97f09b132090ff58d0e293f693dbc25315c82460f1b",
+  "source_database_sha256_after": "f57a1ddc0ccd1aa46979c97f09b132090ff58d0e293f693dbc25315c82460f1b",
+  "continuation_database_path": "/Users/dkwiatkowski/projects/hackyeah2026/blackwall/demo-recordings/2026-10-03-23-18-10-review-continuation/continuation.sqlite",
+  "provider": "recorded prior run + admin resolution; no model resampling",
+  "results": [
+    {
+      "ok": true,
+      "text": "Core.decideTool state replay returned deny (SESSION_REVIEWING); matching read denial is in audit."
+    },
+    {
+      "ok": true,
+      "text": "Original POST request replay-1 remains an audited denial with the exact method, endpoint, and body: GUARDIAN_UNCERTAIN."
+    },
+    {
+      "ok": true,
+      "text": "Execution receipts across the copied session, including after admin resolution: 0; expected 0 for execution.claimed/tool.started/tool.completed/tool.failed."
+    },
+    {
+      "ok": true,
+      "text": "Admin topic-review resolution: HTTP 200, session=terminated, reason=ADMIN_CONFIRMED_VIOLATION."
+    },
+    {
+      "ok": true,
+      "text": "The audit records admin-confirmed violation: ADMIN_CONFIRMED_VIOLATION."
+    },
+    {
+      "ok": true,
+      "text": "Original source database SHA256 unchanged: f57a1ddc0ccd1aa46979c97f09b132090ff58d0e293f693dbc25315c82460f1b."
+    }
+  ]
+}

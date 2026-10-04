@@ -1,65 +1,82 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blackwall — administrator dashboard</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23080909'/%3E%3Cpath d='M17 15h8v34h-8zm13 0h8v34h-8zm13 0h8v34h-8z' fill='%23ff493e'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="/dashboard/styles.css">
+  <script src="/dashboard/session-browser.js" defer></script>
   <script src="/dashboard/app.js" defer></script>
 </head>
 <body>
   <header class="top">
-    <div class="brand"><span class="mark"><i></i><i></i><i></i></span>BLACKWALL <small>administrator dashboard</small></div>
+    <div class="brand"><span class="mark"><i></i><i></i><i></i></span>BLACKWALL <small>AI CONTROL LAYER</small></div>
     <div class="policy" id="policy-line">…</div>
-    <div class="auth"><input id="token" type="password" placeholder="administrator token" autocomplete="off" aria-label="Administrator token"><button id="save-token">Connect</button><span id="live" class="live" title="event stream">○</span></div>
+    <div class="auth"><input id="token" type="password" placeholder="administrator token" autocomplete="off" aria-label="Administrator token"><button id="save-token">Connect</button><span id="live" class="live" role="status" aria-label="Event stream disconnected" title="event stream">○</span></div>
   </header>
   <nav class="tabs" role="tablist">
-    <button role="tab" aria-selected="true" data-tab="overview">Overview</button>
+    <button role="tab" aria-selected="true" data-tab="sessions">Live sessions</button>
+    <button role="tab" aria-selected="false" data-tab="overview">Overview</button>
     <button role="tab" aria-selected="false" data-tab="events">Events</button>
     <button role="tab" aria-selected="false" data-tab="policies">Policies</button>
   </nav>
   <main>
+    <div class="intro"><div><p class="eyebrow">CENTRAL POLICY · DECISIONS BEFORE EXECUTION</p><h1 id="dashboard-heading">User sessions</h1></div><p class="coverage">Shell execution profile <strong>demo_prepared</strong><br>Jev assesses shell commands. System isolation requires a sandbox.</p></div>
     <p id="error" class="error" hidden></p>
 
-    <section id="tab-overview">
+    <section id="tab-sessions" aria-label="User session browser"><div id="session-browser"><p class="empty">Loading session history…</p></div></section>
+
+    <section id="tab-overview" hidden>
       <div class="kpis" id="kpis"></div>
       <div class="grid2">
-        <div class="card"><h2>Latency (ms)</h2><table id="latency"><thead><tr><th>Stage</th><th>n</th><th>p50</th><th>p95</th><th>max</th></tr></thead><tbody></tbody></table><p class="note">From the most recent events in the audit log. Time spent waiting for a human is not included.</p></div>
-        <div class="card"><h2>Most frequent reasons for refusals</h2><table id="reasons"><tbody></tbody></table></div>
+        <div class="card"><h2>Latency (ms)</h2><div class="table-scroll" tabindex="0" role="region" aria-label="Latency — horizontally scrollable table"><table id="latency"><thead><tr><th>Stage</th><th>n</th><th>p50</th><th>p95</th><th>max</th></tr></thead><tbody></tbody></table></div><p class="table-hint">Scroll horizontally to see all columns.</p><p class="note">From recent audit events. Time spent waiting for a human is not included.</p></div>
+        <div class="card"><h2>Most frequent refusal reasons</h2><div class="table-scroll" tabindex="0" role="region" aria-label="Refusal reasons — horizontally scrollable table"><table id="reasons"><tbody></tbody></table></div><p class="table-hint">Scroll horizontally to see all columns.</p></div>
       </div>
-      <div class="card"><h2>Sessions</h2><table id="sessions"><thead><tr><th>Session</th><th>User</th><th>State</th><th>Topics</th><th>Tokens</th><th>Tools</th><th></th></tr></thead><tbody></tbody></table></div>
+      <div class="card"><h2 >Sessions</h2><div class="table-scroll" tabindex="0" role="region" aria-label="Sessions — horizontally scrollable table"><table id="sessions"><thead><tr><th >Session</th><th >User</th><th >Status</th><th >Topics</th><th >Tokens</th><th >Tools</th><th></th></tr></thead><tbody></tbody></table></div><p class="table-hint">Scroll horizontally to see all columns.</p></div>
       <div class="grid2">
-        <div class="card"><h2>Pending approvals</h2><div id="approvals" class="empty">none</div></div>
-        <div class="card"><h2>Reviews to resolve</h2><div id="reviews" class="empty">none</div></div>
+        <div class="card"><h2>Pending approvals</h2><div id="approvals" class="empty" >none</div></div>
+        <div class="card"><h2>Reviews to resolve</h2><div id="reviews" class="empty" >none</div></div>
       </div>
     </section>
 
     <section id="tab-events" hidden>
       <div class="toolbar">
         <label>Session <select id="f-session"><option value="">all</option></select></label>
-        <label>Session state <select id="f-status"><option value="">all</option><option value="failed">failed only (blocked, terminated, in review)</option><option value="terminated">terminated</option><option value="blocked">blocked</option><option value="reviewing">reviewing</option><option value="awaiting_approval">awaiting_approval</option><option value="active">active</option></select></label>
+        <label>Session status <select id="f-status"><option value="">all</option><option value="failed">failed only (blocked, terminated, in review)</option><option value="terminated">terminated</option><option value="blocked">blocked</option><option value="reviewing">reviewing</option><option value="awaiting_approval">awaiting_approval</option><option value="active">active</option></select></label>
         <label>Reason <select id="f-reason"><option value="">all</option></select></label>
         <label>Effect <select id="f-effect"><option value="">all</option><option value="deny">deny</option><option value="require_approval">require_approval</option><option value="allow">allow</option></select></label>
-        <label>Type <input id="f-type" placeholder="e.g. decision.*"></label>
+        <label>Typee <input id="f-type" placeholder="e.g. decision.*"></label>
         <label class="chk"><input type="checkbox" id="f-hide"> hide noise (content.*, budget.*)</label>
-        <button id="f-reset">Clear filters</button>
+        <button id="f-reset">Reset filters</button>
         <button id="export">Export JSONL</button>
         <span id="f-count" class="note"></span>
       </div>
       <div class="split">
         <ol id="timeline" class="timeline"></ol>
-        <aside id="detail" class="card detail"><p class="empty">Select an event to see the reason, the versions and the evidence.</p></aside>
+        <aside id="detail" class="card detail"><p class="empty">Select an event to view its reason, versions, and evidence.</p></aside>
       </div>
     </section>
 
     <section id="tab-policies" hidden>
       <div class="grid2">
-        <div class="card"><h2>The policy in force</h2><dl id="policy-facts"></dl></div>
-        <div class="card"><h2>Strictness levels</h2><table id="profiles"></table><p class="note">The active level is highlighted; the differences concern, among other things, the scope of the semantic assessment and the thresholds. To change it: edit <code>config/policy.yaml</code> and restart.</p></div>
+        <div class="card"><h2>Effective policy</h2><dl id="policy-facts"></dl></div>
+        <div class="card"><h2>Policy profiles</h2><div class="table-scroll" tabindex="0" role="region" aria-label="Policy profiles — horizontally scrollable table"><table id="profiles"></table></div><p class="table-hint">Scroll horizontally to see all columns.</p><p class="note">The active profile is highlighted. Changes below are validated and published without a restart.</p></div>
       </div>
-      <div class="card"><h2>A user's scope (after combining with the organization policy)</h2><label>User <select id="eff-user"></select></label><pre id="effective"></pre></div>
-      <div class="card"><h2>Sensitive topics</h2><table id="topics"></table></div>
+      <div class="card"><h2>User scope (combined with organization policy)</h2><label>User <select id="eff-user"></select></label><pre id="effective"></pre></div>
+      <div class="grid2">
+        <div class="card"><h2>Publish policy</h2>
+          <p class="note">Change a rule or threshold. The new version applies to the next decision; existing approvals and pending reviews are invalidated. Operations already in progress are not rolled back.</p>
+          <label>Policy changes (JSON)<textarea id="policy-edit" rows="12" spellcheck="false" aria-label="Policy changes in JSON"></textarea></label>
+          <div class="config-actions"><button id="policy-reload">Load current</button><button id="policy-publish" class="ok">Publish policy</button></div><p id="policy-publish-result" class="note" role="status"></p>
+        </div>
+        <div class="card"><h2>Publish threat feed</h2>
+          <p class="note">Keep the catalog ID and increment the feed version. An invalid document leaves the active configuration unchanged.</p>
+          <label>Feed (JSON)<textarea id="feed-edit" rows="12" spellcheck="false" aria-label="Threat feed in JSON"></textarea></label>
+          <div class="config-actions"><button id="feed-reload">Load current</button><button id="feed-publish" class="ok">Publish feed</button></div><p id="feed-publish-result" class="note" role="status"></p>
+        </div>
+      </div>
+      <div class="card"><h2>Sensitive topics</h2><div class="table-scroll" tabindex="0" role="region" aria-label="Sensitive topics — horizontally scrollable table"><table id="topics"></table></div><p class="table-hint">Scroll horizontally to see all columns.</p></div>
     </section>
   </main>
 </body>

@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 1,
+  "artifact": {
+    "path": "sites/blackwall-presentation/content/process-flow.json",
+    "sha256": "8d6109b01bf180a45ba398ed28ca398b1c28c10d18fcb3a07144d95f64c7e1ab",
+    "nodeCount": 10,
+    "edgeCount": 27,
+    "scenarioCount": 8
+  },
+  "audit": "Independent source-to-diagram semantic review; read-only on process-flow.json and code. No model/API calls.",
+  "sourceIntegrity": {
+    "count": 18,
+    "allPresentAndMatching": true,
+    "sources": [
+      {
+        "path": "blackwall/plugin/blackwall.ts",
+        "expectedSha256": "bdf22f8ee012a86e3880ce79952f1f35a6d8082b4b565d2ed07e56692ff84a97",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/server/app.ts",
+        "expectedSha256": "23312c3c930f234ced219bc8bf5fbce48f4ef6aab974d2d9d5a57fe1ca7415d8",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/server/main.ts",
+        "expectedSha256": "47d6c0914f90ace01b772ec4a3c6d04dd25d56eefc461fdbfef1c48b000f8d15",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/gateway/chat.ts",
+        "expectedSha256": "7f0300b8627547c83b98262b535f888a254668b0ba7d08dc94de0d4cef5ee523",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/engine/core.ts",
+        "expectedSha256": "c77e2126f0766d47b12bd16fb77f3d0dbdc5f7093dfd3608d14146e34c7e6fe0",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/topics/detector.ts",
+        "expectedSha256": "0de415fc76ef26b07d89b15b4e70fae8f020ebf469b81a40820bbb3a56661e0e",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/judge/guardian.ts",
+        "expectedSha256": "6acf9bbcad47397a485aacdd8a8daa060c9240d31627603c8e73a37c016fdba6",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/judge/jev.ts",
+        "expectedSha256": "2ce54373b2d60f7905210a280366ffb895392f7fa8d36a8f916883cb9243fe14",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/config/publication.ts",
+        "expectedSha256": "2b2cc3e211bf2a18a3adb05cc81b26ce2275bb335c19a330439cf980e81a8e41",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/server/publication-gate.ts",
+        "expectedSha256": "c0f1b976a41a92612223c66c757a85435456f8707588e99ab54e344230aa78bd",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/store/store.ts",
+        "expectedSha256": "8f9bb6be404cfc63bbd249809c1fa49d96c24ddabe835e22cbc758bc900bacf2",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/config/effective.ts",
+        "expectedSha256": "903e595d8096a5d19277f0987a882f814da40136e7d5c74648ac308a43999117",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/engine/files.ts",
+        "expectedSha256": "505e9b5f3802646e6dc7bca294e6567945e0c9e62a4cb7905a650ae8286a70f0",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/engine/network.ts",
+        "expectedSha256": "9e9e1781c870844da5397071e9ab551d63bed967b9bb08095b624f96ea41588d",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/engine/feed.ts",
+        "expectedSha256": "f58fe1ee3cc3ab404fd7797ca845173e00fdbace1f9d1f140347ae59cc294952",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/engine/secrets.ts",
+        "expectedSha256": "bbdc9529aa18c452d8cf9e4889a22ad90bd9abd895a24d77bbe892fb4ada42c4",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/config/schema.ts",
+        "expectedSha256": "2fee8075e02d13715f74e0ecba2f99571f5fcc6e9331b59888e1325bd5aba362",
+        "exists": true,
+        "hashMatches": true
+      },
+      {
+        "path": "blackwall/src/gateway/openai.ts",
+        "expectedSha256": "b724d19ce0148ccbcbded6fb4d0613d0111aa2a7b166d163ccb2ddfdc56932ac",
+        "exists": true,
+        "hashMatches": true
+      }
+    ]
+  },
+  "verifiedSemantics": [
+    "Topic detector embeddings are gated by topic_supervision.enabled; Guardian is skipped when no candidate or confirmed topic label is active.",
+    "Guardian error or control-budget failure blocks; a verified violation terminates; uncertain moves the session to reviewing.",
+    "Jev is a distinct, profile-routed operation judge; every bash operation uses it, while other tools follow semantic_evaluate. There is no direct Jev-to-embedding call.",
+    "Tool decision allow creates a grant, but Pi must consume it; consume rechecks bindings and deterministic rules and claims it before executor start.",
+    "The gateway’s optional evaluateToolCalls path returns a decision/refusal and does not consume or execute a tool; Pi uses the separate tool-call plugin path.",
+    "Runtime publication validates/initializes a candidate, rechecks versions under PublicationGate, persists the change transactionally, and swaps the active Core."
+  ],
+  "findings": [
+    {
+      "id": "observe-mode-can-still-execute",
+      "severity": "high",
+      "location": "notes[5]; blackwall node conditions; scenario assumptions",
+      "finding": "Observe mode is not necessarily audit-only. Core.finalize converts every non-HARD denial and require_approval into effect=allow except USER_REJECTED_OPERATION, then creates a grant. Pi consumes the grant, but consume re-runs only deterministic checks; it does not repeat feed, secret, topic/Guardian, or Jev checks, and it rejects only fresh deterministic effect=deny (a fresh require_approval is not rejected). Native file/shell tools can therefore execute after some denials that enforce mode would block, including an existing-file approval requirement. HTTP execution is blocked by the plugin when execution metadata is absent. This materially changes effects, not just audit labels.",
+      "evidence": [
+        {
+          "path": "blackwall/src/engine/core.ts",
+          "line": 669,
+          "detail": "Observe conversion in finalize; inspect exact current implementation around this line."
+        },
+        {
+          "path": "blackwall/src/engine/core.ts",
+          "line": 726,
+          "detail": "consumeDecision validates identity/version and reruns deterministic checks before claiming."
+        },
+        {
+          "path": "blackwall/src/engine/core.ts",
+          "line": 363,
+          "detail": "Threat-feed denial returns before the normal allow path and its execution metadata."
+        },
+        {
+          "path": "blackwall/plugin/blackwall.ts",
+          "line": 220,
+          "detail": "HTTP plugin requires execution metadata; local native file tools use the grant lookup and native executor."
+        }
+      ],
+      "recommendation": "Keep all depicted scenarios explicitly in enforce mode. Clarify that observe may allow actual execution of some non-hard denials/approval-required operations; it is not shadow-only behavior."
+    },
+    {
+      "id": "gateway-prompt-coverage-overstated",
+      "severity": "medium",
+      "location": "scenarios[model-safe].outcome",
+      "finding": "“Model dostaje tylko dopuszczony prompt” overstates Guardian coverage. The gateway topic-supervises new user and tool messages (and skips previously-cleared messages for the same policy version), while the whole-prompt scan checks secrets in system/developer/earlier assistant content and tool definitions. Those other prompt parts do not receive the same event-level Guardian review.",
+      "evidence": [
+        {
+          "path": "blackwall/src/gateway/chat.ts",
+          "line": 131,
+          "detail": "Only user and tool roles are selected for inspectContent."
+        },
+        {
+          "path": "blackwall/src/gateway/chat.ts",
+          "line": 149,
+          "detail": "The whole prompt and tools get a secret scan."
+        },
+        {
+          "path": "blackwall/src/engine/core.ts",
+          "line": 308,
+          "detail": "Previously cleared content may be skipped under the same policy/configuration version."
+        }
+      ],
+      "recommendation": "Narrow this outcome to say that newly received user/tool events are inspected and the complete prompt is secret-scanned before provider forwarding."
+    },
+    {
+      "id": "tool-audit-receipt-order",
+      "severity": "medium",
+      "location": "scenarios[tool-allow].steps (execute-tool, inspect-tool-result, execution-receipt)",
+      "finding": "The scenario groups tool.started and tool.completed after result inspection. In the Pi plugin, consume is followed by the started receipt before execute runs. The custom executor inspects the returned result before returning; tool_result then reports completed/failed. As drawn, the ordering can imply start is receipted only after inspection.",
+      "evidence": [
+        {
+          "path": "blackwall/plugin/blackwall.ts",
+          "line": 126,
+          "detail": "Consume then started receipt occur in tool_call before local execution."
+        },
+        {
+          "path": "blackwall/plugin/blackwall.ts",
+          "line": 176,
+          "detail": "The executor wrapper runs the native tool and inspects its result before returning."
+        },
+        {
+          "path": "blackwall/plugin/blackwall.ts",
+          "line": 138,
+          "detail": "tool_result reports the final receipt after the wrapped execution returns."
+        }
+      ],
+      "recommendation": "Show tool.started immediately after consume and before execute; show tool.completed/failed after result inspection."
+    },
+    {
+      "id": "hard-deny-event-misattributed",
+      "severity": "medium",
+      "location": "scenarios[hard-deny].steps node=pi title=Zatrzymaj wykonanie",
+      "finding": "This step lists model.denied, but a tool-decision denial is recorded as decision.denied by Core.finalize. model.denied belongs to the chat gateway’s model-request path; the Pi plugin simply blocks the tool call after a non-allow decision.",
+      "evidence": [
+        {
+          "path": "blackwall/src/engine/core.ts",
+          "line": 670,
+          "detail": "finalize appends decision.denied for tool decision effects."
+        },
+        {
+          "path": "blackwall/plugin/blackwall.ts",
+          "line": 116,
+          "detail": "The tool_call hook blocks when effect is not allow; it does not append model.denied."
+        },
+        {
+          "path": "blackwall/src/gateway/chat.ts",
+          "line": 118,
+          "detail": "model.denied is appended for closed-session chat requests."
+        }
+      ],
+      "recommendation": "Remove model.denied from the Pi stop step; keep decision.denied on the Blackwall/audit side."
+    },
+    {
+      "id": "executor-sandbox-boundary-omitted",
+      "severity": "medium",
+      "location": "executor node and notes[7]",
+      "finding": "The diagram accurately calls execution local to the Pi plugin, but does not state that shell execution has no OS sandbox. The native bash tool runs with the user’s OS permissions; the wrapper applies a timeout, while require_isolation only rejects a policy profile other than isolated and does not itself create isolation.",
+      "evidence": [
+        {
+          "path": "blackwall/plugin/blackwall.ts",
+          "line": 182,
+          "detail": "Bash timeout is bounded before delegating to Pi’s native tool."
+        },
+        {
+          "path": "blackwall/src/engine/core.ts",
+          "line": 533,
+          "detail": "Isolation setting is a policy gate only."
+        },
+        {
+          "path": "blackwall/README.md",
+          "line": 120,
+          "detail": "Repository documents no sandbox and user-level OS permissions."
+        }
+      ],
+      "recommendation": "Add a compact note that local bash is not OS-sandboxed and runs with the user’s permissions."
+    },
+    {
+      "id": "publication-does-not-drain-local-execution",
+      "severity": "medium",
+      "location": "policies node description; publication scenario",
+      "finding": "PublicationGate drains active HTTP request leases. Pi’s consume and execution-receipt calls release their leases when each API response completes; local tool execution happens between/after those calls and is not covered by the gate. A claimed grant is not invalidated by publication (only available grants are), so publication does not wait for or cancel an already-consumed local execution. The current phrase about draining “trwających żądań” is accurate for HTTP requests, but should not be read as executor quiescence.",
+      "evidence": [
+        {
+          "path": "blackwall/src/server/app.ts",
+          "line": 54,
+          "detail": "Reader lease covers each /v1 HTTP request and is released at response/error."
+        },
+        {
+          "path": "blackwall/src/server/publication-gate.ts",
+          "line": 8,
+          "detail": "Gate tracks HTTP readers only."
+        },
+        {
+          "path": "blackwall/src/store/store.ts",
+          "line": 232,
+          "detail": "Publication invalidates available grants only."
+        },
+        {
+          "path": "blackwall/plugin/blackwall.ts",
+          "line": 128,
+          "detail": "Plugin consumes and reports started via separate API requests before local operation."
+        }
+      ],
+      "recommendation": "Keep wording scoped to in-flight server requests and state that active local executors are not drained by PublicationGate."
+    },
+    {
+      "id": "approval-without-ui-branch-not-shown",
+      "severity": "low",
+      "location": "scenarios[tool-approval].conditions",
+      "finding": "Approval is possible only when the Pi context has a UI. If require_approval arrives without UI, the plugin blocks the operation without resolving it; the happy-path scenario assumes an interactive Pi UI.",
+      "evidence": [
+        {
+          "path": "blackwall/plugin/blackwall.ts",
+          "line": 105,
+          "detail": "The plugin refuses execution when approval is needed but ctx.hasUI is false."
+        }
+      ],
+      "recommendation": "Mark the scenario condition as “Pi UI available”; no separate failure path is necessary for this overview."
+    }
+  ]
+}

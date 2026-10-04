@@ -35,7 +35,7 @@ export function parsePolicy(raw: string, env: Record<string, string | undefined>
   return p;
 }
 
-function semanticChecks(p: Policy): void {
+export function semanticChecks(p: Policy): void {
   const errs: string[] = [];
   if (!p.profiles[p.profile]) errs.push(`profile "${p.profile}" is not defined under profiles`);
   for (const [id, t] of Object.entries(p.topics)) {
@@ -49,6 +49,9 @@ function semanticChecks(p: Policy): void {
   }
   const tokens = new Set<string>();
   for (const [name, u] of Object.entries(p.users)) {
+    for (const topic of u.topic_ids ?? []) {
+      if (!p.topics[topic]) errs.push(`user ${name} references unknown topic ${topic}`);
+    }
     if (tokens.has(u.token)) errs.push(`user ${name} reuses another user's token`);
     tokens.add(u.token);
   }

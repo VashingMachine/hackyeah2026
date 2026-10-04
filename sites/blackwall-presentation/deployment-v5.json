@@ -1,0 +1,23 @@
+{
+  "project_id": "appgprj_6ac0e7f351c48191b1f94d385c8b4d66",
+  "version_id": "appgprj_6ac0e7f351c48191b1f94d385c8b4d66~appgver_948d49d9e4248191a31ede578cd61826",
+  "version_number": 5,
+  "deployment_id": "appgdep_6ac1a6f366bc8191bb6a6bf1ce7e3b05",
+  "status": "succeeded",
+  "url": "https://blackwall-hackyeah-2026.dariusz.chatgpt.site",
+  "commit_sha": "9465a345d622b228bd704c78898517ec4ae92253",
+  "updated_at": "2026-10-04T01:08:20.168113+00:00",
+  "qa": {
+    "browser_checks": 31,
+    "fault_recovery": "PASS",
+    "visual_review": "PASS",
+    "viewports": [
+      "1440x1000",
+      "390x844"
+    ],
+    "credential_matches": 0,
+    "recorded_sessions": 6,
+    "video_clips": 8,
+    "deck_revision": "final-v4"
+  }
+}

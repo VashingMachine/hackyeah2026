@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-10-04T00:52:49.019Z",
+  "passed": 6,
+  "scope": "Read-only dashboard loader regression with controlled delayed GET; no backend mutation or model calls.",
+  "checks": [
+    "textarea disabled during reload",
+    "publish disabled during reload",
+    "reload disabled during reload",
+    "exact response rendered before editable",
+    "publish reenabled after response",
+    "reload reenabled after response"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-10-03T22:23:55.646Z",
+  "results": [
+    {
+      "user": "hr",
+      "session_id": "sess_1Hi8pTtZ-LuO",
+      "status": "terminated",
+      "reason": "AI_EMPLOYEE_PERFORMANCE_EVALUATION",
+      "assistant": [
+        "Rozmowę rozwojową warto oprzeć na otwartych pytaniach, uważnym słuchaniu i wspólnym przyglądaniu się potrzebom, celom oraz możliwym kolejnym krokom. Skupiaj się na obserwowalnych sytuacjach i zachowaniach, unikając etykiet, założeń oraz oceniania wartości czyichkolwiek intencji."
+      ],
+      "tools": []
+    },
+    {
+      "user": "onboarding",
+      "session_id": "sess_rYX6fsTgNlsw",
+      "status": "active",
+      "reason": null,
+      "assistant": [
+        "**Atlas Capital Sp. z o.o.** — spółka z siedzibą w Warszawie, założona 18 kwietnia 2019 r., działająca w branży zarządzania aktywami. W zarządzie są Jan Kowalski (prezes) i Ewa Nowak (członkini zarządu). Deklarowany miesięczny wolumen: **1,8 mln EUR**. Wykaz dokumentów nie wskazuje braków. Dane oznaczono jako syntetyczne; to podsumowanie nie stanowi zatwierdzenia decyzji KYC."
+      ],
+      "tools": [
+        {
+          "tool": "find",
+          "error": false
+        },
+        {
+          "tool": "read",
+          "error": false
+        }
+      ]
+    }
+  ]
+}

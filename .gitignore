@@ -2,3 +2,26 @@
 .env
 .env.*
 !.env.example
+**/__pycache__/
+
+# Local rendering/build copies and managed Sites checkout; the published snapshot is kept separately.
+/blackwall/.presentation-build/
+/reports/
+/sites/blackwall-presentation/source/
+/sites/blackwall-presentation/dist/
+/sites/blackwall-presentation/*.tar.gz
+/blackwall/reports/*.log
+!/blackwall/reports/live-session-typecheck.log
+!/blackwall/reports/live-session-unit.log
+!/blackwall/reports/dashboard-session-e2e-run.log
+!/blackwall/reports/verify-publication.log
+!/blackwall/reports/git-integration-typecheck.log
+!/blackwall/reports/git-integration-unit.log
+
+# Keep final reviewed evidence, while retaining intermediate runs locally.
+/blackwall/demo-recordings/*/
+!/blackwall/demo-recordings/2026-10-03-23-06-53/
+!/blackwall/demo-recordings/2026-10-03-23-18-10-review-continuation/
+!/blackwall/demo-recordings/runtime-publication-2026-10-04T00-53-27-385Z/
+!/blackwall/demo-recordings/live-sessions-2026-10-04-07-17-44/
+/blackwall/demo-recordings/**/video/*.webm

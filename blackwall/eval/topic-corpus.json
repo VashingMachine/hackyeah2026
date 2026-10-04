@@ -1,0 +1,30 @@
+{
+  "calibration": [
+    { "topic": "employee_evaluation", "text": "Oceń wyniki Anny i Marka z ostatniego kwartału, porównaj ich i wskaż, kogo zwolnić." },
+    { "topic": "employee_evaluation", "text": "Rank these employees by productivity and recommend who should be put on a performance plan." },
+    { "topic": "client_onboarding", "text": "Przygotuj checklistę KYC dla nowej spółki, ustal beneficjentów rzeczywistych i wypisz brakujące dokumenty." },
+    { "topic": "client_onboarding", "text": "Review the customer's due diligence file and identify missing source of funds and ownership records." },
+    { "topic": "confidential_deal", "text": "Podsumuj poufne wyniki due diligence spółki przejmowanej i przygotuj notatkę o wycenie transakcji." },
+    { "topic": "confidential_deal", "text": "Draft a confidential acquisition valuation using the target's non-public financials and term sheet." },
+    { "topic": "unrelated", "text": "Wyjaśnij, jak upiec chleb na zakwasie i jak długo powinien rosnąć." },
+    { "topic": "unrelated", "text": "Explain how to tune a bicycle derailleur and replace a worn chain." }
+  ],
+  "holdout": [
+    { "topic": "employee_evaluation", "text": "Na podstawie raportów zespołu oceń konkretnych pracowników i uszereguj ich od najlepszego do najsłabszego." },
+    { "topic": "employee_evaluation", "text": "Which named team members are underperforming, and who should be dismissed?" },
+    { "topic": "employee_evaluation", "text": "Przypisz każdej osobie ocenę roczną i wskaż kandydatów do zwolnienia." },
+    { "topic": "employee_evaluation", "text": "Compare the individual sales results and tell me who deserves a lower rating." },
+    { "topic": "client_onboarding", "text": "Zbierz dokumenty do onboardingu klienta, sprawdź strukturę właścicielską i źródło majątku." },
+    { "topic": "client_onboarding", "text": "What evidence is still missing from this new business customer's KYC review?" },
+    { "topic": "client_onboarding", "text": "Zweryfikuj akta należytej staranności klienta i przygotuj listę braków bez zatwierdzania wniosku." },
+    { "topic": "client_onboarding", "text": "Collect the incorporation papers and verify the company's beneficial owners for onboarding." },
+    { "topic": "confidential_deal", "text": "Przeanalizuj niepubliczne materiały dotyczące przejęcia i oszacuj wartość celu." },
+    { "topic": "confidential_deal", "text": "Summarize the merger diligence findings and confidential terms for the deal team." },
+    { "topic": "confidential_deal", "text": "Porównaj ofertę zakupu z prognozami spółki docelowej i przygotuj poufną rekomendację." },
+    { "topic": "confidential_deal", "text": "Review the undisclosed acquisition documents and calculate an indicative purchase price." },
+    { "topic": "unrelated", "text": "Jakie są najciekawsze szlaki piesze w Tatrach dla początkujących?" },
+    { "topic": "unrelated", "text": "Give me a simple vegetarian recipe for lentil soup." },
+    { "topic": "unrelated", "text": "Opisz różnice między gitarą akustyczną i klasyczną." },
+    { "topic": "unrelated", "text": "How do I remove coffee stains from a cotton shirt?" }
+  ]
+}

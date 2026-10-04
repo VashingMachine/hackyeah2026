@@ -1,7 +1,7 @@
 import { lstatSync, statSync } from 'node:fs';
 import { extname } from 'node:path';
 import type { EffectiveScope } from '../config/effective.ts';
-import { checkSymlinks, isWithin, matchesAnyBasename } from '../util/paths.ts';
+import { checkSymlinks, isWithin, matchesAnyBasename, realOrSelf } from '../util/paths.ts';
 import type { Check } from './network.ts';
 
 const ok: Check = { ok: true };
@@ -25,7 +25,9 @@ export function checkFilePath(abs: string, op: FileOp, scope: EffectiveScope['fi
   if (denied) return fail('PROTECTED_FILE', 'This file is protected by the secrets policy.');
 
   if (roots === undefined || roots.length === 0) return fail('PATH_OUTSIDE_WORKSPACE', 'No directory is allowed for this operation.');
-  const root = roots.find((r) => isWithin(r, abs));
+  // macOS exposes /var and /tmp through trusted OS aliases. Pi reports the physical cwd.
+  // Resolve the configured root only; symlinks below that anchor still get rejected.
+  const root = roots.flatMap(r => [r, realOrSelf(r)]).find((r) => isWithin(r, abs));
   if (!root) return fail('PATH_OUTSIDE_WORKSPACE', 'The path is outside the directories allowed for this session.');
 
   if (scope.reject_symlinks) {
@@ -52,7 +54,7 @@ export function checkFilePath(abs: string, op: FileOp, scope: EffectiveScope['fi
   let needsApproval = false;
   if (op === 'write' && existing) {
     try {
-      if (lstatSync(abs).isFile()) needsApproval = scope.require_approval_roots.some((r) => isWithin(r, abs));
+      if (lstatSync(abs).isFile()) needsApproval = scope.require_approval_roots.some((r) => isWithin(r, abs) || isWithin(realOrSelf(r), abs));
     } catch {
       /* treated as non-existing */
     }

@@ -1,0 +1,5 @@
+
+> blackwall@0.1.0 test
+> vitest run --exclude 'test/live/**' --exclude 'test/e2e/**' --reporter=json --outputFile=reports/git-integration-unit.json
+
+JSON report written to /Users/dkwiatkowski/projects/hackyeah2026/blackwall/reports/git-integration-unit.json

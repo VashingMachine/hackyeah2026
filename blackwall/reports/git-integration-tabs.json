@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-10-04T07:34:50.761Z",
+  "scope": "Read-only smoke on the two-user demo; no policy publications or provider calls.",
+  "checks": [
+    "English dashboard language",
+    "sessions tab renders and loads data",
+    "overview tab renders and loads data",
+    "events tab renders and loads data",
+    "policies tab renders and loads data"
+  ],
+  "errors": [],
+  "passed": 5,
+  "total": 5
+}

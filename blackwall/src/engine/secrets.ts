@@ -40,12 +40,14 @@ function ibanValid(raw: string): boolean {
 
 const DETECTORS: Detector[] = [
   { kind: 'secret', type: 'PRIVATE_KEY', re: /-----BEGIN (?:RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY(?: BLOCK)?-----[\s\S]*?(?:-----END [A-Z ]*PRIVATE KEY(?: BLOCK)?-----|$)/g },
-  { kind: 'secret', type: 'AWS_ACCESS_KEY', re: /\b(?:AKIA|ASIA)[0-9A-Z]{16}\b/g },
-  { kind: 'secret', type: 'ANTHROPIC_KEY', re: /\bsk-ant-[A-Za-z0-9_-]{20,}\b/g },
-  { kind: 'secret', type: 'OPENAI_KEY', re: /\bsk-(?:proj-)?[A-Za-z0-9_-]{32,}\b/g },
-  { kind: 'secret', type: 'GITHUB_TOKEN', re: /\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{30,}\b|\bgithub_pat_[A-Za-z0-9_]{50,}\b/g },
-  { kind: 'secret', type: 'SLACK_TOKEN', re: /\bxox[abprs]-[A-Za-z0-9-]{10,}\b/g },
-  { kind: 'secret', type: 'JWT', re: /\beyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b/g },
+  // Serialized JSON can place an escaped newline immediately before a key ("\\nAKIA...").
+  // Its literal 'n' is a word character, so a leading word boundary would miss the secret.
+  { kind: 'secret', type: 'AWS_ACCESS_KEY', re: /(?:AKIA|ASIA)[0-9A-Z]{16}/g },
+  { kind: 'secret', type: 'ANTHROPIC_KEY', re: /sk-ant-[A-Za-z0-9_-]{20,}/g },
+  { kind: 'secret', type: 'OPENAI_KEY', re: /sk-(?:proj-)?[A-Za-z0-9_-]{32,}/g },
+  { kind: 'secret', type: 'GITHUB_TOKEN', re: /(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{50,}/g },
+  { kind: 'secret', type: 'SLACK_TOKEN', re: /xox[abprs]-[A-Za-z0-9-]{10,}/g },
+  { kind: 'secret', type: 'JWT', re: /eyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/g },
   { kind: 'secret', type: 'API_KEY_ASSIGNMENT', re: /\b(?:api[_-]?key|secret|passwd|password|token)\b["']?\s*[:=]\s*["']?[A-Za-z0-9_\-/+=]{12,}["']?/gi },
   { kind: 'pii', type: 'IBAN', re: /\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){3,7}(?:\s?[A-Z0-9]{1,4})?\b/g, validate: ibanValid },
   { kind: 'pii', type: 'PESEL', re: /\b\d{11}\b/g, validate: peselValid },

@@ -1,0 +1,60 @@
+{
+  "all_checks_passed": true,
+  "checks": [
+    {
+      "name": "Initial active configuration loaded in authenticated dashboard",
+      "ok": true,
+      "detail": "policy v1, feed v1; admin API HTTP 200/200."
+    },
+    {
+      "name": "Real Pi read and harmless program completed before publication",
+      "ok": true,
+      "detail": "Pi run took 10s; executor receipts: tool.started:read, tool.started:bash, tool.completed:read, tool.completed:bash."
+    },
+    {
+      "name": "Real Jev evaluated the program operation",
+      "ok": true,
+      "detail": "judge.evaluated receipts=1; sources=real."
+    },
+    {
+      "name": "Real OpenAI gpt-6-luna completed Pi gateway calls",
+      "ok": true,
+      "detail": "model.completed receipts=2; models=gpt-6-luna."
+    },
+    {
+      "name": "Admin UI publishes a profile threshold change",
+      "ok": true,
+      "detail": "standard.min_allow_probability 0.9 → 0.91; active policy v2."
+    },
+    {
+      "name": "Malformed feed is rejected without changing the active feed",
+      "ok": true,
+      "detail": "malformed publication HTTP 400; active feed remains v1."
+    },
+    {
+      "name": "Stale compare-and-swap publication returns HTTP 409",
+      "ok": true,
+      "detail": "stale publication HTTP 409; active versions stay policy v2/feed v1."
+    },
+    {
+      "name": "Admin UI publishes feed v2 while retaining the catalog identity",
+      "ok": true,
+      "detail": "catalog=demo-attacks; active policy v3/feed v2; canary=BW-RUNTIME-CANARY-001."
+    },
+    {
+      "name": "Same active session uses feed v2 on its next decision",
+      "ok": true,
+      "detail": "session=sess_jmG14cbtWqBu; effect=deny; policy v3; matched feed v2."
+    },
+    {
+      "name": "Consume-gated executor stayed idle after the canary denial",
+      "ok": true,
+      "detail": "Harness replay decision=deny; consume HTTP=not called; executor start HTTP=not called; marker exists=false; stdout=\"\"."
+    },
+    {
+      "name": "Audit stores real Jev/OpenAI receipts and both publication events",
+      "ok": true,
+      "detail": "real Jev=1, gpt-6-luna=2, policy.published=true, feed.published=true."
+    }
+  ]
+}

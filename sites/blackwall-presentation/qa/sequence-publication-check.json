@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-10-04T06:58:17.497583+00:00",
+  "status": "PASS; published",
+  "project_id": "appgprj_6ac0e7f351c48191b1f94d385c8b4d66",
+  "baseline_version": 6,
+  "baseline_commit": "3680cacf7afc3905253df7eb0ae84ddf548f47d7",
+  "diagram_type": "sequence",
+  "participants": 10,
+  "scenarios": 8,
+  "steps": 48,
+  "messages": 114,
+  "source_hashes_checked": 18,
+  "source_line_references_checked": 56,
+  "process_flow_sha256": "78e0d5bced49d852469e2966c335a7e796391f631be12d9ec91fde0a1c8d4a87",
+  "qa": {
+    "sequence_browser_checks": 126,
+    "site_regression_checks": 31,
+    "policy_links": 69,
+    "semantic_review": "PASS",
+    "credential_matches": 0,
+    "html_copies_identical": true,
+    "desktop_visual_review": "PASS",
+    "mobile_visual_review": "PASS"
+  },
+  "source_file_sha256": {
+    "README.md": "d4d7d8de335d372a25c9fdc1962793865842e9f01811978964a8ae9b702bc38d",
+    "dist/index.html": "2b90e847d403d5183064290d7607d9998f70c67c4482848dfc190b14ececa77d",
+    "dist/presentation.html": "2b90e847d403d5183064290d7607d9998f70c67c4482848dfc190b14ececa77d",
+    "dist/presentation.css": "8938f7c947feb3d6e14c5f46f1246460a5c857d56b32e9c7e9235e84ebd00158",
+    "dist/presentation.js": "dba47c61feab5a29c34d0dece14805fae7f0b51a7527dfdaa787dddfc6d56585",
+    "dist/process-diagram.js": "a3cedb118f22819e60199eb7dabcfd055a1c8601d1c9d199b1f2ec7d2a68a54f",
+    "dist/assets/process-flow.json": "78e0d5bced49d852469e2966c335a7e796391f631be12d9ec91fde0a1c8d4a87",
+    ".openai/hosting.json": "adc54284fb9f125492250d38aaa7624d2a17e9bf5c8a563bbca971c20edd4437"
+  },
+  "unchanged_from_version6": {
+    "dist/assets/blackwall-demo.pptx": "741bc3b7aadf75a0451a039970ac69a336a6ba516cabd88e41db04a754b4af66",
+    "dist/assets/evidence.json": "5f2b2b83b2db27ae797be8418ce2d40d53fcacd1913c18e123e96993ba30b0ab",
+    "dist/policy-explorer.js": "b8437d5b17648a881ae002cfd093ab1d65a4858bfa2c999a45191a42c297ee00",
+    "dist/assets/policy-guide.json": "cb0ab01c23c4523d32afa61ea7f1ef6783e63bd23ff2300e3b489957a9d37f3e",
+    "dist/assets/session-contexts.json": "d07ac0d7064dca90082a8489f2d289db5c5ccac5245c51ce4e2d08357fa6c5ae"
+  },
+  "reports": [
+    "qa/process-qa.json",
+    "qa/sequence-semantics-audit.json",
+    "qa/sequence-policy-links.json",
+    "qa/browser-qa.json"
+  ],
+  "publication": {
+    "project_id": "appgprj_6ac0e7f351c48191b1f94d385c8b4d66",
+    "version_id": "appgprj_6ac0e7f351c48191b1f94d385c8b4d66~appgver_810a858b7ec081918e1d6b8edbf2bf24",
+    "version_number": 7,
+    "deployment_id": "appgdep_6ac1f9307ab88191a25df2b7de58c6c2",
+    "status": "succeeded",
+    "url": "https://blackwall-hackyeah-2026.dariusz.chatgpt.site",
+    "commit_sha": "e267ac61ca59548022dfe820b338958402781b27",
+    "updated_at": "2026-10-04T06:59:11.650231+00:00",
+    "archive_hash": "sha256:5d649e9e85e4c2a36edbfc34d42e8b25f5e53642397f544f576f271f7273b0ab",
+    "qa": {
+      "diagram_type": "sequence",
+      "participants": 10,
+      "scenarios": 8,
+      "steps": 48,
+      "messages": 114,
+      "sequence_browser_checks": 126,
+      "site_regression_checks": 31,
+      "policy_links_checked": 69,
+      "semantic_review": "PASS",
+      "source_hashes_checked": 18,
+      "source_line_references_checked": 56,
+      "credential_matches": 0,
+      "viewports": [
+        "1440x1000",
+        "390x844"
+      ],
+      "deck_revision": "final-v4",
+      "reports": [
+        "qa/process-qa.json",
+        "qa/sequence-semantics-audit.json",
+        "qa/sequence-policy-links.json",
+        "qa/browser-qa.json",
+        "qa/sequence-publication-check.json"
+      ],
+      "archive_files_matching_source": 38
+    },
+    "local_archive_sha256": "50844c0931f2f3f395023eaa701878ddd3e8ca6c1f6c116db684e8fbfad7ca96"
+  },
+  "archive_provenance": {
+    "source_commit_matches_saved_version": true,
+    "files_matching_committed_source": 38,
+    "local_archive_sha256": "50844c0931f2f3f395023eaa701878ddd3e8ca6c1f6c116db684e8fbfad7ca96",
+    "saved_archive_content_hash": "sha256:5d649e9e85e4c2a36edbfc34d42e8b25f5e53642397f544f576f271f7273b0ab"
+  }
+}

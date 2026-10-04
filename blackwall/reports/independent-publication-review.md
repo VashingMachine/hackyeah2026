@@ -1,0 +1,27 @@
+# Independent publication and feed review
+
+**Result:** I found no remaining material correctness or security blocker in the reviewed runtime publication and threat-feed changes. The earlier reproduced defects have regression coverage and are fixed in the current code. The runtime-controls demonstration is still pending, so the implementation review does not by itself complete the requested demonstration evidence.
+
+This review was read-only except for this report. I made no provider or Sites calls. I reran local tests and an isolated runtime reproduction; the saved live/evaluation reports were inspected as evidence, not rerun.
+
+## Previously reproduced defects
+
+**Reasoning continuity across policy replacement.** The earlier P1 was reproducible: OpenAI encrypted reasoning was held in a `WeakMap` keyed by `Core`, while successful publication swaps in a new `Core`; the next request then lost the session's opaque reasoning item. The current cache is keyed by the shared `Store` and session ID ([chat.ts](/Users/dkwiatkowski/projects/hackyeah2026/blackwall/src/gateway/chat.ts:79)). The regression test submits a tool call, publishes a policy, then verifies the next provider input still contains the encrypted reasoning item before the prior function call ([runtime-publication.test.ts](/Users/dkwiatkowski/projects/hackyeah2026/blackwall/test/unit/runtime-publication.test.ts:272)). This closes the reproduced cache-loss failure for the shared-store publication path.
+
+**Catastrophic regex backtracking.** The old feed path accepted the 501-character pattern `'a*'.repeat(250) + 'z'` as a native JavaScript regex. In the earlier reproduction, matching a short run of `a` followed by nonmatching text exceeded 500 ms in an isolated worker. Current feed patterns are constructed only as RE2 expressions (`re2-wasm` 1.0.2); there is no native-regex fallback. The bundled `torch.load` lookahead rule is handled by a RE2 prefix scan and a bounded safe-option check, while arbitrary lookahead patterns are rejected ([feed.ts](/Users/dkwiatkowski/projects/hackyeah2026/blackwall/src/engine/feed.ts:62)).
+
+I reran the 18 feed-publication unit tests; all passed. I also exercised the actual `ThreatFeed` constructor and `match()` with the formerly catastrophic pattern and a 200,041-character input: it returned no match in 7.32 ms. A second direct check confirmed that a safe `torch.load(..., weights_only=True)` call does not mask a following unsafe call, and that a safe-only call remains unflagged. This addresses the original ReDoS reproduction and the bundled-rule multi-call edge case.
+
+## Publication and persistence checks
+
+The publication gate queues writers, prevents new readers while a publication is pending, waits for active request leases to drain, and releases the barrier in `finally` ([publication-gate.ts](/Users/dkwiatkowski/projects/hackyeah2026/blackwall/src/server/publication-gate.ts:1)). HTTP leases are released on normal responses and errors ([app.ts](/Users/dkwiatkowski/projects/hackyeah2026/blackwall/src/server/app.ts:51)). Policy/feed candidates are validated and initialized before entering the gate; publication then rechecks expected versions, persists the candidate, and swaps the active core ([app.ts](/Users/dkwiatkowski/projects/hackyeah2026/blackwall/src/server/app.ts:227)).
+
+Persistence stores controls and feed without credentials, keyed by the original configuration fingerprint. Restarting with the same base restores the last publication; a different base does not inherit that overlay ([build.ts](/Users/dkwiatkowski/projects/hackyeah2026/blackwall/src/server/build.ts:26)). SQLite records the configuration and invalidates pending approvals, unused execution grants, and open reviews in one transaction; sessions waiting on approval/review become blocked while terminated sessions are not revived ([store.ts](/Users/dkwiatkowski/projects/hackyeah2026/blackwall/src/store/store.ts:224)).
+
+The 10 runtime-publication unit tests cover active-session decisions after a policy edit, credential-free controls, unauthorized/invalid/stale changes, feed version checks, restart restoration, failed detector initialization rollback, draining an in-flight chat and rechecking it under the new policy, complete catalog validation, invalidation behavior, nested patch semantics, and reasoning continuity. I additionally checked two sequential publications followed by rebuilding from the same base (latest version restored) and rebuilding from a changed base (old runtime overlay not inherited).
+
+Saved verification evidence reports 143/143 unit tests, 33/33 live tests, and 12/12 Pi end-to-end tests passed. The saved real-provider evaluation identifies Luna 6 Low, OpenAI `text-embedding-3-small`, and Jev; it reports 34 supervision cases with 0/15 false allows and 0/19 false terminations, plus typed tool-enforcement and shell-review cases. The evaluation includes three uncertain shell cases, so its evidence supports the tested scenarios rather than universal model reliability.
+
+## Remaining evidence gap
+
+The requested runtime-controls demonstration remains pending. The code and local tests show that an authenticated administrator can change controls and that the next decision uses the published version, but the final demo evidence should still show the requested operator flow end to end. I found no code defect in the reviewed gate or feed paths that blocks that demonstration.

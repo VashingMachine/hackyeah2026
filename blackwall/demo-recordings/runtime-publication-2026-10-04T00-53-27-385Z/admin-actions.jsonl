@@ -1,0 +1,4 @@
+{"ts":"2026-10-04T00:53:39.902Z","action":"Authenticated dashboard policy editor published standard.min_allow_probability update.","status":200,"detail":"version 1 → 2"}
+{"ts":"2026-10-04T00:53:39.993Z","action":"Authenticated admin API submitted malformed feed; publication was rejected.","status":400,"detail":"active feed remains v1"}
+{"ts":"2026-10-04T00:53:40.014Z","action":"Authenticated admin API retried with stale policy/feed versions.","status":409,"detail":"active versions remain policy v2/feed v1"}
+{"ts":"2026-10-04T00:53:40.550Z","action":"Authenticated dashboard feed editor published the unique runtime canary signature.","status":200,"detail":"policy v3, feed v2"}

@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    {
+      "id": "model-safe",
+      "messages": [
+        {"step":0,"from":"pi","to":"blackwall","label":"POST /v1/chat/completions","kind":"request"},
+        {"step":1,"from":"blackwall","to":"blackwall","label":"Uwierzytelnij sesję, sprawdź alias i przeskanuj całą strukturę promptu pod kątem sekretów","kind":"self"},
+        {"step":1,"from":"blackwall","to":"embeddings","label":"Wyślij bieżące zdarzenie do detektora tematów","kind":"request","condition":"topic_supervision.enabled"},
+        {"step":2,"from":"embeddings","to":"blackwall","label":"Zwróć kandydatów i wyniki podobieństwa","kind":"response","condition":"topic_supervision.enabled"},
+        {"step":3,"from":"blackwall","to":"guardian","label":"Oceń bieżące zdarzenie i aktywne klauzule","kind":"request","condition":"Temat przypisany lub aktywny kandydat"},
+        {"step":3,"from":"guardian","to":"blackwall","label":"Zwróć no_identified_violation / violation / uncertain","kind":"response","condition":"Guardian został wywołany"},
+        {"step":4,"from":"blackwall","to":"llm","label":"Wyślij sprawdzony prompt do modelu agenta","kind":"request"},
+        {"step":5,"from":"llm","to":"blackwall","label":"Zwróć buforowaną odpowiedź modelu","kind":"response"},
+        {"step":6,"from":"blackwall","to":"blackwall","label":"Sprawdź tekst model_output przez DLP i nadzór bieżącego zdarzenia","kind":"self"},
+        {"step":6,"from":"blackwall","to":"embeddings","label":"Wyślij zdarzenie model_output do detektora","kind":"request","condition":"Topic supervision włączony"},
+        {"step":6,"from":"embeddings","to":"blackwall","label":"Zwróć kandydatów dla model_output","kind":"response","condition":"Topic supervision włączony"},
+        {"step":6,"from":"blackwall","to":"guardian","label":"Oceń bieżące model_output","kind":"request","condition":"Temat przypisany lub aktywny kandydat"},
+        {"step":6,"from":"guardian","to":"blackwall","label":"Zwróć werdykt nadzoru","kind":"response","condition":"Guardian został wywołany"},
+        {"step":6,"from":"blackwall","to":"pi","label":"Zwróć odpowiedź po pomyślnej inspekcji","kind":"response"},
+        {"step":7,"from":"pi","to":"pi","label":"Pokaż sprawdzoną odpowiedź","kind":"self"}
+      ]
+    },
+    {
+      "id": "tool-allow",
+      "messages": [
+        {"step":0,"from":"llm","to":"blackwall","label":"Zwróć odpowiedź zawierającą tool_call","kind":"response"},
+        {"step":0,"from":"blackwall","to":"pi","label":"Przekaż sprawdzony tool_call w odpowiedzi czatu","kind":"response"},
+        {"step":1,"from":"pi","to":"blackwall","label":"POST /v1/tool-decisions","kind":"request"},
+        {"step":2,"from":"blackwall","to":"blackwall","label":"Sprawdź stan sesji, budżet, allowlistę i reguły deterministyczne","kind":"self"},
+        {"step":2,"from":"blackwall","to":"blackwall","label":"Sprawdź sekrety i threat feed","kind":"self"},
+        {"step":2,"from":"blackwall","to":"embeddings","label":"Oceń bieżące zdarzenie argumentów narzędzia","kind":"request","condition":"Topic supervision włączony"},
+        {"step":2,"from":"embeddings","to":"blackwall","label":"Zwróć kandydatów tematu","kind":"response","condition":"Topic supervision włączony"},
+        {"step":2,"from":"blackwall","to":"guardian","label":"Oceń bieżące zdarzenie argumentów","kind":"request","condition":"Temat przypisany lub aktywny kandydat"},
+        {"step":2,"from":"guardian","to":"blackwall","label":"Zwróć werdykt dla zdarzenia","kind":"response","condition":"Guardian został wywołany"},
+        {"step":2,"from":"blackwall","to":"jev","label":"Oceń zgodność proponowanej operacji","kind":"request","condition":"Bash zawsze; inne narzędzia według profiles.*.semantic_evaluate"},
+        {"step":2,"from":"jev","to":"blackwall","label":"Zwróć allow / deny / uncertain","kind":"response","condition":"Jev został wywołany"},
+        {"step":2,"from":"blackwall","to":"blackwall","label":"Złóż decyzję i utwórz grant available przy allow","kind":"self"},
+        {"step":3,"from":"blackwall","to":"pi","label":"Zwróć allow i metadane grantu","kind":"response"},
+        {"step":4,"from":"pi","to":"blackwall","label":"POST /v1/tool-decisions/:id/consume z tymi samymi argumentami","kind":"request"},
+        {"step":4,"from":"blackwall","to":"pi","label":"Potwierdź claim grantu","kind":"response","condition":"Kontrole consume przeszły"},
+        {"step":5,"from":"pi","to":"blackwall","label":"POST /v1/execution-events: phase=started","kind":"request"},
+        {"step":5,"from":"blackwall","to":"pi","label":"Potwierdź zapis tool.started","kind":"response"},
+        {"step":6,"from":"pi","to":"executor","label":"Uruchom lokalne narzędzie Pi","kind":"request"},
+        {"step":7,"from":"executor","to":"pi","label":"Zwróć lokalny wynik do wtyczki","kind":"response"},
+        {"step":8,"from":"pi","to":"blackwall","label":"POST /v1/content/inspect z treścią i structured/details","kind":"request"},
+        {"step":9,"from":"blackwall","to":"pi","label":"Zwróć allow / redact / block","kind":"response"},
+        {"step":10,"from":"pi","to":"blackwall","label":"POST /v1/execution-events: phase=completed albo failed","kind":"request"},
+        {"step":10,"from":"blackwall","to":"pi","label":"Potwierdź receipt końcowy","kind":"response"},
+        {"step":11,"from":"pi","to":"pi","label":"Dołącz tylko sprawdzony wynik do dalszego kontekstu rozmowy","kind":"self"}
+      ]
+    },
+    {
+      "id": "tool-approval",
+      "messages": [
+        {"step":0,"from":"pi","to":"blackwall","label":"POST /v1/tool-decisions","kind":"request"},
+        {"step":1,"from":"blackwall","to":"pi","label":"Zwróć require_approval i dane jednorazowej zgody","kind":"response","condition":"Wymagane kody są kwalifikowane przez politykę"},
+        {"step":2,"from":"pi","to":"approval","label":"Pokaż użytkownikowi potwierdzenie operacji w UI Pi","kind":"request","condition":"Pi ma dostępne UI; bez UI plugin blokuje"},
+        {"step":2,"from":"approval","to":"pi","label":"Zwróć approve albo reject","kind":"response"},
+        {"step":2,"from":"pi","to":"blackwall","label":"POST /v1/approvals/:id/resolve","kind":"request"},
+        {"step":3,"from":"blackwall","to":"pi","label":"Zwróć ponownie wyliczoną decyzję i nowy grant przy allow","kind":"response"},
+        {"step":4,"from":"pi","to":"blackwall","label":"POST /v1/tool-decisions/:id/consume","kind":"request"},
+        {"step":4,"from":"blackwall","to":"pi","label":"Potwierdź claim grantu","kind":"response"},
+        {"step":4,"from":"pi","to":"blackwall","label":"POST /v1/execution-events: phase=started","kind":"request"},
+        {"step":4,"from":"blackwall","to":"pi","label":"Potwierdź tool.started przed uruchomieniem","kind":"response"},
+        {"step":5,"from":"pi","to":"executor","label":"Uruchom lokalne narzędzie","kind":"request"},
+        {"step":5,"from":"executor","to":"pi","label":"Zwróć wynik do custom executora","kind":"response"},
+        {"step":5,"from":"pi","to":"blackwall","label":"POST /v1/content/inspect","kind":"request"},
+        {"step":5,"from":"blackwall","to":"pi","label":"Zwróć allow / redact / block","kind":"response"},
+        {"step":5,"from":"pi","to":"blackwall","label":"Po inspekcji zgłoś phase=completed albo failed","kind":"request"},
+        {"step":5,"from":"blackwall","to":"pi","label":"Potwierdź receipt końcowy","kind":"response"}
+      ]
+    },
+    {
+      "id": "hard-deny",
+      "messages": [
+        {"step":0,"from":"pi","to":"blackwall","label":"POST /v1/tool-decisions","kind":"request"},
+        {"step":1,"from":"blackwall","to":"blackwall","label":"Odrzuć operację na deterministycznej kontroli","kind":"self","condition":"Naruszono twardą regułę zakresu, stanu, budżetu lub narzędzia"},
+        {"step":1,"from":"blackwall","to":"pi","label":"Zwróć deny bez grantu wykonania","kind":"response"},
+        {"step":2,"from":"pi","to":"pi","label":"Zablokuj tool_call; nie uruchamiaj executora","kind":"self"},
+        {"step":3,"from":"blackwall","to":"audit","label":"Zapisz decision.denied i kod przyczyny","kind":"audit"}
+      ]
+    },
+    {
+      "id": "topic-violation",
+      "messages": [
+        {"step":0,"from":"blackwall","to":"embeddings","label":"Oceń bieżące zdarzenie sesji","kind":"request","condition":"Topic supervision włączony"},
+        {"step":1,"from":"embeddings","to":"blackwall","label":"Zwróć dopasowania kandydatów; to nie jest jeszcze violation","kind":"response"},
+        {"step":2,"from":"blackwall","to":"guardian","label":"Przekaż bieżące zdarzenie, aktywne tematy i klauzule","kind":"request","condition":"Temat przypisany albo kandydat aktywny"},
+        {"step":3,"from":"guardian","to":"blackwall","label":"Zwróć violation z weryfikowalnym dowodem","kind":"response"},
+        {"step":4,"from":"blackwall","to":"blackwall","label":"Zakończ sesję i zablokuj dalszy ruch","kind":"self"},
+        {"step":4,"from":"blackwall","to":"audit","label":"Zapisz guardian.reviewed i session.terminated","kind":"audit"}
+      ]
+    },
+    {
+      "id": "topic-uncertain",
+      "messages": [
+        {"step":0,"from":"blackwall","to":"guardian","label":"Przekaż bieżące zdarzenie i zaufaną politykę","kind":"request","condition":"Temat przypisany albo kandydat aktywny"},
+        {"step":1,"from":"guardian","to":"blackwall","label":"Zwróć uncertain","kind":"response"},
+        {"step":2,"from":"blackwall","to":"blackwall","label":"Ustaw sesję reviewing i utwórz topic review","kind":"self"},
+        {"step":2,"from":"blackwall","to":"audit","label":"Zapisz session.reviewing i otwarte review","kind":"audit"},
+        {"step":2,"from":"approval","to":"blackwall","label":"GET /v1/admin/stream","kind":"request"},
+        {"step":2,"from":"blackwall","to":"approval","label":"Udostępnij administratorowi zdarzenie i review","kind":"response"},
+        {"step":3,"from":"approval","to":"blackwall","label":"POST /v1/admin/topic-reviews/:id/resolve z no_violation albo violation","kind":"request"},
+        {"step":3,"from":"blackwall","to":"approval","label":"Zwróć zaktualizowany status sesji","kind":"response"}
+      ]
+    },
+    {
+      "id": "publication",
+      "messages": [
+        {"step":0,"from":"policies","to":"blackwall","label":"POST /v1/admin/policies z expected_version i changes","kind":"request"},
+        {"step":1,"from":"blackwall","to":"blackwall","label":"Waliduj schemat i semantykę; przygotuj Core i detector kandydata","kind":"self"},
+        {"step":2,"from":"blackwall","to":"blackwall","label":"PublicationGate czeka na lease aktywnych żądań HTTP","kind":"self"},
+        {"step":2,"from":"blackwall","to":"audit","label":"Transakcja zapisuje konfigurację, unieważnia zgody/granty available i zapisuje policy.published","kind":"audit"},
+        {"step":3,"from":"blackwall","to":"blackwall","label":"Podmień aktywny Core; claimed lokalny executor może dokończyć","kind":"self"},
+        {"step":3,"from":"blackwall","to":"blackwall","label":"Kolejne kontrole korzystają z nowej wersji","kind":"policy"},
+        {"step":4,"from":"blackwall","to":"policies","label":"Zwróć policy_version i feed_version","kind":"response"}
+      ]
+    },
+    {
+      "id": "jev-deny",
+      "messages": [
+        {"step":0,"from":"pi","to":"blackwall","label":"POST /v1/tool-decisions","kind":"request"},
+        {"step":1,"from":"blackwall","to":"blackwall","label":"Sprawdź stan, budżet, narzędzie, deterministic gate, sekrety i feed","kind":"self"},
+        {"step":1,"from":"blackwall","to":"embeddings","label":"Oceń bieżące zdarzenie argumentów","kind":"request","condition":"Topic supervision włączony"},
+        {"step":1,"from":"embeddings","to":"blackwall","label":"Zwróć kandydatów tematu","kind":"response","condition":"Topic supervision włączony"},
+        {"step":1,"from":"blackwall","to":"guardian","label":"Oceń bieżące zdarzenie","kind":"request","condition":"Temat przypisany albo kandydat aktywny"},
+        {"step":1,"from":"guardian","to":"blackwall","label":"Zwróć werdykt Guardian","kind":"response","condition":"Guardian został wywołany"},
+        {"step":1,"from":"blackwall","to":"jev","label":"Oceń propozycję względem zaufanego zadania","kind":"request","condition":"Bash zawsze; pozostałe według profilu"},
+        {"step":2,"from":"jev","to":"blackwall","label":"Zwróć deny z kodami powodów","kind":"response"},
+        {"step":2,"from":"blackwall","to":"audit","label":"Zapisz judge.evaluated i decision.denied","kind":"audit"},
+        {"step":3,"from":"blackwall","to":"pi","label":"Zwróć deny bez execution grant","kind":"response"},
+        {"step":3,"from":"pi","to":"pi","label":"Nie uruchamiaj executora","kind":"self"}
+      ]
+    }
+  ]
+}

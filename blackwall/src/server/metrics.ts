@@ -18,7 +18,7 @@ export function metrics(core: Core) {
   const reasons = all<{ reason_codes: string; n: number }>(`SELECT reason_codes, COUNT(*) n FROM events WHERE effect = 'deny' AND reason_codes IS NOT NULL GROUP BY reason_codes ORDER BY n DESC LIMIT 15`);
   const sessions = all<{ status: string; n: number }>(`SELECT status, COUNT(*) n FROM sessions GROUP BY status`);
   const spend = one<{ tokens: number; cost: number; reserved: number }>(`SELECT COALESCE(SUM(tokens_spent),0) tokens, COALESCE(SUM(cost_micros),0) cost, COALESCE(SUM(tokens_reserved),0) reserved FROM sessions`);
-  const counts = all<{ type: string; n: number }>(`SELECT type, COUNT(*) n FROM events WHERE type IN ('content.redacted','content.blocked','session.terminated','session.reviewing','topic.candidate_detected','topic.confirmed','topic.dismissed','guardian.reviewed','guardian.unavailable','judge.evaluated','model.completed','model.denied','budget.denied','approval.requested','approval.approved','approval.rejected','approval.expired','tool.started','tool.completed','tool.failed') GROUP BY type`);
+  const counts = all<{ type: string; n: number }>(`SELECT type, COUNT(*) n FROM events WHERE type IN ('content.redacted','content.blocked','session.terminated','session.reviewing','topic.assigned','topic.candidate_detected','topic.confirmed','topic.dismissed','guardian.reviewed','guardian.unavailable','judge.evaluated','model.completed','model.denied','budget.denied','approval.requested','approval.approved','approval.rejected','approval.expired','tool.started','tool.completed','tool.failed') GROUP BY type`);
   const feed = one<{ n: number }>(`SELECT COUNT(*) n FROM events WHERE reason_codes LIKE '%THREAT_FEED_MATCH%'`);
 
   const dec = all<{ data: string }>(`SELECT data FROM events WHERE type IN ('decision.allowed','decision.denied','approval.requested') ORDER BY id DESC LIMIT 2000`).map((r) => JSON.parse(r.data) as { timings_ms?: Record<string, number> });
@@ -26,7 +26,7 @@ export function metrics(core: Core) {
   const judge = all<{ data: string }>(`SELECT data FROM events WHERE type='judge.evaluated' ORDER BY id DESC LIMIT 1000`).map((r) => (JSON.parse(r.data) as { latency_ms: number }).latency_ms);
   const guardian = all<{ data: string }>(`SELECT data FROM events WHERE type='guardian.reviewed' ORDER BY id DESC LIMIT 1000`).map((r) => (JSON.parse(r.data) as { latency_ms: number }).latency_ms);
   const provider = all<{ data: string }>(`SELECT data FROM events WHERE type='model.completed' ORDER BY id DESC LIMIT 1000`).map((r) => (JSON.parse(r.data) as { provider_ms: number }).provider_ms);
-  const detect = all<{ data: string }>(`SELECT data FROM events WHERE type='decision.allowed' OR type='decision.denied' ORDER BY id DESC LIMIT 1000`).map((r) => (JSON.parse(r.data) as { timings_ms?: Record<string, number> }).timings_ms?.supervision_detect).filter((x): x is number => typeof x === 'number');
+  const detect = all<{ data: string }>(`SELECT data FROM events WHERE type='topic.checked' ORDER BY id DESC LIMIT 2000`).map((r) => (JSON.parse(r.data) as { latency_ms: number }).latency_ms);
 
   const map = (rows: { type: string; n: number }[]) => Object.fromEntries(rows.map((r) => [r.type, r.n]));
   return {

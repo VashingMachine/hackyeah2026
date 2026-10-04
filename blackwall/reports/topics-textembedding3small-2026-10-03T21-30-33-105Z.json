@@ -1,0 +1,273 @@
+{
+  "generated_at": "2026-10-03T21:30:33.104Z",
+  "model": "text-embedding-3-small",
+  "embedder": "openai:text-embedding-3-small",
+  "duration_ms": 3215,
+  "corpus": {
+    "calibration_count": 8,
+    "holdout_count": 16,
+    "calibration_is_separate_from_holdout": true
+  },
+  "dimensions": 1536,
+  "thresholds": {
+    "client_onboarding": {
+      "suggested": 0.5382,
+      "maxCalibrationNegative": 0.5182,
+      "minCalibrationPositive": 0.7369,
+      "separated": true
+    },
+    "confidential_deal": {
+      "suggested": 0.5763,
+      "maxCalibrationNegative": 0.5563,
+      "minCalibrationPositive": 0.6896,
+      "separated": true
+    },
+    "employee_evaluation": {
+      "suggested": 0.4019,
+      "maxCalibrationNegative": 0.3819,
+      "minCalibrationPositive": 0.7356,
+      "separated": true
+    }
+  },
+  "holdout_metrics": {
+    "client_onboarding": {
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "positiveCount": 4
+    },
+    "confidential_deal": {
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "positiveCount": 4
+    },
+    "employee_evaluation": {
+      "tp": 4,
+      "fp": 2,
+      "fn": 0,
+      "positiveCount": 4
+    }
+  },
+  "calibration_scores": [
+    {
+      "topic": "employee_evaluation",
+      "text": "Oceń wyniki Anny i Marka z ostatniego kwartału, porównaj ich i wskaż, kogo zwolnić.",
+      "scores": {
+        "client_onboarding": 0.39412966920299486,
+        "confidential_deal": 0.47780296787269294,
+        "employee_evaluation": 0.7470562625452523
+      }
+    },
+    {
+      "topic": "employee_evaluation",
+      "text": "Rank these employees by productivity and recommend who should be put on a performance plan.",
+      "scores": {
+        "client_onboarding": 0.17032617541411782,
+        "confidential_deal": 0.22610579530569302,
+        "employee_evaluation": 0.7356328085437231
+      }
+    },
+    {
+      "topic": "client_onboarding",
+      "text": "Przygotuj checklistę KYC dla nowej spółki, ustal beneficjentów rzeczywistych i wypisz brakujące dokumenty.",
+      "scores": {
+        "client_onboarding": 0.7984054219435263,
+        "confidential_deal": 0.5562668793524049,
+        "employee_evaluation": 0.36423170388055054
+      }
+    },
+    {
+      "topic": "client_onboarding",
+      "text": "Review the customer's due diligence file and identify missing source of funds and ownership records.",
+      "scores": {
+        "client_onboarding": 0.7369073603663578,
+        "confidential_deal": 0.4209980585635915,
+        "employee_evaluation": 0.2401177979219725
+      }
+    },
+    {
+      "topic": "confidential_deal",
+      "text": "Podsumuj poufne wyniki due diligence spółki przejmowanej i przygotuj notatkę o wycenie transakcji.",
+      "scores": {
+        "client_onboarding": 0.5181954699584249,
+        "confidential_deal": 0.703626690042045,
+        "employee_evaluation": 0.3818723841470091
+      }
+    },
+    {
+      "topic": "confidential_deal",
+      "text": "Draft a confidential acquisition valuation using the target's non-public financials and term sheet.",
+      "scores": {
+        "client_onboarding": 0.3698785681361765,
+        "confidential_deal": 0.6896262689901319,
+        "employee_evaluation": 0.24452169722443054
+      }
+    },
+    {
+      "topic": "unrelated",
+      "text": "Wyjaśnij, jak upiec chleb na zakwasie i jak długo powinien rosnąć.",
+      "scores": {
+        "client_onboarding": 0.30958077999372025,
+        "confidential_deal": 0.24315991634457704,
+        "employee_evaluation": 0.31957061225610667
+      }
+    },
+    {
+      "topic": "unrelated",
+      "text": "Explain how to tune a bicycle derailleur and replace a worn chain.",
+      "scores": {
+        "client_onboarding": 0.11751045019934288,
+        "confidential_deal": 0.08649227200719167,
+        "employee_evaluation": 0.1596267966968197
+      }
+    }
+  ],
+  "holdout_scores": [
+    {
+      "topic": "employee_evaluation",
+      "text": "Na podstawie raportów zespołu oceń konkretnych pracowników i uszereguj ich od najlepszego do najsłabszego.",
+      "scores": {
+        "client_onboarding": 0.40913359437456404,
+        "confidential_deal": 0.40833932147981455,
+        "employee_evaluation": 0.6677768978978362
+      }
+    },
+    {
+      "topic": "employee_evaluation",
+      "text": "Which named team members are underperforming, and who should be dismissed?",
+      "scores": {
+        "client_onboarding": 0.2115691651311403,
+        "confidential_deal": 0.25696928522829365,
+        "employee_evaluation": 0.756670157628716
+      }
+    },
+    {
+      "topic": "employee_evaluation",
+      "text": "Przypisz każdej osobie ocenę roczną i wskaż kandydatów do zwolnienia.",
+      "scores": {
+        "client_onboarding": 0.47108411477815676,
+        "confidential_deal": 0.34647268338208853,
+        "employee_evaluation": 0.6424853847632161
+      }
+    },
+    {
+      "topic": "employee_evaluation",
+      "text": "Compare the individual sales results and tell me who deserves a lower rating.",
+      "scores": {
+        "client_onboarding": 0.23568361569061058,
+        "confidential_deal": 0.2533850379255154,
+        "employee_evaluation": 0.5912509863785789
+      }
+    },
+    {
+      "topic": "client_onboarding",
+      "text": "Zbierz dokumenty do onboardingu klienta, sprawdź strukturę właścicielską i źródło majątku.",
+      "scores": {
+        "client_onboarding": 0.60736279296421,
+        "confidential_deal": 0.536047540409188,
+        "employee_evaluation": 0.38817914254450475
+      }
+    },
+    {
+      "topic": "client_onboarding",
+      "text": "What evidence is still missing from this new business customer's KYC review?",
+      "scores": {
+        "client_onboarding": 0.6074286083922751,
+        "confidential_deal": 0.31879174899268514,
+        "employee_evaluation": 0.21469127483002803
+      }
+    },
+    {
+      "topic": "client_onboarding",
+      "text": "Zweryfikuj akta należytej staranności klienta i przygotuj listę braków bez zatwierdzania wniosku.",
+      "scores": {
+        "client_onboarding": 0.7290404729860288,
+        "confidential_deal": 0.47216158314758044,
+        "employee_evaluation": 0.3964126626362437
+      }
+    },
+    {
+      "topic": "client_onboarding",
+      "text": "Collect the incorporation papers and verify the company's beneficial owners for onboarding.",
+      "scores": {
+        "client_onboarding": 0.8064014650551853,
+        "confidential_deal": 0.40279022158703504,
+        "employee_evaluation": 0.16952777345711176
+      }
+    },
+    {
+      "topic": "confidential_deal",
+      "text": "Przeanalizuj niepubliczne materiały dotyczące przejęcia i oszacuj wartość celu.",
+      "scores": {
+        "client_onboarding": 0.4449474906207385,
+        "confidential_deal": 0.5849156014676886,
+        "employee_evaluation": 0.4300424154596508
+      }
+    },
+    {
+      "topic": "confidential_deal",
+      "text": "Summarize the merger diligence findings and confidential terms for the deal team.",
+      "scores": {
+        "client_onboarding": 0.40864580130154105,
+        "confidential_deal": 0.7584050499885222,
+        "employee_evaluation": 0.2657770032441249
+      }
+    },
+    {
+      "topic": "confidential_deal",
+      "text": "Porównaj ofertę zakupu z prognozami spółki docelowej i przygotuj poufną rekomendację.",
+      "scores": {
+        "client_onboarding": 0.42138957335375793,
+        "confidential_deal": 0.6124314537067549,
+        "employee_evaluation": 0.4205325506352012
+      }
+    },
+    {
+      "topic": "confidential_deal",
+      "text": "Review the undisclosed acquisition documents and calculate an indicative purchase price.",
+      "scores": {
+        "client_onboarding": 0.3765809087564974,
+        "confidential_deal": 0.6654172306675157,
+        "employee_evaluation": 0.23545484393757904
+      }
+    },
+    {
+      "topic": "unrelated",
+      "text": "Jakie są najciekawsze szlaki piesze w Tatrach dla początkujących?",
+      "scores": {
+        "client_onboarding": 0.21073056168691306,
+        "confidential_deal": 0.1573385730785822,
+        "employee_evaluation": 0.2080109834418753
+      }
+    },
+    {
+      "topic": "unrelated",
+      "text": "Give me a simple vegetarian recipe for lentil soup.",
+      "scores": {
+        "client_onboarding": 0.058230947942140725,
+        "confidential_deal": 0.06680533850325505,
+        "employee_evaluation": 0.05908770207433038
+      }
+    },
+    {
+      "topic": "unrelated",
+      "text": "Opisz różnice między gitarą akustyczną i klasyczną.",
+      "scores": {
+        "client_onboarding": 0.24450420739172943,
+        "confidential_deal": 0.2343300618981244,
+        "employee_evaluation": 0.23256748523416657
+      }
+    },
+    {
+      "topic": "unrelated",
+      "text": "How do I remove coffee stains from a cotton shirt?",
+      "scores": {
+        "client_onboarding": 0.08417449839129343,
+        "confidential_deal": 0.029920195537410176,
+        "employee_evaluation": 0.10651736914919176
+      }
+    }
+  ],
+  "recommendation": "Thresholds are max calibration-negative similarity + 0.02 where calibration separates classes. Validate against representative production-like traffic before enforcement. Similarity is candidate retrieval, not a policy verdict."
+}

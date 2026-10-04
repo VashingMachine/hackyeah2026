@@ -10,7 +10,7 @@ import { StubJudge } from '../../src/judge/jev.ts';
 import type { ToolRequest } from '../../src/types.ts';
 
 describe('network rules', () => {
-  const fx = makeFixture();
+  const fx = makeFixture({ judge: new CountingJudge(), guardian: new StubGuardian() });
   const net = effectiveScope(fx.policy, 'developer-demo').network;
   const check = (url: string, method = 'GET') => {
     const t = parseTarget(url, method);
@@ -50,6 +50,14 @@ describe('network rules', () => {
 });
 
 describe('secret and PII scanner', () => {
+  it('redacts secrets inside serialized JSON after escaped whitespace', () => {
+    for (const prefix of ['\n', '\r', '\t']) {
+      const text = JSON.stringify({ output: prefix + 'AKIAIOSFODNN7EXAMPLE' + '\n' });
+      const r = scanText(text);
+      expect(r.findings.map(f => f.type)).toContain('AWS_ACCESS_KEY');
+      expect(r.redacted).not.toContain('AKIAIOSFODNN7EXAMPLE');
+    }
+  });
   it('finds provider keys, private keys and tokens, and redacts them', () => {
     const text = `a AKIAIOSFODNN7EXAMPLE b -----BEGIN RSA PRIVATE KEY-----\nMIIE\n-----END RSA PRIVATE KEY----- c ghp_${'a'.repeat(36)} d password: "S3cr3tS3cr3tS3cr3t"`;
     const r = scanText(text);

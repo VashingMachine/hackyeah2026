@@ -1,0 +1,66 @@
+{
+  "auditVersion": 1,
+  "artifacts": {
+    "guide": "sites/blackwall-presentation/source/dist/assets/policy-guide.json",
+    "policySchema": "sites/blackwall-presentation/source/dist/assets/policy.schema.json",
+    "publicationSchema": "sites/blackwall-presentation/source/dist/assets/policy-publication.schema.json"
+  },
+  "source": {
+    "policySchema": "blackwall/src/config/schema.ts",
+    "policySchemaSha256": "2fee8075e02d13715f74e0ecba2f99571f5fcc6e9331b59888e1325bd5aba362",
+    "publicationSchema": "blackwall/src/config/publication.ts",
+    "publicationSchemaSha256": "2b2cc3e211bf2a18a3adb05cc81b26ce2275bb335c19a330439cf980e81a8e41",
+    "evidence": "sites/blackwall-presentation/source/dist/assets/evidence.json"
+  },
+  "checks": {
+    "policyLeavesExpected": 116,
+    "policyLeavesCovered": 116,
+    "missingPolicyLeaves": [],
+    "expandedDuplicatePaths": [],
+    "guideFields": 119,
+    "badTypedExamples": [],
+    "publicationExamples": [
+      {
+        "id": "tighten-read-scope",
+        "valid": true
+      },
+      {
+        "id": "set-topic-threshold",
+        "valid": true
+      },
+      {
+        "id": "publish-topic-catalog",
+        "valid": true
+      }
+    ],
+    "allPublicationExamplesValid": true,
+    "evidenceReferenceErrors": [],
+    "guideFieldIdReferenceErrors": [],
+    "policySchemaMatchesFreshZod": true,
+    "publicationSchemaMatchesFreshZod": true,
+    "approvalEligibleReasonCodesExampleType": "object",
+    "approvalEligibleReasonCodesClaimsAllReasons": true,
+    "approvalEligibleReasonCodesStatesNoHardOverride": true,
+    "finalRefinementFailures": []
+  },
+  "hashes": {
+    "downloadedPolicySchema": "e2c1f8bf44beb7e0871ac47d9f229822fd1e7cde8cdbe69a55697562eb00965e",
+    "downloadedPublicationSchema": "75155fca4add5e63635aa00904bff037fb54d49c9e854c6d3d8d888f14d07d2a",
+    "previousPolicySchema": "e2c1f8bf44beb7e0871ac47d9f229822fd1e7cde8cdbe69a55697562eb00965e",
+    "previousPublicationSchema": "75155fca4add5e63635aa00904bff037fb54d49c9e854c6d3d8d888f14d07d2a",
+    "previousSchemaHashesMatch": true,
+    "guide": "cb0ab01c23c4523d32afa61ea7f1ef6783e63bd23ff2300e3b489957a9d37f3e",
+    "sourceDistMatchesContentDir": {
+      "guide": true,
+      "policySchema": true,
+      "publicationSchema": true
+    }
+  },
+  "truthfulness": {
+    "guideSourceReferencesExist": true,
+    "schemaGenerationClaimVerified": true,
+    "policyPathsDerivedFromExportedZodSchema": true,
+    "publicationValidationUsedExportedPolicyPublicationSchema": true,
+    "evidenceIdsCheckedAgainstEvidenceAsset": true
+  }
+}

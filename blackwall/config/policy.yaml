@@ -42,11 +42,13 @@ approvals:
 
 model_aliases:
   demo-agent:
-    provider: anthropic
-    model: claude-haiku-4-5-20251001   # cheaper executor; use claude-sonnet-5-5 for stronger agent behaviour
+    provider: openai
+    model: gpt-6-luna
+    reasoning_effort: low
   demo-guardian:
-    provider: anthropic
-    model: claude-haiku-4-5-20251001
+    provider: openai
+    model: gpt-6-luna
+    reasoning_effort: low
 
 global:
   tools:
@@ -94,41 +96,50 @@ semantic:
 topic_supervision:
   enabled: true
   embedding:
-    provider: local              # local (MiniLM, English, no API key) | openai (needs OPENAI_API_KEY) | lexical (word overlap, fallback only)
-    model: Xenova/all-MiniLM-L6-v2
+    provider: openai             # multilingual OpenAI embeddings; local and lexical are optional
+    model: text-embedding-3-small
   guardian_model_alias: demo-guardian
   chunk_chars: 2000
   overlap_chars: 250
   max_history_events: 12
   on_error: block
-  default_similarity_threshold: 0.28
+  default_similarity_threshold: 0.5
 
 topics:
   client_onboarding:
     description: Customer onboarding / KYC document collection and review
     policy_id: CLIENT_DATA_SCOPE
+    similarity_threshold: 0.5382
     examples:
       - Prepare a KYC draft for the new client and list the missing documents
       - Collect onboarding documents for the company and check beneficial ownership
       - Review the know your customer file for Atlas Capital
       - Customer due diligence checklist and source of funds documents
+      - Przygotuj szkic KYC klienta i wypisz brakujące dokumenty oraz beneficjentów rzeczywistych
+      - Sprawdź pochodzenie środków i dokumentację onboardingu Atlas Capital
   confidential_deal:
     description: Confidential M&A transaction analysis
     policy_id: DEAL_CONFIDENTIALITY
+    similarity_threshold: 0.5763
     examples:
       - Prepare an analysis of the confidential acquisition transaction
       - Draft valuation notes for the merger and the target company
       - Non-public deal documents for the takeover, project codename
       - Summarise the term sheet and due diligence findings for the acquisition
+      - Przygotuj poufną analizę przejęcia spółki i wycenę transakcji Orion
+      - Podsumuj dokumenty due diligence oraz niepubliczne warunki fuzji
   employee_evaluation:
     description: Evaluating individual employees' performance or recommending dismissals
     policy_id: HR_AI_RESTRICTIONS
+    similarity_threshold: 0.4019
     examples:
       - Evaluate the performance of these employees and rank them
       - Who on the team performs worst and should be fired
       - Recommend which employee we should dismiss based on their results
       - Give each person a performance rating and compare them
       - How should managers run development conversations and performance reviews
+      - Oceń wyniki Anny i Piotra, uszereguj pracowników i wskaż kogo zwolnić
+      - Jak menedżerowie powinni prowadzić rozmowy rozwojowe i oceny okresowe
 
 topic_policies:
   CLIENT_DATA_SCOPE:
@@ -149,6 +160,7 @@ topic_policies:
 
 users:
   onboarding-demo:
+    topic_ids: [client_onboarding]
     workdir: ${WORKSPACE}/clients/atlas
     token: demo-token-onboarding
     description: Operations analyst assigned to the Atlas Capital KYC case
@@ -159,6 +171,7 @@ users:
       allow_hosts: [research.example.com]
       allowed_methods: [GET]
   deal-demo:
+    topic_ids: [confidential_deal]
     workdir: ${WORKSPACE}/deals/orion
     token: demo-token-deal
     description: Deal analyst assigned to the Orion transaction
@@ -171,6 +184,7 @@ users:
       allowed_ports: [9911]
       allow_endpoints: [/api/reports]
   hr-demo:
+    topic_ids: [employee_evaluation]
     workdir: ${WORKSPACE}/public/hr
     token: demo-token-hr
     description: HR business partner working with general process material
@@ -195,6 +209,7 @@ users:
     description: Analyst with read-only access to public reports
     files:
       read_roots: [${WORKSPACE}/public/reports]
+      write_roots: []
     budgets:
       session_tool_attempts: 15
 

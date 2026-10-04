@@ -21,6 +21,10 @@ export class OpenAIEmbedder implements Embedder {
     this.name = `openai:${model}`;
   }
   async embed(texts: string[]): Promise<number[][]> {
+    if (texts.length === 0) return [];
+    if (texts.some((text) => typeof text !== 'string' || text.trim().length === 0)) {
+      throw new EmbeddingError('embedding input must contain non-empty strings');
+    }
     let res: Response;
     try {
       res = await fetch(this.baseUrl, {
@@ -33,9 +37,32 @@ export class OpenAIEmbedder implements Embedder {
       throw new EmbeddingError(`embedding request failed: ${(e as Error).message}`);
     }
     if (!res.ok) throw new EmbeddingError(`embedding service returned HTTP ${res.status}`);
-    const body = (await res.json()) as { data?: { embedding: number[]; index: number }[] };
-    if (!body.data || body.data.length !== texts.length) throw new EmbeddingError('embedding response has the wrong shape');
-    return body.data.sort((a, b) => a.index - b.index).map((d) => d.embedding);
+    let body: unknown;
+    try {
+      body = await res.json();
+    } catch {
+      throw new EmbeddingError('embedding service returned invalid JSON');
+    }
+    const data = (body as { data?: unknown } | null)?.data;
+    if (!Array.isArray(data) || data.length !== texts.length) throw new EmbeddingError('embedding response has the wrong shape');
+    const ordered: number[][] = new Array(texts.length);
+    let dimensions: number | undefined;
+    for (const item of data) {
+      const row = item as { embedding?: unknown; index?: unknown } | null;
+      const index = row?.index;
+      const embedding = row?.embedding;
+      if (!Number.isInteger(index) || (index as number) < 0 || (index as number) >= texts.length || ordered[index as number]) {
+        throw new EmbeddingError('embedding response has invalid or duplicate indices');
+      }
+      if (!Array.isArray(embedding) || embedding.length === 0 || !embedding.every((n) => typeof n === 'number' && Number.isFinite(n))) {
+        throw new EmbeddingError('embedding response contains an invalid vector');
+      }
+      if (dimensions !== undefined && embedding.length !== dimensions) throw new EmbeddingError('embedding response vectors have inconsistent dimensions');
+      dimensions = embedding.length;
+      ordered[index as number] = embedding as number[];
+    }
+    if (ordered.some((vector) => vector === undefined)) throw new EmbeddingError('embedding response is missing an index');
+    return ordered;
   }
 }
 
@@ -156,26 +183,52 @@ export class TopicDetector {
           owners.push(id);
         }
       }
+      if (texts.length === 0) { this.examples = []; return; }
       const vecs = await this.embedder.embed(texts);
+      if (vecs.length !== texts.length || vecs.some((vec) => !validVector(vec)) || new Set(vecs.map((vec) => vec.length)).size > 1) {
+        throw new EmbeddingError('embedder returned invalid example vectors');
+      }
       this.examples = vecs.map((vec, i) => ({ topic_id: owners[i]!, vec }));
     })();
+    this.ready = this.ready.catch((error) => {
+      this.ready = undefined;
+      throw error;
+    });
     return this.ready;
   }
 
   /** Every window of the text is compared, so a signal in the middle of a long document is not missed. */
   async detect(text: string): Promise<TopicMatch[]> {
+    if (!text.trim()) return [];
     await this.init();
     const ts = this.policy.topic_supervision;
     const chunks = chunkText(text, ts.chunk_chars, ts.overlap_chars);
-    const missing = chunks.filter((c) => !this.cache.has(c));
+    const missing = [...new Set(chunks.filter((c) => !this.cache.has(c)))];
+    const currentVectors = new Map<string, number[]>();
     if (missing.length) {
       const vecs = await this.embedder.embed(missing);
-      missing.forEach((c, i) => this.cache.set(c, vecs[i]!));
-      if (this.cache.size > 2000) this.cache.clear();
+      const dimensions = this.examples[0]?.vec.length;
+      if (vecs.length !== missing.length || vecs.some((vec) => !validVector(vec) || (dimensions !== undefined && vec.length !== dimensions))) {
+        throw new EmbeddingError('embedder returned invalid query vectors');
+      }
+      missing.forEach((c, i) => {
+        currentVectors.set(c, vecs[i]!);
+        this.cache.delete(c);
+        this.cache.set(c, vecs[i]!);
+      });
+      while (this.cache.size > 2000) {
+        const oldest = [...this.cache.keys()].find((key) => !chunks.includes(key));
+        if (oldest === undefined) break;
+        this.cache.delete(oldest);
+      }
     }
     const best = new Map<string, number>();
     for (const c of chunks) {
-      const v = this.cache.get(c)!;
+      const v = this.cache.get(c) ?? currentVectors.get(c)!;
+      if (!currentVectors.has(c) && this.cache.has(c)) {
+        this.cache.delete(c);
+        this.cache.set(c, v);
+      }
       for (const ex of this.examples) {
         const s = cosine(v, ex.vec);
         if (s > (best.get(ex.topic_id) ?? -1)) best.set(ex.topic_id, s);
@@ -189,4 +242,8 @@ export class TopicDetector {
     }
     return out.sort((a, b) => b.score - a.score);
   }
+}
+
+function validVector(vec: unknown): vec is number[] {
+  return Array.isArray(vec) && vec.length > 0 && vec.every((n) => typeof n === 'number' && Number.isFinite(n));
 }

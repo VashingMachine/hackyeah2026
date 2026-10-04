@@ -94,6 +94,8 @@ export const TopicPolicySchema = z.strictObject({
 export const UserSchema = ScopeSchema.extend({
   token: z.string().min(8),
   description: z.string().optional(),
+  // A trusted assignment can already identify sensitive policies before any semantic lookup.
+  topic_ids: strArr.optional(),
   // Directory the managed launcher starts the agent in (relative paths in tool calls resolve here).
   workdir: z.string().optional(),
 });
@@ -119,8 +121,9 @@ export const PolicySchema = z.strictObject({
   model_aliases: z.record(
     z.string(),
     z.strictObject({
-      provider: z.enum(['anthropic']),
+      provider: z.enum(['openai', 'anthropic']),
       model: z.string(),
+      reasoning_effort: z.enum(['none', 'low', 'medium', 'high', 'xhigh', 'max']).optional(),
       input_usd_micros_per_mtok: z.number().int().nonnegative().optional(),
       output_usd_micros_per_mtok: z.number().int().nonnegative().optional(),
     }),

@@ -1,0 +1,191 @@
+{
+  "generated_at": "2026-10-04T07:24:00.635Z",
+  "baseUrl": "http://127.0.0.1:64132",
+  "isolatedStore": true,
+  "seededEventCount": 126,
+  "seedStart": 13,
+  "seededLatest": 260,
+  "sessions": {
+    "onboarding": "sess_M5ooR6FBPc7_",
+    "deal": "sess_oDDdv_CJyUWl",
+    "developer": "sess_xWn553Fts1c-",
+    "secondOnboarding": "sess_sYPfidSH92PZ"
+  },
+  "checks": [
+    {
+      "name": "HTTP history cursor returns every event exactly once in chronology",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "HTTP history rejects malformed pagination cursors",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pagination snapshot excludes rows created after its high-water mark",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "session browser lists sessions created over HTTP",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "session cards do not expose null placeholders",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "selected user session is isolated from other sessions",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "technical events are hidden by default",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "timeline includes the actual policy-denied tool call",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "history initially renders a bounded recent page",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "older-history control is available for paged session history",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "all loaded session events remain unique and chronological",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pagination reaches the expected seeded session chronology",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "untrusted event text is inert and rendered literally",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "denial attribution includes the actual tool, reason, and policy version",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "allowed tool decision is distinct from executor start and completion",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "new events do not steal the selected session",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "SSE appends new selected-session event while excluding other-session update",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "session selection button keeps keyboard focus through live list refresh",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "other-session SSE update increments unread indicator",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "keyboard Enter selects a focused session",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "same-page deep-link hashchange selects the requested session",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pause retains incoming event as unread without changing visible timeline",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "resume reveals the event received while updates were paused",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "SSE transport confirms it disconnected before events are appended",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "HTTP refresh recovers an event during the disconnected-stream gap",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "stream reconnect fills the event gap without duplicates",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "invalid-token stream stops receiving protected updates",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "mobile dashboard has no horizontal page overflow",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "mobile session browser remains visible and selectable",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "no uncaught browser errors or unexpected HTTP 5xx responses",
+      "result": "PASS",
+      "detail": "{\"errors\":[],\"serverErrors\":[]}"
+    }
+  ],
+  "errors": [],
+  "serverErrors": [],
+  "transportFailures": [
+    {
+      "url": "http://127.0.0.1:64132/v1/admin/stream?since=261",
+      "reason": "net::ERR_INCOMPLETE_CHUNKED_ENCODING"
+    },
+    {
+      "url": "http://127.0.0.1:64132/v1/admin/stream?since=265",
+      "reason": "net::ERR_ABORTED"
+    }
+  ],
+  "expectedConsoleTransportErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: net::ERR_INCOMPLETE_CHUNKED_ENCODING",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "screenshots": [
+    "reports/dashboard-session-desktop.png",
+    "reports/dashboard-session-mobile.png"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "generated_at": "2026-10-04T06:45:57.468955+00:00",
+  "status": "PASS",
+  "policy_links_checked": 69,
+  "empty_results": 0,
+  "fields_view_failures": 0,
+  "process_flow_sha256": "ab5e13982352e65b06ca54326e0a345aca51da7842d96b3f91269de25ad118ec",
+  "scope": "Browser interaction for every component policy button; triggers existing policy explorer search and field view. No backend/API calls."
+}

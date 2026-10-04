@@ -1,27 +1,20 @@
 import { cpSync, mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { readFileSync } from 'node:fs';
 import { loadPolicyFile } from '../src/config/load.ts';
 import type { Policy } from '../src/config/schema.ts';
 import type { Core } from '../src/engine/core.ts';
 import { buildCore, type Overrides } from '../src/server/build.ts';
 import { Store } from '../src/store/store.ts';
+import { LexicalEmbedder } from '../src/topics/detector.ts';
+import { loadEnv } from '../src/util/env.ts';
 
 export const ROOT = resolve(import.meta.dirname, '..');
 
-/** Read ../.env into an object (real keys for live tests); missing file gives an empty object. */
+/** Read project credentials without exposing values; local .env takes precedence. */
 export function dotenv(): Record<string, string> {
-  try {
-    const out: Record<string, string> = {};
-    for (const line of readFileSync(join(ROOT, '..', '.env'), 'utf8').split('\n')) {
-      const m = /^([A-Z0-9_]+)=(.*)$/.exec(line.trim());
-      if (m) out[m[1]!] = m[2]!;
-    }
-    return out;
-  } catch {
-    return {};
-  }
+  return Object.fromEntries(Object.entries(loadEnv([join(ROOT, '.env'), join(ROOT, '..', '.env')]))
+    .filter((entry): entry is [string, string] => entry[1] !== undefined));
 }
 
 export interface Fixture {
@@ -47,7 +40,7 @@ export function makeFixture(opts: FixtureOpts = {}): Fixture {
   const policy = loadPolicyFile(join(ROOT, 'config', 'policy.yaml'), env);
   policy.audit.db_path = ':memory:';
   opts.tweak?.(policy);
-  const core = buildCore(policy, env, { ...opts, store: opts.store ?? new Store(':memory:') });
+  const core = buildCore(policy, env, { ...opts, embedder: opts.embedder ?? ((opts.judge || opts.guardian) ? new LexicalEmbedder() : undefined), store: opts.store ?? new Store(':memory:') });
   return {
     core,
     policy,

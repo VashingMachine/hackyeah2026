@@ -1,0 +1,49 @@
+{
+  "scope": "Website prompt/context and policy-explorer update; no backend changes or new model calls. Original application/demo results remain historical evidence.",
+  "baselineVersion": 5,
+  "sourceFiles": {
+    "dist/index.html": "35d64215c2fd6b09efbc65bd17640dfbbc9af249a9ee849900dd9ea27b8cc4ee",
+    "dist/presentation.html": "35d64215c2fd6b09efbc65bd17640dfbbc9af249a9ee849900dd9ea27b8cc4ee",
+    "dist/presentation.js": "ed3802fdd80e0adea2d2214ee99daa4229e8dae556a72832f9124961da74f8bf",
+    "dist/presentation.css": "7e8366b677c2a9e07d2864b543fa94102c5389901bf201c29d6531c7133ec7bc",
+    "dist/policy-explorer.js": "b8437d5b17648a881ae002cfd093ab1d65a4858bfa2c999a45191a42c297ee00",
+    "dist/assets/session-contexts.json": "d07ac0d7064dca90082a8489f2d289db5c5ccac5245c51ce4e2d08357fa6c5ae",
+    "dist/assets/policy-guide.json": "cb0ab01c23c4523d32afa61ea7f1ef6783e63bd23ff2300e3b489957a9d37f3e",
+    "dist/assets/policy.schema.json": "e2c1f8bf44beb7e0871ac47d9f229822fd1e7cde8cdbe69a55697562eb00965e",
+    "dist/assets/policy-publication.schema.json": "75155fca4add5e63635aa00904bff037fb54d49c9e854c6d3d8d888f14d07d2a",
+    "dist/assets/evidence.json": "5f2b2b83b2db27ae797be8418ce2d40d53fcacd1913c18e123e96993ba30b0ab",
+    "dist/assets/blackwall-demo.pptx": "741bc3b7aadf75a0451a039970ac69a336a6ba516cabd88e41db04a754b4af66"
+  },
+  "checks": {
+    "htmlCopiesIdentical": true,
+    "existingBrowserRegression": 31,
+    "privateCredentialScan": {
+      "secretsCompared": 2,
+      "matches": []
+    },
+    "screens": [
+      "qa/root-policy-desktop.png",
+      "qa/root-policy-json.png",
+      "qa/root-session-context.png"
+    ],
+    "guideBrowserChecks": 90,
+    "guideBrowserFailures": [],
+    "guideBrowserFindings": [],
+    "schemaLeavesCovered": 116,
+    "schemaLeavesExpected": 116,
+    "guideFieldDescriptions": 119,
+    "validPublicationExamples": 3,
+    "sessionPromptsProvenanceChecked": 6,
+    "eventContextsMatched": 45
+  },
+  "publication": {
+    "project_id": "appgprj_6ac0e7f351c48191b1f94d385c8b4d66",
+    "version_id": "appgprj_6ac0e7f351c48191b1f94d385c8b4d66~appgver_de0f60671eb08191a8f93e8899c898cc",
+    "version_number": 6,
+    "deployment_id": "appgdep_6ac1f0f095b48191a79071b1007085fc",
+    "commit_sha": "3680cacf7afc3905253df7eb0ae84ddf548f47d7",
+    "status": "succeeded",
+    "url": "https://blackwall-hackyeah-2026.dariusz.chatgpt.site",
+    "archive_hash": "sha256:f4936dc4050908ed27ecaa53b2eb40ec6dd79a34f178ebdb6c3bda479229f935"
+  }
+}

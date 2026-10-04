@@ -8,6 +8,9 @@ import { handleChat, toSse, type ChatRequest, type GatewayOptions } from '../gat
 import type { EventRow, SessionRow } from '../store/store.ts';
 import { topicMessage } from '../engine/messages.ts';
 import { metrics } from './metrics.ts';
+import { applyControls, editableControls, PolicyPublicationSchema } from '../config/publication.ts';
+import { ThreatFeed } from '../engine/feed.ts';
+import { PublicationGate } from './publication-gate.ts';
 
 export interface AppOptions {
   adminToken: string;
@@ -45,6 +48,19 @@ const ExecBody = z.object({
 export function buildApp(core: Core, opts: AppOptions): FastifyInstance {
   const app = Fastify({ logger: opts.logger ?? false, bodyLimit: 8 * 1024 * 1024 });
   const store = core.store;
+  const gate = new PublicationGate();
+  const leases = new WeakMap<FastifyRequest, () => void>();
+  const release = (req: FastifyRequest) => { leases.get(req)?.(); leases.delete(req); };
+  app.addHook('preHandler', async req => {
+    const path = req.url.split('?')[0]!;
+    // Streams contain audit rows only. Publishers must not acquire their own reader lease.
+    if (path.startsWith('/v1/') && path !== '/v1/admin/stream' &&
+      !(req.method === 'POST' && ['/v1/admin/policies', '/v1/admin/threat-feed'].includes(path)))
+      leases.set(req, await gate.acquire());
+  });
+  app.addHook('onSend', async req => { release(req); });
+  app.addHook('onError', async req => { release(req); });
+  app.addHook('onResponse', async req => { release(req); });
 
   // ---- auth helpers
   const sessionAuth = (req: FastifyRequest, reply: FastifyReply): SessionRow | undefined => {
@@ -103,6 +119,16 @@ export function buildApp(core: Core, opts: AppOptions): FastifyInstance {
     return d;
   });
 
+  app.post('/v1/tool-decisions/:id/consume', async (req, reply) => {
+    const session = sessionAuth(req, reply);
+    if (!session) return;
+    const body = ToolBody.safeParse(req.body);
+    if (!body.success) return reply.code(400).send({ error: { code: 'BAD_REQUEST', message: 'request_id, tool and arguments are required' } });
+    const result = await core.consumeDecision(session, (req.params as { id: string }).id, body.data.request_id, body.data.tool, body.data.arguments, body.data.context?.cwd);
+    if (!result.ok) return reply.code(409).send({ error: { code: result.code, message: result.message } });
+    return result;
+  });
+
   app.get('/v1/approvals/:id', async (req, reply) => {
     const s = sessionAuth(req, reply);
     if (!s) return;
@@ -126,12 +152,16 @@ export function buildApp(core: Core, opts: AppOptions): FastifyInstance {
     if (!s) return;
     const body = InspectBody.safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: { code: 'BAD_REQUEST', message: body.error.issues.map((i) => i.message).join('; ') } });
-    const status = core.store.getSession(s.id)!.status;
-    if (status === 'terminated' || status === 'blocked') {
-      const reason = status === 'terminated' ? 'SESSION_TERMINATED' : 'SESSION_BLOCKED';
-      return { action: 'block', text: '', session_action: status === 'terminated' ? 'terminate' : 'block', session_status: status, reason_codes: [reason], message: topicMessage(reason), topic_ids: [] };
+    const result = await core.withSessionLock(s.id, async () => {
+      const current = core.store.getSession(s.id)!;
+      if (current.status !== 'active') return { state: current.status } as const;
+      return { inspected: await core.inspectContent(current, body.data.kind, body.data.text) } as const;
+    });
+    if ('state' in result) {
+      const reason = result.state === 'terminated' ? 'SESSION_TERMINATED' : result.state === 'reviewing' ? 'SESSION_REVIEWING' : result.state === 'awaiting_approval' ? 'AWAITING_APPROVAL' : 'SESSION_BLOCKED';
+      return { action: 'block', text: '', session_action: result.state === 'terminated' ? 'terminate' : 'block', session_status: result.state, reason_codes: [reason], message: topicMessage(reason), topic_ids: [] };
     }
-    const r = await core.withSessionLock(s.id, () => core.inspectContent(core.store.getSession(s.id)!, body.data.kind, body.data.text));
+    const r = result.inspected;
     const now = core.store.getSession(s.id)!;
     const sup = r.supervision;
     if (sup.action !== 'pass') {
@@ -157,7 +187,7 @@ export function buildApp(core: Core, opts: AppOptions): FastifyInstance {
     if (!s) return;
     const body = ExecBody.safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: { code: 'BAD_REQUEST', message: 'invalid execution event' } });
-    core.recordExecution(s, body.data);
+    if (!core.recordExecution(s, body.data)) return reply.code(409).send({ error: { code: 'INVALID_EXECUTION_RECEIPT', message: 'The receipt has no consumed matching permission, is out of order, or was already recorded.' } });
     return { ok: true };
   });
 
@@ -185,6 +215,64 @@ export function buildApp(core: Core, opts: AppOptions): FastifyInstance {
   });
 
   // ---- admin
+  app.get('/v1/admin/policies/editable', async (req, reply) => {
+    if (!adminAuth(req, reply)) return;
+    return { expected_version: core.policy.version, changes: editableControls(core.policy) };
+  });
+  app.get('/v1/admin/threat-feed', async (req, reply) => {
+    if (!adminAuth(req, reply)) return;
+    return { expected_policy_version: core.policy.version, expected_feed_version: core.feed.version, feed: core.feed.toJSON() };
+  });
+
+  app.post('/v1/admin/policies', async (req, reply) => {
+    if (!adminAuth(req, reply)) return;
+    const body = PolicyPublicationSchema.safeParse(req.body);
+    if (!body.success || Object.keys(body.data.changes).length === 0)
+      return reply.code(400).send({ error: { code: 'INVALID_POLICY', message: 'Provide a valid, non-empty controls patch and expected_version.' } });
+    if (body.data.expected_version !== core.policy.version)
+      return reply.code(409).send({ error: { code: 'STALE_POLICY', message: 'Reload the current policy before publishing.' } });
+    let candidate: Core;
+    try {
+      const policy = applyControls(core.policy, body.data.changes, core.policy.version + 1);
+      candidate = await core.reconfigure(policy);
+    } catch {
+      return reply.code(400).send({ error: { code: 'INVALID_POLICY', message: 'The candidate policy/catalog could not be validated and initialized. Active configuration is unchanged.' } });
+    }
+    return gate.publish(async () => {
+      if (body.data.expected_version !== core.policy.version)
+        return reply.code(409).send({ error: { code: 'STALE_POLICY', message: 'Another publication has already changed this version.' } });
+      store.publishConfiguration(core.configurationBaseHash, candidate.policy.policy_id, candidate.policy.version, candidate.policy.profile,
+        editableControls(candidate.policy), candidate.feed.toJSON(), candidate.policy.topics, 'policy.published');
+      core = candidate;
+      return { policy_id: core.policy.policy_id, policy_version: core.policy.version, feed_version: core.feed.version };
+    });
+  });
+
+  app.post('/v1/admin/threat-feed', async (req, reply) => {
+    if (!adminAuth(req, reply)) return;
+    const body = z.strictObject({ expected_policy_version: z.number().int().positive(), expected_feed_version: z.number().int().positive(), feed: z.unknown() }).safeParse(req.body);
+    if (!body.success) return reply.code(400).send({ error: { code: 'INVALID_FEED', message: 'A feed and both expected versions are required.' } });
+    let feed: ThreatFeed;
+    try { feed = new ThreatFeed(body.data.feed); }
+    catch { return reply.code(400).send({ error: { code: 'INVALID_FEED', message: 'The feed failed validation. Active configuration is unchanged.' } }); }
+    if (feed.catalogId !== core.feed.catalogId || feed.version <= core.feed.version)
+      return reply.code(409).send({ error: { code: 'FEED_VERSION_CONFLICT', message: 'Keep the catalog identity and publish a newer feed version.' } });
+    if (body.data.expected_policy_version !== core.policy.version || body.data.expected_feed_version !== core.feed.version)
+      return reply.code(409).send({ error: { code: 'STALE_POLICY', message: 'Reload the current versions before publishing.' } });
+    const policy = applyControls(core.policy, {}, core.policy.version + 1);
+    let candidate: Core;
+    try { candidate = await core.reconfigure(policy, feed); }
+    catch { return reply.code(400).send({ error: { code: 'INVALID_FEED', message: 'Candidate initialization failed. Active configuration is unchanged.' } }); }
+    return gate.publish(async () => {
+      if (body.data.expected_policy_version !== core.policy.version || body.data.expected_feed_version !== core.feed.version)
+        return reply.code(409).send({ error: { code: 'STALE_POLICY', message: 'Another publication has already changed these versions.' } });
+      store.publishConfiguration(core.configurationBaseHash, policy.policy_id, policy.version, policy.profile,
+        editableControls(policy), feed.toJSON(), policy.topics, 'feed.published');
+      core = candidate;
+      return { policy_id: policy.policy_id, policy_version: policy.version, feed_version: feed.version };
+    });
+  });
+
   app.get('/v1/admin/events', async (req, reply) => {
     if (!adminAuth(req, reply)) return;
     const q = req.query as { session_id?: string; type?: string; since?: string; limit?: string };
@@ -203,6 +291,39 @@ export function buildApp(core: Core, opts: AppOptions): FastifyInstance {
     return { ...sessionView(core, s), events: store.listEvents({ sessionId: s.id, limit: 500 }).reverse().map(eventView) };
   });
 
+  app.get('/v1/admin/sessions/:id/events', async (req, reply) => {
+    if (!adminAuth(req, reply)) return;
+    const s = store.getSession((req.params as { id: string }).id);
+    if (!s) return reply.code(404).send({ error: { code: 'NOT_FOUND', message: 'Unknown session.' } });
+    const q = req.query as { before_id?: string; snapshot_id?: string; limit?: string };
+    const parseCursor = (value: string | undefined): number | undefined => {
+      if (value === undefined) return undefined;
+      if (!/^\d+$/.test(value)) return Number.NaN;
+      const parsed = Number(value);
+      return Number.isSafeInteger(parsed) ? parsed : Number.NaN;
+    };
+    const beforeId = parseCursor(q.before_id);
+    const requestedSnapshot = parseCursor(q.snapshot_id);
+    const limit = q.limit === undefined ? 100 : parseCursor(q.limit);
+    if ((beforeId !== undefined && (!Number.isSafeInteger(beforeId) || beforeId <= 0)) ||
+      (requestedSnapshot !== undefined && (!Number.isSafeInteger(requestedSnapshot) || requestedSnapshot < 0)) ||
+      (beforeId !== undefined && requestedSnapshot === undefined) ||
+      (beforeId !== undefined && requestedSnapshot !== undefined && beforeId > requestedSnapshot) ||
+      !Number.isSafeInteger(limit) || limit! < 1 || limit! > 200) {
+      return reply.code(400).send({ error: { code: 'BAD_REQUEST', message: 'before_id and snapshot_id must be safe event IDs; limit must be 1–200.' } });
+    }
+    const snapshotId = requestedSnapshot ?? store.latestEventId();
+    if (snapshotId > store.latestEventId()) return reply.code(400).send({ error: { code: 'BAD_REQUEST', message: 'snapshot_id is ahead of the event log.' } });
+    const page = store.sessionEventsPage(s.id, snapshotId, beforeId, limit!);
+    return {
+      session_id: s.id,
+      events: page.events.map(eventView),
+      snapshot_id: snapshotId,
+      next_cursor: page.nextCursor,
+      has_more: page.hasMore,
+    };
+  });
+
   app.get('/v1/admin/sessions/:id/topics', async (req, reply) => {
     if (!adminAuth(req, reply)) return;
     const id = (req.params as { id: string }).id;
@@ -213,21 +334,26 @@ export function buildApp(core: Core, opts: AppOptions): FastifyInstance {
     if (!adminAuth(req, reply)) return;
     const s = store.getSession((req.params as { id: string }).id);
     if (!s) return reply.code(404).send({ error: { code: 'NOT_FOUND', message: 'Unknown session.' } });
-    store.setStatusUnlessTerminated(s.id, 'blocked', 'REVOKED_BY_ADMIN');
-    store.invalidateApprovals(s.id);
-    store.appendEvent(s.id, 'session.blocked', { by: 'admin' }, { reason_codes: ['REVOKED_BY_ADMIN'], effect: 'deny' });
-    return sessionView(core, store.getSession(s.id)!);
+    return core.withSessionLock(s.id, async () => {
+      store.setStatusUnlessTerminated(s.id, 'blocked', 'REVOKED_BY_ADMIN');
+      store.invalidateApprovals(s.id);
+      store.appendEvent(s.id, 'session.blocked', { by: 'admin', policy_attribution: core.policyAttribution() }, { reason_codes: ['REVOKED_BY_ADMIN'], effect: 'deny' });
+      return sessionView(core, store.getSession(s.id)!);
+    });
   });
 
   app.post('/v1/admin/sessions/:id/resume', async (req, reply) => {
     if (!adminAuth(req, reply)) return;
-    const s = store.getSession((req.params as { id: string }).id);
-    if (!s) return reply.code(404).send({ error: { code: 'NOT_FOUND', message: 'Unknown session.' } });
-    // `terminated` is final; `reviewing` is resolved through a topic review, not resumed blindly
-    if (s.status !== 'blocked') return reply.code(409).send({ error: { code: 'NOT_RESUMABLE', message: `A ${s.status} session cannot be resumed this way.` } });
-    store.setStatus(s.id, 'active');
-    store.appendEvent(s.id, 'session.resumed', { by: 'admin' });
-    return sessionView(core, store.getSession(s.id)!);
+    const id = (req.params as { id: string }).id;
+    if (!store.getSession(id)) return reply.code(404).send({ error: { code: 'NOT_FOUND', message: 'Unknown session.' } });
+    return core.withSessionLock(id, async () => {
+      const current = store.getSession(id)!;
+      if (current.status !== 'blocked') return reply.code(409).send({ error: { code: 'NOT_RESUMABLE', message: `A ${current.status} session cannot be resumed this way.` } });
+      store.invalidateApprovals(id);
+      store.setStatus(id, 'active');
+      store.appendEvent(id, 'session.resumed', { by: 'admin', pending_approvals_invalidated: true, policy_attribution: core.policyAttribution() });
+      return sessionView(core, store.getSession(id)!);
+    });
   });
 
   app.post('/v1/admin/topic-reviews/:id/resolve', async (req, reply) => {
@@ -236,15 +362,23 @@ export function buildApp(core: Core, opts: AppOptions): FastifyInstance {
     if (!body.success) return reply.code(400).send({ error: { code: 'BAD_REQUEST', message: 'outcome (no_violation|violation) and a note are required' } });
     const rev = store.getTopicReview((req.params as { id: string }).id);
     if (!rev) return reply.code(404).send({ error: { code: 'NOT_FOUND', message: 'Unknown review.' } });
-    const s = store.getSession(rev.session_id)!;
-    if (!store.resolveTopicReview(rev.id, body.data.note)) return reply.code(409).send({ error: { code: 'ALREADY_RESOLVED', message: 'Review already resolved.' } });
-    // The admin clarifies the facts against the policy; there is no way here to waive a prohibition.
-    if (body.data.outcome === 'violation') core.terminate(s, 'ADMIN_CONFIRMED_VIOLATION', { review_id: rev.id, note: body.data.note });
-    else {
-      store.setStatusUnlessTerminated(s.id, 'active');
-      store.appendEvent(s.id, 'session.resumed', { by: 'admin', review_id: rev.id, note: body.data.note });
-    }
-    return sessionView(core, store.getSession(s.id)!);
+    return core.withSessionLock(rev.session_id, async () => {
+      const currentReview = store.getTopicReview(rev.id)!;
+      const s = store.getSession(rev.session_id)!;
+      if (currentReview.status !== 'open') return reply.code(409).send({ error: { code: 'ALREADY_RESOLVED', message: 'Review already resolved.' } });
+      // A later revoke/termination takes precedence over an old review displayed in an admin tab.
+      if (s.status !== 'reviewing') return reply.code(409).send({ error: { code: 'NOT_REVIEWING', message: 'The session is no longer waiting for this review.' } });
+      if (store.guardian(s.id)?.last_reviewed_seq !== currentReview.seq)
+        return reply.code(409).send({ error: { code: 'STALE_REVIEW', message: 'A newer event requires its own review.' } });
+      if (!store.resolveTopicReview(rev.id, body.data.note)) return reply.code(409).send({ error: { code: 'ALREADY_RESOLVED', message: 'Review already resolved.' } });
+      // The admin clarifies the facts against the policy; there is no way here to waive a prohibition.
+      if (body.data.outcome === 'violation') core.terminate(s, 'ADMIN_CONFIRMED_VIOLATION', { review_id: rev.id, note: body.data.note });
+      else {
+        store.setStatusUnlessTerminated(s.id, 'active');
+        store.appendEvent(s.id, 'session.resumed', { by: 'admin', review_id: rev.id, note: body.data.note, policy_attribution: core.policyAttribution() });
+      }
+      return sessionView(core, store.getSession(s.id)!);
+    });
   });
 
   app.get('/v1/admin/metrics', async (req, reply) => {
@@ -276,13 +410,18 @@ export function buildApp(core: Core, opts: AppOptions): FastifyInstance {
   // Server-sent events: new audit rows are pushed as they appear (poll of the audit table, ~1 s).
   app.get('/v1/admin/stream', async (req, reply) => {
     if (!adminAuth(req, reply)) return;
+    const q = req.query as { since?: string };
+    const headerCursor = req.headers['last-event-id'];
+    const rawCursor = (typeof headerCursor === 'string' ? headerCursor : undefined) ?? q.since;
+    const cursor = rawCursor === undefined ? store.latestEventId() : /^\d+$/.test(rawCursor) ? Number(rawCursor) : Number.NaN;
+    if (!Number.isSafeInteger(cursor) || cursor < 0) return reply.code(400).send({ error: { code: 'BAD_REQUEST', message: 'since must be a non-negative event ID.' } });
     reply.raw.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-store', Connection: 'keep-alive' });
-    let last = Number((req.query as { since?: string }).since ?? store.listEvents({ limit: 1 })[0]?.id ?? 0);
+    let last = cursor;
     const tick = () => {
-      const rows = store.listEvents({ sinceId: last, limit: 200 }).reverse();
+      const rows = store.listEvents({ sinceId: last, limit: 200, order: 'asc' });
       for (const r of rows) {
         last = Math.max(last, r.id);
-        reply.raw.write(`data: ${JSON.stringify(eventView(r))}\n\n`);
+        reply.raw.write(`id: ${r.id}\ndata: ${JSON.stringify(eventView(r))}\n\n`);
       }
       if (!rows.length) reply.raw.write(': keepalive\n\n');
     };
@@ -302,16 +441,22 @@ export function buildApp(core: Core, opts: AppOptions): FastifyInstance {
   app.get('/', serveFile('index.html', 'text/html; charset=utf-8'));
   app.get('/dashboard', serveFile('index.html', 'text/html; charset=utf-8'));
   app.get('/dashboard/app.js', serveFile('app.js', 'text/javascript; charset=utf-8'));
+  app.get('/dashboard/session-browser.js', serveFile('session-browser.js', 'text/javascript; charset=utf-8'));
   app.get('/dashboard/styles.css', serveFile('styles.css', 'text/css; charset=utf-8'));
 
   return app;
 }
 
 export function eventView(e: EventRow) {
+  const data = JSON.parse(e.data) as unknown;
+  const attribution = data && typeof data === 'object' && !Array.isArray(data)
+    ? (data as { policy_attribution?: unknown }).policy_attribution
+    : undefined;
   return {
     id: e.id, ts: e.ts, session_id: e.session_id, seq: e.seq, type: e.type, tool: e.tool, effect: e.effect,
     reason_codes: e.reason_codes ? e.reason_codes.split(',') : [], request_id: e.request_id, decision_id: e.decision_id, user: e.user_name,
-    data: JSON.parse(e.data) as unknown,
+    policy_attribution: attribution ?? null,
+    data,
   };
 }
 
@@ -319,6 +464,7 @@ export function sessionView(core: Core, s: SessionRow) {
   const scope = effectiveScope(core.policy, s.user_name);
   return {
     id: s.id, user: s.user_name, status: s.status, status_reason: s.status_reason, created_at: s.created_at, updated_at: s.updated_at,
+    last_event_at: s.last_event_at ?? core.store.sessionLastEventAt(s.id),
     policy_version: s.policy_version,
     budget: {
       tokens_spent: s.tokens_spent, tokens_reserved: s.tokens_reserved, token_limit: scope.budgets.session_total_tokens ?? null,

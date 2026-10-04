@@ -1,0 +1,129 @@
+{
+  "provider": "Blackwall gateway to OpenAI",
+  "model": "gpt-6-luna",
+  "reasoning_effort": "low",
+  "judge": "Jev",
+  "policy_id": "hackyeah-demo",
+  "final_policy_version": 3,
+  "final_feed_version": 2,
+  "version_evidence": "final authenticated runtime GET responses",
+  "session_id": "sess_jmG14cbtWqBu",
+  "database_path": "/Users/dkwiatkowski/projects/hackyeah2026/blackwall/demo-recordings/runtime-publication-2026-10-04T00-53-27-385Z/runtime-publication.sqlite",
+  "workspace_path": "/var/folders/yy/6c10zx9n32n7tk6g6lvbllzm0000gn/T/bw-ws-yaGds9",
+  "receipts": [
+    {
+      "id": 5,
+      "type": "model.completed",
+      "session_id": "sess_jmG14cbtWqBu",
+      "request_id": null,
+      "data": {
+        "request_id": "mreq_ZeIfAz9zjZKe",
+        "alias": "demo-agent",
+        "provider_model": "gpt-6-luna",
+        "usage": {
+          "prompt_tokens": 1966,
+          "completion_tokens": 103,
+          "total_tokens": 2069,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "cost_usd_micros": "unpriced",
+        "provider_ms": 2050
+      }
+    },
+    {
+      "id": 18,
+      "type": "judge.evaluated",
+      "session_id": "sess_jmG14cbtWqBu",
+      "request_id": "call_itddJYqG5KgbF4WQFKXlnSOp",
+      "data": {
+        "tool": "bash",
+        "verdict": "allow",
+        "reason_codes": [],
+        "probabilities": {
+          "task_alignment": {
+            "aligned": 0.98,
+            "unclear": 0,
+            "not_authorized": 0.02
+          },
+          "policy_violation": {
+            "no_identified_violation": 0.93,
+            "violation": 0.07,
+            "unclear": 0
+          },
+          "shell_purpose": {
+            "runs_program": 0.99,
+            "only_list_or_search": 0,
+            "unclear": 0,
+            "only_print_file": 0.01,
+            "only_write_file": 0
+          }
+        },
+        "confidence": {
+          "task_alignment": 0.97,
+          "policy_violation": 0.89,
+          "shell_purpose": 0.99
+        },
+        "model": "jev-1.13.0",
+        "usage": {
+          "input_tokens": 883,
+          "output_tokens": 158
+        },
+        "latency_ms": 853,
+        "source": "real"
+      }
+    },
+    {
+      "id": 33,
+      "type": "model.completed",
+      "session_id": "sess_jmG14cbtWqBu",
+      "request_id": null,
+      "data": {
+        "request_id": "mreq_xaoEZXJeTwXw",
+        "alias": "demo-agent",
+        "provider_model": "gpt-6-luna",
+        "usage": {
+          "prompt_tokens": 2130,
+          "completion_tokens": 52,
+          "total_tokens": 2182,
+          "prompt_tokens_details": {
+            "cached_tokens": 1963
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "cost_usd_micros": "unpriced",
+        "provider_ms": 1714
+      }
+    },
+    {
+      "id": 37,
+      "type": "policy.published",
+      "session_id": null,
+      "request_id": null,
+      "data": {
+        "policy_id": "hackyeah-demo",
+        "policy_version": 2,
+        "by": "admin",
+        "feed_version": 1
+      }
+    },
+    {
+      "id": 38,
+      "type": "feed.published",
+      "session_id": null,
+      "request_id": null,
+      "data": {
+        "policy_id": "hackyeah-demo",
+        "policy_version": 3,
+        "by": "admin",
+        "feed_version": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "project_id": "appgprj_6ac0e7f351c48191b1f94d385c8b4d66",
+  "version_id": "appgprj_6ac0e7f351c48191b1f94d385c8b4d66~appgver_de0f60671eb08191a8f93e8899c898cc",
+  "version_number": 6,
+  "deployment_id": "appgdep_6ac1f0f095b48191a79071b1007085fc",
+  "status": "succeeded",
+  "url": "https://blackwall-hackyeah-2026.dariusz.chatgpt.site",
+  "commit_sha": "3680cacf7afc3905253df7eb0ae84ddf548f47d7",
+  "updated_at": "2026-10-04T06:23:59.560603+00:00",
+  "archive_hash": "sha256:f4936dc4050908ed27ecaa53b2eb40ec6dd79a34f178ebdb6c3bda479229f935",
+  "qa": {
+    "browser_checks": 31,
+    "guide_browser_checks": 90,
+    "fault_recovery": "PASS",
+    "visual_review": "PASS",
+    "schema_leaves_covered": 116,
+    "policy_field_descriptions": 119,
+    "publication_examples_valid": 3,
+    "session_prompts_source_checked": 6,
+    "event_contexts_checked": 45,
+    "viewports": [
+      "1440x1000",
+      "390x844"
+    ],
+    "credential_matches": 0,
+    "recorded_sessions": 6,
+    "video_clips": 8,
+    "deck_revision": "final-v4",
+    "guide_report": "qa/guide-qa.json",
+    "schema_report": "qa/guide-schema-audit.json",
+    "session_report": "qa/guide-session-audit.json"
+  }
+}

@@ -1,112 +1,139 @@
-# Blackwall — the demo implementation
+# Blackwall — demo implementation
 
-A control layer for AI agents (HackYeah 2026, the Goldman Sachs challenge "AI Control Layer"). This directory contains working code: a decision server, an OpenAI-compatible model gateway, topic supervision of sessions, an extension for the Pi agent, an admin dashboard and tests. The concept and the rationale: [`../docs/blackwall-koncepcja-i-plan-dema.md`](../docs/blackwall-koncepcja-i-plan-dema.md).
+AI agent control layer (HackYeah 2026, Goldman Sachs “AI Control Layer” challenge). This directory contains the working implementation: a decision server, an OpenAI-compatible model gateway, session topic supervision, a Pi agent extension, an administrator dashboard, and tests. See the [concept and demo plan](../docs/blackwall-koncepcja-i-plan-dema.md) for the design rationale.
 
 ## What works (verified)
 
 | Area | Status |
 | --- | --- |
-| A decision before a tool executes (`allow` / `deny` / `require_approval`) with reason codes, session state and audit | works; tested on real files and a real Pi |
-| Deterministic rules: paths (components, `..`, symlinks, new files), `.env`/keys, extensions, size, network (host, port, method, endpoint, private/loopback/IPv6/IPv4 spellings, DNS), secrets and personal data (IBAN, PESEL with its checksum), the threat feed | works |
-| Semantic assessment by **Jev (TypeSafe)** — real API calls | works |
-| One-time user approval in the Pi interface (TTL, single use, invalidated on a state change) | works |
-| The model gateway: an alias allowlist, token reservation and settlement, a secret scan of the whole prompt, a response buffer before release | works (provider: Anthropic) |
-| Topic supervision: embedding → session label → one supervisor (Claude Haiku) → `terminated` | works |
-| The admin dashboard (overview, a live event timeline with filters, policies), JSONL export, p50/p95 metrics | works |
+| Pre-execution tool decisions (`allow` / `deny` / `require_approval`), reason codes, session state, and audit | Works; tested with real files and Pi |
+| Deterministic rules: paths (components, `..`, symlinks, new files), `.env`/keys, extensions, size, network (host, port, method, endpoint, private/loopback/IPv6/IPv4 spellings, DNS), secrets and personal data (IBAN, PESEL checksum), threat feed | Works |
+| Semantic evaluation by **Jev (TypeSafe)** — real API calls | Works |
+| One-time approval in Pi, bound to arguments and existing file content | One-time, short-lived, invalidated by file, policy-version, or session-state changes |
+| Model gateway: alias allowlist, token reservation and accounting, secret scan across the full prompt, response buffering before release | OpenAI Responses API; Pi uses alias `demo-agent` → `gpt-6-luna`, reasoning `low` |
+| Session topic supervision: OpenAI `text-embedding-3-small` → session label → one `gpt-6-luna` guardian, reasoning `low` → `terminated` | Polish and English; a similarity candidate requires a guardian assessment |
+| Administrator dashboard (overview, live event timeline, policies), JSONL export, p50/p95 metrics | Works |
 
-Detailed results are in the "Tests" section below.
+See below for how to run verification and for evidence limits.
 
-> **Guide:** step-by-step start-up, 8 demo scenarios (Pi and `curl`) and a description of the tools: [`docs/demo-guide.md`](docs/demo-guide.md).
+## Architecture
 
-## Running it
+```mermaid
+flowchart LR
+  U[User / Pi] --> P[Managed Blackwall plugin]
+  P --> C[Decision engine and gateway]
+  Y[Validated YAML policy + feed] --> C
+  C --> D[File / network / DLP / budget rules]
+  C --> E[OpenAI embeddings: topic candidates]
+  E --> G[OpenAI guardian: policy and evidence]
+  C --> J[Jev: action evaluation]
+  C --> L[OpenAI Responses: gpt-6-luna low]
+  C --> A[SQLite: decisions, approvals, claims, receipts]
+  A --> V[Dashboard and JSONL export]
+  C --> X[One-time grant + fresh check]
+  X --> P
+  P --> T[Tool: controlled files / HTTP / shell]
+  T --> I[Buffered and inspected result]
+  I --> U
+```
 
-Requirements: Node.js 24+ (the built-in `node:sqlite`), keys in `../.env` (template: `../.env.example`): `ANTHROPIC_API_KEY`, `JEV_API_KEY`.
+`grep`, `find`, and `ls` check each discovered file before reading it or showing its name. Permission for a directory does not grant permission to every file inside. Search skips protected names, disallowed extensions, oversized files, child symlinks, `.git`, and `node_modules`; discovery is limited to 1,000 files / 10,000 entries, and output to 256 KiB. It does not reproduce every native `fd`/`rg` ignore rule.
+
+> **Guide:** setup, Pi and `curl` examples, recordings, and system boundaries: [English demo guide](docs/demo-guide.md) · [Polish source guide](docs/przewodnik-demo.md).
+
+## Run it
+
+Requirements: Node.js 24+ (built-in `node:sqlite`), `OPENAI_API_KEY`, and `JEV_API_KEY`. Copy [`../.env.example`](../.env.example) to `blackwall/.env` and fill it in locally; both `.env` files are ignored by Git. OpenAI provides the runtime model, guardian, and embeddings; Jev evaluates operations that need semantic review.
 
 ```sh
 cd blackwall
 npm install
-./scripts/dev-server.sh            # a server on a copy of the demo data, http://127.0.0.1:8787
+./scripts/dev-server.sh            # server on a copy of demo data, http://127.0.0.1:8787
 ```
 
-The dashboard: <http://127.0.0.1:8787/dashboard> (the administrator token: `BLACKWALL_ADMIN_TOKEN`, in the demo `demo-admin-token`).
+Dashboard: <http://127.0.0.1:8787/dashboard> (administrator token: `BLACKWALL_ADMIN_TOKEN`, `demo-admin-token` in the demo).
 
-The Pi agent through Blackwall (every demo user has their own working directory and scope):
+The default **Live sessions** view lists users and sessions on the left and the conversation and Blackwall decisions on the right. Each row shows status, latest activity, search, a status filter, and an unread-event count. The selected session stays selected while other users work. You can pause the view, return to the newest events, and load older history; technical details are optional. The Overview, Events, and Policies tabs retain their administrator functions.
+
+Updates arrive over authenticated SSE with a resume cursor. Session history uses `GET /v1/admin/sessions/:id/events?limit=100`; subsequent pages use `before_id` and a fixed `snapshot_id`. Control cards distinguish a tool decision from its actual start and completion, and show reasons, identifiers, and the policy active at event time. Older records without attribution explicitly show that the version is unavailable. Inspected content fragments are not presented as messages delivered to the user. The new `model.message_released` event records the final message released by the gateway, after redaction, and marks audit-length limits.
+
+Browser checks against an isolated database and real HTTP/SSE routes: `node test/e2e/dashboard-sessions.qa.mjs`. A live demo with two Pi sessions, OpenAI Luna Low, embeddings, and Jev: `node scripts/demo-sessions.mjs` (uses configured API keys and saves recordings and screenshots in `demo-recordings/live-sessions-*`).
+
+Browser checks require Playwright with Chromium. Use an installed `playwright` package, or set `PLAYWRIGHT_MODULE` to the module path of an existing runtime before running the command.
+
+Verification of the new view: **148/148 unit tests, 30/30 browser checks, and 16/16 live-stack checks**. The [evidence manifest](reports/live-session-verification.json) links the recording, screenshots, hashes, and [independent review](reports/independent-live-session-review.md). Reopen the [two-user demo](http://127.0.0.1:8788/dashboard#sessions/sess_r7KDzSz5lkt8) with `PORT=8788 node scripts/show-demo.ts demo-recordings/live-sessions-2026-10-04-07-17-44`. The list shows the 200 most recently active sessions; selected-session event history is paginated.
+
+Launch Pi through Blackwall (each demo user has its own working directory and scope):
 
 ```sh
 node scripts/pi-launch.mjs --user onboarding-demo     # interactive
 node scripts/pi-launch.mjs --user onboarding-demo -- -p "Prepare a KYC draft for Atlas Capital …"
 ```
 
-Demo users: `onboarding-demo` (KYC Atlas), `deal-demo` (the Orion transaction), `hr-demo`, `developer-demo`, `analyst-demo`. A test receiver for the M&A scenario: `node scripts/receiver.mjs` (port 9911).
+Demo users: `onboarding-demo` (Atlas KYC), `deal-demo` (Orion transaction), `hr-demo`, `developer-demo`, and `analyst-demo`. Test receiver for the M&A scenario: `node scripts/receiver.mjs` (port 9911).
 
-Any other model client can use the gateway directly: `POST /v1/chat/completions` with a session token (`POST /v1/sessions` with a user token). With `BLACKWALL_GATEWAY_TOOLS=1` the gateway itself assesses the tool calls proposed by the model.
+Any other model client can call the gateway directly: `POST /v1/chat/completions` with a session token (created through `POST /v1/sessions` with a user token). With `BLACKWALL_GATEWAY_TOOLS=1`, the gateway also evaluates tool calls proposed by the model.
 
 ## Configuration
 
-A single source of truth: [`config/policy.yaml`](config/policy.yaml). A change = editing the file and restarting. The validator rejects unknown keys, nonexistent aliases and inconsistent references.
+Base configuration: [`config/policy.yaml`](config/policy.yaml). An administrator can publish rules, profiles/thresholds, the complete topic catalog, and the threat feed from the **Policies** tab, without a restart. The API requires the current version; it validates the full candidate and initializes its detector before swapping it in. An invalid or stale publication preserves the active configuration. The version increments automatically, and history and active settings are stored in SQLite. Restarting the same database with an unchanged base YAML restores its latest publication.
 
-- `profile: permissive | standard | strict` — they differ in the **scope** of semantic assessment (strict assesses every tool, standard writes/HTTP/shell, permissive HTTP/shell), in the **thresholds** (0.80/0.90/0.95), in the handling of secrets (redaction or a block) and of personal data, and in the behavior on uncertainty. Every allowed `bash` call is assessed in every profile.
-- `mode: enforce | observe` — `observe` records what would have been refused; authentication, session state and budgets still apply.
-- `global` + `users.<name>` — the organization's and the user's policy; allowlists intersect, prohibitions are summed, limits take the minimum, an empty list = prohibited.
-- `topics` / `topic_policies` — the catalog of sensitive topics and their policies.
-- The threat feed: [`feed/demo-attacks.json`](feed/demo-attacks.json) (deserialization with `pickle`/`torch.load` — the CVE-2025-32434 class, `trust_remote_code`, `curl | sh`, a reverse shell, `rm -rf /`, a leak to paste/webhook services, prompt injection).
+Publication waits for in-flight gateway and inspection requests, then invalidates unused grants, approvals, and open reviews. Pending sessions move to `blocked / POLICY_CHANGED`; an administrator can explicitly resume them under the new rules. Terminated sessions stay terminated. Started operations are not rolled back. OpenAI reasoning context for active sessions remains on the server, while earlier verdicts and detector cache do not authorize requests under the new version.
 
-## Tests
+`GET /v1/admin/policies/editable` returns controls without tokens or credential settings. `POST /v1/admin/policies` accepts `{expected_version, changes}`. `GET/POST /v1/admin/threat-feed` manages a versioned feed; publication requires `expected_policy_version`, `expected_feed_version`, and the complete `feed`. API keys, user identities, model providers, and base paths remain startup YAML/environment configuration. Details: [demo guide](docs/demo-guide.md).
+
+- `profile: permissive | standard | strict` — profiles differ in **semantic-review scope** (strict reviews every tool, standard reviews writes/HTTP/shell, permissive reviews HTTP/shell), **thresholds** (0.80/0.90/0.95), secret handling (redact or block), personal-data handling, and uncertainty behavior. Every allowed `bash` call is reviewed in every profile.
+- `mode: enforce | observe` — `observe` records what would have been denied; authentication, session state, and budgets still apply.
+- `global` + `users.<name>` — organization and user policy; allowlists intersect, denials combine, limits take the minimum, and an empty list means deny.
+- `topics` / `topic_policies` — sensitive-topic catalog and policies.
+- Threat feed: [`feed/demo-attacks.json`](feed/demo-attacks.json) (pickle/`torch.load` deserialization — CVE-2025-32434 class, `trust_remote_code`, `curl | sh`, reverse shell, `rm -rf /`, leaks to paste/webhook services, prompt injection).
+
+## Verification
 
 ```sh
-npm test            # 50 unit tests, no network
-npm run test:live   # 21 tests on real APIs (Jev, Claude)
-npm run test:e2e    # 8 tests with a real Pi agent
-npm run eval        # the semantic corpus (see below)
+npm run verify      # full suite; requires both keys and never silently skips API checks
+npm test            # unit tests, no network
+npm run test:live   # tests using real APIs (OpenAI, Jev)
+npm run test:e2e    # runs with a real Pi agent and services
+npm run eval -- --strict  # semantic corpus; exit 1 on regression
 npm run typecheck
 ```
 
-The last full run: **79/79** (50 unit + 21 on live APIs + 8 end-to-end). Tests on live models are non-deterministic: one e2e test failed in about 1 run in 4, because its prompt (overwriting a KYC draft with the text "SHOULD NOT BE WRITTEN") looked like sabotage to the supervisor; the prompt was changed to an ordinary one. The lesson: the supervisor can be over-eager on unusual requests. The negative tests check the **effect**, not a log entry: the file was not created or did not change, the HTTP receiver got no request, the model did not receive the prohibited message (the model-call counter did not grow), the secret reached neither the agent's transcript nor the audit.
+Final verification (`npm run verify -- --report-suffix=publication` and a final unit/typecheck follow-up) completed with exit code 0 on October 4, 2026: **143/143 unit tests, 33/33 integration checks, and 12/12 tests with real Pi**, with no skips. The [final report](reports/final-audit.md) lists models, evaluation results, and evidence limits; the [requirements matrix](docs/audit-2026-10-03.md) compares implementation with the concept and brief. Negative tests check **effects**: the file was not created or changed, the HTTP receiver got no request, the model did not receive prohibited content, or a secret did not reach the UI or audit.
 
-The end-to-end tests (a real Pi + a real Claude + a real Jev): approval of overwriting a KYC draft (one write), rejection of the approval (the file untouched, the session `blocked`), a read of another client's data, protection of `.env` and redaction of a key in an allowed file, an HR session closed after a request to evaluate people, an allowed POST at the user's request, no request on an injection in a document, and the absence of the session token in the agent's shell environment.
+### Semantic corpus (`npm run eval`)
 
-### The semantic corpus (`npm run eval`)
+Run reports are saved as dated files in [`reports/`](reports/). The [final evaluation](reports/eval-2026-10-03-23-13.json) includes 34 raw guardian assessments, 10 typed proposals through the full engine, and 15 Jev evaluations; 10 proposals repeat cases from the first group. The corpus is small and hand-written; it does not measure production effectiveness. Earlier errors remain, including a guardian false negative for reading another client's data in the [22:41 run](reports/eval-2026-10-03-22-41.json). OpenAI embeddings have a separate, experimental calibration in the [topic report](reports/topics-textembedding3small-2026-10-03T21-30-33-105Z.json); it does not replace validation on representative data.
 
-34 supervision cases + 15 shell commands, the labels written **before** the run and not tuned. Reports: [`reports/`](reports/).
+**Note:** these are small author-written samples. They do not establish production effectiveness. Jev evaluates the instruction text, not its execution effects; the `demo_prepared` profile is **not a sandbox**.
 
-| Measure | Result |
-| --- | --- |
-| Supervision: violations let through (false allow) | 0/15 |
-| Supervision: closures without a violation (false terminate) | 0/19 |
-| Supervision: uncertain / technical blocks | 0/34 / 0/34 |
-| A topic detected in unrelated messages | 0/3 |
-| Latency: topic detection p50 / p95 | 9 / 15 ms (local MiniLM, CPU) |
-| Latency: the supervisor (Haiku) p50 / p95 | ~1.3 / ~1.6 s |
-| Jev, shell: dangerous commands let through automatically | 0/4 in every profile |
-| Jev, shell: justified programs let through automatically | permissive 5/5, standard 2/5, strict 1/5 (the rest ask the user) |
+## Differences from the concept document
 
-**Note:** these are small samples written by the authors. They do not translate into production effectiveness. Jev's assessment concerns the text of a command, not its effects at run time; the `demo_prepared` profile **is not a sandbox**.
-
-## Deviations from the concept document
-
-| The concept | The implementation | Reason |
+| Concept | Implementation | Reason |
 | --- | --- | --- |
-| PostgreSQL + pgvector | SQLite (`node:sqlite`), exact cosine similarity in memory | no dependence on Docker; 3 topics; the `Store` contract allows swapping the database |
-| OpenAI embeddings | a local MiniLM (transformers.js), English only; the `openai` provider is ready in the code | no OpenAI key with available credits; data does not leave the machine |
-| `execution_authorization` + `/consume` | a one-time decision after approval (an atomic `pending → approved` transition) | a simplification for a single-machine demo |
-| React + Vite | a static dashboard in plain JS | fewer dependencies |
-| Messages for the model in Polish | in English | the executor model works in English |
-| Hot-reload of the policy through the API | a YAML file + a restart | the user's decision |
-| Context validation through `trusted_task_id` | the trusted task = the user messages recorded by the gateway/extension | no separate task registry |
+| PostgreSQL + pgvector | SQLite (`node:sqlite`), exact in-memory cosine similarity | Avoids a Docker dependency; 3 topics; the `Store` contract allows a database swap |
+| OpenAI embeddings | `text-embedding-3-small`; the API receives text from controlled events and catalog examples | Depends on network and external service; errors block event handling |
+| Approval and execution | Approval is bound to the session, tool, request, exact arguments, policy version, and hash of existing content; the plugin makes a fresh `/consume` call immediately before execution | Hash and receipt limit replay and target changes but do not prove the person's identity or execution outcome |
+| React + Vite | Static plain-JS dashboard | Fewer dependencies |
+| Runtime model | `gpt-6-luna` at reasoning `low` | Response behavior and quality still depend on the model; policy decisions remain with Blackwall |
+| Policy and feed publication | Authenticated API/UI, validation, versions, and SQLite history | Works without restart; local backend has no organizational control plane/SSO |
+| Context validation through `trusted_task_id` | A trusted task consists of user messages recorded by the gateway/extension | No separate task registry |
 
 ## Demo recording
 
-`node scripts/demo.ts --only 06-hr-termination` records one case on the real stack (Pi, Claude, Jev, real files) into `demo-recordings/`: the course of the conversation, the audit trail, the evidence checked in the system and dashboard screenshots. An independent counting forwarder sits between the gateway and the model provider, so "the model did not receive the prohibited content" can be checked without trusting Blackwall's own audit. Without `--only` it records all the cases (about 8 min).
+`node scripts/demo.ts --only 10-hr-pl-first-violation` records the selected scenario on the local stack with real Pi and configured services. It saves an MP4 of the dashboard, overview/policy/event-detail screenshots, a transcript, and audit JSONL under `demo-recordings/`. A relay between the gateway and OpenAI lets you compare runtime-model requests with the Blackwall audit; it does not observe direct guardian calls or other Pi network paths.
 
-A review of the recording by an independent agent found a real bug: a message recorded in the audit was treated as "already inspected" even when the supervisor had failed or was uncertain, so after an administrator resumed the session it would have reached the model without assessment. It was fixed (a message is skipped only after it has passed the check) and tests were added.
+Recording requires Playwright with Chromium and FFmpeg with an H.264 encoder. Set `PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.js` to select Playwright and `FFMPEG_PATH=/absolute/path/to/ffmpeg` to select FFmpeg; the script also tries local installations. Check a running dev server without starting an agent: `node scripts/record-browser.mjs http://127.0.0.1:8787 /tmp/blackwall-browser-smoke --smoke`. A full demo sends scenario content to OpenAI and Jev; use synthetic data.
 
-## Known limitations and open issues
+## Known limitations and open items
 
-- **No sandbox.** `bash` is assessed, but a program that runs may do more than the command describes. The extension does not pass the session token to the shell's environment, but the shell process runs with the permissions of the system user.
-- A tool result is inspected in Pi's `tool_result`, that is after execution; the raw content may have reached the TUI stream before it is replaced.
-- The model's response is buffered in full (no real streaming).
-- By default a refusal **blocks the session** (`default_session_action: block`). The extension tells the agent its allowed locations so that it avoids accidental refusals.
-- During manual trials, a Pi invocation with no traffic at all to the server (it hung until the time limit) was observed 3 times; it could not be reproduced in the subsequent dozen or so runs (including 7 e2e tests). Request logging of the server: `BLACKWALL_LOG=1`.
-- The embedding model is English; Polish messages will be detected less reliably.
-- No automatic download of the feed, no MCP, agent-to-agent or SSO.
-- The keys used during the build ended up in the transcript of the work — **they should be rotated** after the hackathon.
+- **No sandbox.** `bash` is assessed, but a running program can do more than its description suggests. The extension does not pass the session token into the shell environment, but the shell process runs with the operating-system user's permissions.
+- In the trusted plugin, Pi's native tools buffer standard text and `structuredContent`; results are inspected before publication to Pi UI/RPC and before being passed to the agent. Filesystem reads happen earlier, and non-text modalities and paths outside this plugin are not covered by this guarantee.
+- Model responses are buffered in full (there is no true streaming).
+- By default, a denial **blocks the session** (`default_session_action: block`). The extension gives the agent allowed locations to avoid accidental denials.
+- Deployment depends on OpenAI for the gateway, guardian, and embeddings, and on Jev for semantic evaluation. Content sent to those components leaves the machine; the demo uses synthetic data.
+- The detector selects candidates by embedding similarity; a candidate is not proof of a violation. The small calibration corpus does not guarantee recall or precision on real messages.
+- No automatic feed downloads, MCP, agent-to-agent support, or SSO.
+- Key values are not stored in this audit's artifacts. Do not put production secrets in prompts, shell commands, or demo captures.
+
+[Interactive Sites presentation](https://blackwall-hackyeah-2026.dariusz.chatgpt.site): animations, dashboard replay, and eight live clips. The [publication/test closeout](reports/publication-closeout.md) and [current manifest](reports/verification-manifest-publication.json) link the current code, new demo, and verified nine-slide presentation.

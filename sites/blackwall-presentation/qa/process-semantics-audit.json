@@ -1,0 +1,257 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS — no remaining material semantic findings.",
+  "audit": "Fresh independent review of the final flow JSON and implementation sources. No source or process-flow data was edited; no model/API calls were made.",
+  "artifacts": [
+    {
+      "path": "sites/blackwall-presentation/content/process-flow.json",
+      "sha256": "ab5e13982352e65b06ca54326e0a345aca51da7842d96b3f91269de25ad118ec"
+    },
+    {
+      "path": "sites/blackwall-presentation/source/dist/assets/process-flow.json",
+      "sha256": "ab5e13982352e65b06ca54326e0a345aca51da7842d96b3f91269de25ad118ec"
+    }
+  ],
+  "copiesIdentical": true,
+  "expectedFinalSha256": "ab5e13982352e65b06ca54326e0a345aca51da7842d96b3f91269de25ad118ec",
+  "dimensions": {
+    "nodes": 10,
+    "edges": 27,
+    "scenarios": 8
+  },
+  "sourceIntegrity": {
+    "sourceCount": 18,
+    "allPresentAndMatching": true,
+    "referenceCount": 56,
+    "allLineReferencesValid": true
+  },
+  "eventNameReview": {
+    "count": 42,
+    "allResolved": true,
+    "events": [
+      {
+        "event": "approval.approved",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "approval.expired",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "approval.rejected",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "approval.requested",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "budget.denied",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "budget.reserved",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "content.*",
+        "found": true,
+        "basis": "intentional event-family wildcard"
+      },
+      {
+        "event": "content.blocked",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "content.redacted",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "content.tool_output",
+        "found": true,
+        "basis": "dynamic event name emitted by supervise()"
+      },
+      {
+        "event": "content.user_input",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "decision.*",
+        "found": true,
+        "basis": "intentional event-family wildcard"
+      },
+      {
+        "event": "decision.allowed",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "decision.denied",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "execution.*",
+        "found": true,
+        "basis": "intentional event-family wildcard"
+      },
+      {
+        "event": "execution.claimed",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "feed.published",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "guardian.*",
+        "found": true,
+        "basis": "intentional event-family wildcard"
+      },
+      {
+        "event": "guardian.reviewed",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "guardian.started",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "guardian.unavailable",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "judge.evaluated",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "model.completed",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "model.denied",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "model.failed",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "model.released",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "policy.published",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "session.resumed",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "session.reviewing",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "session.started",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "session.terminated",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "tool.*",
+        "found": true,
+        "basis": "intentional event-family wildcard"
+      },
+      {
+        "event": "tool.completed",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "tool.failed",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "tool.started",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "topic.*",
+        "found": true,
+        "basis": "intentional event-family wildcard"
+      },
+      {
+        "event": "topic.assigned",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "topic.candidate_detected",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "topic.checked",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "topic.confirmed",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "topic.detection_failed",
+        "found": true,
+        "basis": "literal code reference"
+      },
+      {
+        "event": "topic.dismissed",
+        "found": true,
+        "basis": "literal code reference"
+      }
+    ]
+  },
+  "resolvedFindings": [
+    "topic.assigned is removed from the embedding-result event list and correctly described as a trusted assignment made at session creation.",
+    "The publication swap has only policy.published/feed.published audit events; the next-policy step has no emitted-event list and explains that blocked status is a DB update, while later denied requests may emit model.denied/decision.denied."
+  ],
+  "verifiedSemantics": [
+    "Observe-mode note accurately warns that non-hard denials may result in actual execution; scenarios specify enforce mode.",
+    "Gateway prompt scan scope is distinguished from event-level DLP/topic/Guardian inspection.",
+    "Started receipt occurs before local execution; completion/failure receipt follows custom output inspection.",
+    "Hard-deny Pi step uses decision.denied, not model.denied.",
+    "No-OS-sandbox and PublicationGate HTTP-lease boundaries are explicit.",
+    "Approval scenario requires an available Pi UI.",
+    "Guardian and Jev remain separate; embeddings only create candidates and Guardian is conditional on active topic labels."
+  ]
+}

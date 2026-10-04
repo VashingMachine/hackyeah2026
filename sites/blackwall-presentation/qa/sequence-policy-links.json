@@ -1,0 +1,422 @@
+{
+  "generated_at": "2026-10-04T06:55:34.561Z",
+  "policy_links": 69,
+  "failures": [],
+  "results": [
+    {
+      "node": "pi",
+      "path": "users.*.workdir",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "pi",
+      "path": "users.*.topic_ids",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "pi",
+      "path": "global",
+      "matches": 33,
+      "fieldsView": true
+    },
+    {
+      "node": "pi",
+      "path": "users.*",
+      "matches": 38,
+      "fieldsView": true
+    },
+    {
+      "node": "blackwall",
+      "path": "mode",
+      "matches": 20,
+      "fieldsView": true
+    },
+    {
+      "node": "blackwall",
+      "path": "profile",
+      "matches": 11,
+      "fieldsView": true
+    },
+    {
+      "node": "blackwall",
+      "path": "profiles.*",
+      "matches": 7,
+      "fieldsView": true
+    },
+    {
+      "node": "blackwall",
+      "path": "global",
+      "matches": 33,
+      "fieldsView": true
+    },
+    {
+      "node": "blackwall",
+      "path": "users.*",
+      "matches": 38,
+      "fieldsView": true
+    },
+    {
+      "node": "blackwall",
+      "path": "approvals",
+      "matches": 3,
+      "fieldsView": true
+    },
+    {
+      "node": "blackwall",
+      "path": "denials",
+      "matches": 3,
+      "fieldsView": true
+    },
+    {
+      "node": "blackwall",
+      "path": "topic_supervision",
+      "matches": 9,
+      "fieldsView": true
+    },
+    {
+      "node": "blackwall",
+      "path": "topics",
+      "matches": 5,
+      "fieldsView": true
+    },
+    {
+      "node": "blackwall",
+      "path": "topic_policies",
+      "matches": 5,
+      "fieldsView": true
+    },
+    {
+      "node": "blackwall",
+      "path": "threat_feed",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "llm",
+      "path": "model_aliases.*",
+      "matches": 5,
+      "fieldsView": true
+    },
+    {
+      "node": "llm",
+      "path": "global.models",
+      "matches": 3,
+      "fieldsView": true
+    },
+    {
+      "node": "llm",
+      "path": "users.*.models",
+      "matches": 3,
+      "fieldsView": true
+    },
+    {
+      "node": "llm",
+      "path": "profiles.*.secrets",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "llm",
+      "path": "global.budgets",
+      "matches": 6,
+      "fieldsView": true
+    },
+    {
+      "node": "llm",
+      "path": "users.*.budgets",
+      "matches": 6,
+      "fieldsView": true
+    },
+    {
+      "node": "embeddings",
+      "path": "topic_supervision.embedding.*",
+      "matches": 2,
+      "fieldsView": true
+    },
+    {
+      "node": "embeddings",
+      "path": "topic_supervision.chunk_chars",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "embeddings",
+      "path": "topic_supervision.overlap_chars",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "embeddings",
+      "path": "topic_supervision.default_similarity_threshold",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "embeddings",
+      "path": "topics.*.examples",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "embeddings",
+      "path": "topics.*.similarity_threshold",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "embeddings",
+      "path": "users.*.topic_ids",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "guardian",
+      "path": "topic_supervision.guardian_model_alias",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "guardian",
+      "path": "topic_supervision.max_history_events",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "guardian",
+      "path": "topic_supervision.on_error",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "guardian",
+      "path": "topics.*.policy_id",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "guardian",
+      "path": "topic_policies.*.forbidden",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "guardian",
+      "path": "topic_policies.*.allowed",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "guardian",
+      "path": "topic_policies.*.reason_code",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "jev",
+      "path": "semantic.*",
+      "matches": 4,
+      "fieldsView": true
+    },
+    {
+      "node": "jev",
+      "path": "profiles.*.semantic_evaluate",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "jev",
+      "path": "profiles.*.min_allow_probability",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "jev",
+      "path": "profiles.*.min_confidence",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "jev",
+      "path": "profiles.*.on_uncertain",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "jev",
+      "path": "model_aliases.*",
+      "matches": 5,
+      "fieldsView": true
+    },
+    {
+      "node": "jev",
+      "path": "global.budgets",
+      "matches": 6,
+      "fieldsView": true
+    },
+    {
+      "node": "jev",
+      "path": "users.*.budgets",
+      "matches": 6,
+      "fieldsView": true
+    },
+    {
+      "node": "policies",
+      "path": "mode",
+      "matches": 20,
+      "fieldsView": true
+    },
+    {
+      "node": "policies",
+      "path": "profile",
+      "matches": 11,
+      "fieldsView": true
+    },
+    {
+      "node": "policies",
+      "path": "profiles.*",
+      "matches": 7,
+      "fieldsView": true
+    },
+    {
+      "node": "policies",
+      "path": "global",
+      "matches": 33,
+      "fieldsView": true
+    },
+    {
+      "node": "policies",
+      "path": "users.*",
+      "matches": 38,
+      "fieldsView": true
+    },
+    {
+      "node": "policies",
+      "path": "approvals",
+      "matches": 3,
+      "fieldsView": true
+    },
+    {
+      "node": "policies",
+      "path": "denials",
+      "matches": 3,
+      "fieldsView": true
+    },
+    {
+      "node": "policies",
+      "path": "topics",
+      "matches": 5,
+      "fieldsView": true
+    },
+    {
+      "node": "policies",
+      "path": "topic_policies",
+      "matches": 5,
+      "fieldsView": true
+    },
+    {
+      "node": "policies",
+      "path": "changes.topic_thresholds.*",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "policies",
+      "path": "threat_feed",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "approval",
+      "path": "approvals.enabled",
+      "matches": 2,
+      "fieldsView": true
+    },
+    {
+      "node": "approval",
+      "path": "approvals.eligible_reason_codes",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "approval",
+      "path": "approvals.ttl_seconds",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "approval",
+      "path": "topic_policies.*",
+      "matches": 4,
+      "fieldsView": true
+    },
+    {
+      "node": "executor",
+      "path": "global.tools",
+      "matches": 2,
+      "fieldsView": true
+    },
+    {
+      "node": "executor",
+      "path": "global.files",
+      "matches": 7,
+      "fieldsView": true
+    },
+    {
+      "node": "executor",
+      "path": "global.network",
+      "matches": 9,
+      "fieldsView": true
+    },
+    {
+      "node": "executor",
+      "path": "global.shell",
+      "matches": 5,
+      "fieldsView": true
+    },
+    {
+      "node": "executor",
+      "path": "global.budgets",
+      "matches": 6,
+      "fieldsView": true
+    },
+    {
+      "node": "executor",
+      "path": "users.*.files",
+      "matches": 7,
+      "fieldsView": true
+    },
+    {
+      "node": "executor",
+      "path": "users.*.network",
+      "matches": 9,
+      "fieldsView": true
+    },
+    {
+      "node": "audit",
+      "path": "audit.db_path",
+      "matches": 1,
+      "fieldsView": true
+    },
+    {
+      "node": "audit",
+      "path": "version",
+      "matches": 5,
+      "fieldsView": true
+    },
+    {
+      "node": "audit",
+      "path": "mode",
+      "matches": 20,
+      "fieldsView": true
+    },
+    {
+      "node": "audit",
+      "path": "profile",
+      "matches": 11,
+      "fieldsView": true
+    }
+  ],
+  "process_flow_sha256": "78e0d5bced49d852469e2966c335a7e796391f631be12d9ec91fde0a1c8d4a87"
+}

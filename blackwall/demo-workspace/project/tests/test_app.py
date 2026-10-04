@@ -9,3 +9,9 @@ def test_add():
 
 def test_greet():
     assert greet("Ada") == "Hello, Ada!"
+
+
+if __name__ == "__main__":
+    test_add()
+    test_greet()
+    print("TESTS_PASSED")

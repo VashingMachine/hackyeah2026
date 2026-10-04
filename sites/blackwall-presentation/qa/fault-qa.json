@@ -1,0 +1,9 @@
+{
+  "generated_at": "2026-10-04T01:00:57.031Z",
+  "test": "evidence HTTP503 followed by successful retry",
+  "result": "PASS",
+  "errorVisible": true,
+  "filterDisabledOnFailure": true,
+  "recoveredSessions": 6,
+  "recoveredClips": 8
+}

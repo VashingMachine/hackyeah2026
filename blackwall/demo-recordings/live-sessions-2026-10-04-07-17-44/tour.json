@@ -1,0 +1,13 @@
+{
+  "source": "Authenticated UI tour of the recorded real-stack sessions. No new agent calls or invented events.",
+  "base_url": "http://127.0.0.1:8788",
+  "errors": [],
+  "files": [
+    "05-user-prompt-and-blackwall.png",
+    "06-released-assistant-response.png",
+    "07-user-prompt-and-guardian.png",
+    "08-mobile-live-chat.png",
+    "video/session-browser-tour.webm",
+    "video/session-browser-tour.mp4"
+  ]
+}
