@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-10-04T08:23:45.236Z",
+  "scope": "Initial jury-facing information density, progressive disclosure, shortcuts, and closed-state layout. Run only after the source revision is ready.",
+  "initialVisibleWordCount": 482,
+  "heroAndExampleWordCount": 126,
+  "initialVisibleText": "Skip to content\nBLACKWALL\nTry it\nProof\nSequence\nRules\nWatch\n◉\nPresent\n↗\n\nHACKYEAH 2026\n\nAI agents act.\nBlackwall\nchecks first.\n\nA checkpoint between an AI agent and your company’s files and tools.\n\nTry a simple example\n↓\nWatch the demo ↗\nBEFORE A TOOL RUNS\nAI agent\nProposes an action\n↓\nBlackwall\nChecks your rules\n✓ Allow\nTool may run\n? Ask\nWait for approval\n× Stop\nTool stays off\nWORKING LOCAL MVP\nPI + OPENAI + JEV\n01 / TRY IT\nOne action. Three choices.\n\nPick an example. No tools run here.\n\nRead a file\nReplace a draft\nShare private data\nUSER ASKS\n\nRead the Atlas company file.\n\nTHE AGENT PROPOSES\nUse a tool\nread(\"Atlas / company.json\")\nBLACKWALL CHECKS\nYour rules\nOnly this client’s files\nTHE DECISION\nGo ahead\nallow\n\nThe file is inside the allowed folder. The agent may read it.\n\nSee recorded session ↗\n↻\n02 / REAL RESULTS\nSee what actually happened.\n\nRecorded runs. Synthetic data. Approvals supplied by the test harness.\n\nPI AGENT\nAsked first. Wrote once.\n\nReplacing a draft needed approval.\n\nInspect result ↗\nPROPOSAL REPLAY\nOther client? No access.\n\nThe read was blocked before it ran.\n\nInspect result ↗\nPI AGENT\nEmployee ranking? Stopped.\n\nThe request was stopped before the agent model ran.\n\nInspect result ↗\nOpen the session browser\n6 recorded sessions\n+\n03 / WATCH\nOne session. On screen.\n\nWatch the agent, the check and the result.\n\nPI / SIMULATED APPROVAL\nKYC — draft write after approval\n\nReal dashboard recording: review of a file overwrite, simulated user approval, and completed write.\n\n⛶\nChoose another recording\n8 clips\n\nOriginal Polish recordings · English captions on this page · synthetic data · no audio\n\n04 / LOOK INSIDE\nWho talks to whom?\n\nStart at the top. Follow the arrows down.\n\nBlackwall\nRuns the checks\nPi\nThe agent\nPolicies\nYour rules\nEmbeddings\nFind related topics\nGuardian\nChecks topic rules\nJev\nReviews commands\n\nEmbeddings suggest topics. They do not block actions. Each path uses the checks it needs.\n\nExplore the sequence diagram\n8 paths · step by step\n+\n05 / YOUR RULES\nA policy is a set of rules.\n\nChoose a rule to see its value, effect and demo.\n\nOnly this client’s files.\nChoose which folders the agent can read.\nSee the rule ↗\nAsk before replacing a file.\nMark folders that need approval.\nSee the rule ↗\nNo employee rankings.\nSet the tasks that a topic forbids.\nSee the rule ↗\nExplore every policy field\nJSON + examples\n+\n06 / CHECKED\nMore than a green badge.\n✓ Files checked\n✓ Real OpenAI + Jev calls\n✓ Two independent demo reviews\nTest results and evidence\n4 Oct 2026 · small test corpus\n+\n07 / LIMITS\nA working MVP. More to do.\n\nLocal demo.\nNeeds an OS sandbox and central identity for production.\n\nAI can be wrong.\nReviews add cost and time.\n\nSynthetic data.\nContent goes to OpenAI and Jev.\n\nRead the limits\nExecution, data and audit\n+\n\nBLACKWALL / HACKYEAH 2026\n\nLet agents work.\nKeep control.\nGet the slides ↓\nView the code ↗\nGet the evidence ↗\nBLACKWALL\n\nLocal MVP · synthetic data · 4 Oct 2026\n\nBack to top ↑",
+  "checks": [
+    {
+      "name": "technical audit, sequence and policy details start closed",
+      "result": "PASS",
+      "detail": "{\"audit-details\":false,\"sequence-details\":false,\"policy-details\":false}"
+    },
+    {
+      "name": "all initially visible page copy stays within the jury reading budget",
+      "result": "PASS",
+      "detail": "visible words=482"
+    },
+    {
+      "name": "hero and interactive example stay under 150 words",
+      "result": "PASS",
+      "detail": "opening words=126"
+    },
+    {
+      "name": "three interactive flow choices are available",
+      "result": "PASS",
+      "detail": "[\"allow\",\"approval\",\"deny\"]"
+    },
+    {
+      "name": "three evidence cards target the selected recorded sessions",
+      "result": "PASS",
+      "detail": "[\"kyc-approval\",\"client-path-gate\",\"hr-polish-violation\"]"
+    },
+    {
+      "name": "three policy presets are available",
+      "result": "PASS",
+      "detail": "[\"global-files-read-roots\",\"global-files-require-approval-roots\",\"topic-policies-forbidden\"]"
+    },
+    {
+      "name": "desktop page has no horizontal overflow while details are closed",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "deep link #replay opens audit-details",
+      "result": "PASS",
+      "detail": "{\"targetExists\":true,\"detailOpen\":true}"
+    },
+    {
+      "name": "deep link #process-workbench opens sequence-details",
+      "result": "PASS",
+      "detail": "{\"targetExists\":true,\"detailOpen\":true}"
+    },
+    {
+      "name": "deep link #policy-explorer opens policy-details",
+      "result": "PASS",
+      "detail": "{\"targetExists\":true,\"detailOpen\":true}"
+    },
+    {
+      "name": "mobile starts with details closed and no horizontal page overflow",
+      "result": "PASS",
+      "detail": "{\"overflow\":false,\"detailsClosed\":true}"
+    }
+  ]
+}

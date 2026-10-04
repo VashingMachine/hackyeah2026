@@ -1,6 +1,6 @@
 # Blackwall — interactive presentation
 
-The public Blackwall project website on Sites, in English. It presents a working local MVP through an animated hero, control examples, recorded dashboard sessions, a sequence diagram, a policy explorer, eight demo recordings, verification results, limitations and a nine-slide downloadable deck.
+The public Blackwall project website on Sites, in plain English. Its first read explains the checkpoint with a simple picture, three interactive examples and three recorded results. The complete session browser, sequence diagram, policy explorer, test evidence and detailed limits open on demand. Eight demo recordings and a nine-slide downloadable deck remain available.
 
 ## Preview
 
@@ -13,7 +13,9 @@ Open `http://127.0.0.1:8790/`. This static site requires no package installation
 ## Source files
 
 - `dist/index.html` and identical `dist/presentation.html`: English content and semantics.
-- `dist/presentation.css`: layout, animation, responsive views and reduced motion.
+- `dist/presentation.css`: shared layout, animation, responsive views and reduced motion.
+- `dist/jury.css`: the simplified first read, visual rule shortcuts and accessible disclosure layout.
+- `dist/jury-guide.js`: deep links, recorded-result shortcuts, policy presets and closing-panel playback controls.
 - `dist/presentation.js`: filters, replay, recording selection and presentation mode.
 - `dist/policy-explorer.js`: field catalogue, filters, interactive JSON and evidence media.
 - `dist/process-diagram.js` and `dist/assets/process-flow.json`: ten participants, eight paths, 48 steps and 114 sequence messages, with source references and policy links.
@@ -35,6 +37,12 @@ Replay runs only in the browser. It does not connect to Blackwall, run tools, co
 KYC and HR include explicit topic assignment from `user_config`. A separate KYC case demonstrates detection without an initial assignment. The M&A POST replay is a harness proposal rather than an autonomous Pi tool call. Test approvals and administrator decisions are simulated and explicitly labeled; authenticated administrator API actions are identified separately. The uncertain verdict is preserved without another model call.
 
 Historical application evidence shown on this site: 143 unit tests, 33 real integration/API tests and 12 Pi E2E tests; 14 demo scenarios with 68 checks, plus six continuation checks. The site describes the recorded corpus, rather than implying that these are current repository test totals. The small synthetic corpus does not establish production reliability. Missing OS sandboxing, a central control plane and complete financial costing remain visible limitations.
+
+## Jury-first reading path
+
+The default page keeps technical panels closed. The hero separates Allow (the tool may run), Ask (wait for approval) and Stop (the tool stays off). Flow examples are illustrations and never run tools. The publication-denial example starts from a request to summarize a deal: the extra external POST was not requested.
+
+Three proof cards open the final recorded event for the approval, cross-client file denial and HR topic violation cases. Three policy cards open the exact `read_roots`, `require_approval_roots` and topic `forbidden` fields. Direct links to the audit, sequence and policy sections open the appropriate panel. Closing a panel stops its playback. The full technical material and unchanged evidence stay available without crowding the first read.
 
 ## Presentation mode
 

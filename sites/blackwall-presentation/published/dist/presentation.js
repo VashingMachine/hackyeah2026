@@ -54,16 +54,19 @@ document.addEventListener('keydown',e=>{
   if(['ArrowRight','PageDown','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();moveSlide(['ArrowRight','PageDown'].includes(e.key)?1:-1);}
 });
 const flowExamples={
-  allow:{effect:'allow',label:'Allow',operation:'read("Atlas / company.json")',description:'A read within the assigned matter can proceed after checks pass. The allow decision and execution report are separate events.'},
-  approval:{effect:'require_approval',label:'Approval required',operation:'write("Atlas / kyc-draft.md", new content)',description:'Replacing an existing draft requires one-time approval for the exact arguments and resource. The engine checks the file again before starting the operation.'},
-  deny:{effect:'deny',label:'Deny',operation:'POST confidential analysis without user instruction',description:'The supervisor checks the publication proposal against the M&A policy. A confirmed violation ends the session. Denial stops the executor; the receiver gets no request.'}
+  allow:{effect:'allow',label:'Go ahead',request:'Read the company file for the assigned client.',rule:'Reads must stay within the assigned client folder.',operation:'Read: Atlas / company.json',description:'The file is inside the allowed folder. The agent may read it.',evidenceSessionId:'kyc-approval'},
+  approval:{effect:'require_approval',label:'Ask the user',request:'Replace the client’s KYC draft.',rule:'A write to an existing file needs approval.',operation:'Write: Atlas / kyc-draft.md',description:'After approval, Blackwall rechecks the file before the write.',evidenceSessionId:'kyc-approval'},
+  deny:{effect:'deny',label:'Stop here',request:'Summarize the confidential deal.',rule:'Do not publish without the user’s request.',operation:'POST: external service',description:'The agent tries to share the summary. Blackwall blocks it before the request leaves.',evidenceSessionId:'ma-publication-block'}
 };
 let flowChoice='allow';
 function runFlow(choice=flowChoice){
   flowChoice=choice;flowTimers.forEach(clearTimeout);flowTimers=[];
   const f=flowExamples[choice],lab=$('flow-lab');lab.dataset.effect=choice;
   all('[data-flow]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.flow===choice)));
+  if($('flow-request'))$('flow-request').textContent=f.request;
+  if($('flow-rule'))$('flow-rule').textContent=f.rule;
   $('flow-operation').textContent=f.operation;$('flow-effect').textContent=f.effect;$('flow-short').textContent=f.label;$('flow-description').textContent=f.description;
+  const evidenceLink=$('flow-evidence-link');if(evidenceLink)evidenceLink.dataset.demoSession=f.evidenceSessionId;
   lab.classList.remove('animating');all('.flow-node').forEach(n=>n.classList.remove('lit'));
   if(!motion){all('.flow-node').forEach(n=>n.classList.add('lit'));return;}
   void lab.offsetWidth;lab.classList.add('animating');
@@ -78,7 +81,7 @@ function assetURL(value){
 }
 const sourceLabels={Pi:'Pi agent','Authenticated API harness replay':'API replay','Core.decideTool harness replay':'Engine replay'};
 function shortKind(s){if(s.id==='uncertain-review-continuation')return'Replay + admin';return ['Pi','Pi conversation'].includes(s.sourceType)?'Pi agent':'Proposal replay';}
-function timeLabel(value){return new Date(value).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZone:'Europe/Warsaw',hour12:false});}
+function timeLabel(value){return new Date(value).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZone:'Europe/Warsaw',hour12:false});}
 function stateAt(index){
   let status=selectedSession.initialStatus;
   selectedSession.events.slice(0,index+1).forEach(e=>{
@@ -102,7 +105,7 @@ const featureLabels={file_scope:'File scope',approval:'User approval',execution_
 window.BlackwallFeatures=featureLabels;
 function renderFeatureChips(target,ids=[]){
   target.replaceChildren();
-  ids.forEach(id=>{const b=node('button','feature-chip',featureLabels[id]||id);b.type='button';b.dataset.feature=id;b.title=contextFeatures[id]||'View policy fields related to this feature';b.addEventListener('click',()=>window.BlackwallPolicyGuide?.selectFeature(id));target.append(b);});
+  ids.forEach(id=>{const b=node('button','feature-chip',featureLabels[id]||id);b.type='button';b.dataset.feature=id;b.title=contextFeatures[id]||'View policy fields related to this feature';b.addEventListener('click',()=>{const details=$('policy-details');if(details)details.open=true;window.BlackwallPolicyGuide?.selectFeature(id);});target.append(b);});
 }
 function renderSessionContext(s){
   const c=s.context,p=c.prompt;
@@ -120,7 +123,7 @@ function selectSession(s){
   $('session-domain').textContent=`${s.domain} / ${s.sessionRef}`;$('session-title').textContent=s.title;$('session-subtitle').textContent=s.subtitle;
   $('session-kind').textContent=shortKind(s);$('session-kind').title=s.sourceType;
   $('session-proof').textContent=s.proof;$('session-note').textContent=s.note+' Selected audit events; sequence numbers and server times are preserved. Administrator and user approvals are simulated by the harness.';
-  $('dash-source').textContent='AUDYT DEMO / POLICY v1';$('replay-scrub').max=String(s.events.length-1);
+  $('dash-source').textContent='DEMO AUDIT / POLICY v1';$('replay-scrub').max=String(s.events.length-1);
   const log=$('event-log');log.replaceChildren();
   s.events.forEach((e,i)=>{
     const b=node('button','event-row');b.type='button';b.dataset.index=String(i);b.setAttribute('aria-label',`Event seq ${e.seq}: ${e.title}`);
@@ -130,6 +133,18 @@ function selectSession(s){
   });
   renderSessions();renderEvent(0);
 }
+let pendingSessionId=null,pendingSessionEvent='first';
+function selectSessionById(id,event='first'){
+  if(!id)return false;
+  if(!evidence){pendingSessionId=id;pendingSessionEvent=event;return true;}
+  const session=evidence.sessions.find(item=>item.id===id);
+  if(!session)return false;
+  pendingSessionId=null;pendingSessionEvent='first';
+  const filter=$('session-filter');if(filter.value!=='all'&&filter.value!==session.domain){filter.value='all';}
+  selectSession(session);if(event==='last')renderEvent(session.events.length-1);return true;
+}
+function pauseReplay(){stopPlayback();$('demo-video')?.pause();window.BlackwallProcess?.stop();}
+window.BlackwallPresentation={selectSessionById,pause:pauseReplay};
 function renderSessions(){
   if(!evidence)return;
   const filter=$('session-filter').value;const sessions=evidence.sessions.filter(s=>filter==='all'||s.domain===filter);
@@ -191,7 +206,7 @@ async function loadEvidence(){
     d.sessions=d.sessions.map(s=>{const context=contexts.sessions.find(c=>c.id===s.id);if(!context?.prompt?.text||!context.events)throw new Error('Missing session context');return{...s,context};});
     contextFeatures=contexts.featureCatalog||{};
     evidence=d;const filter=$('session-filter');filter.replaceChildren(node('option','','All domains'));filter.firstChild.value='all';[...new Set(d.sessions.map(s=>s.domain))].forEach(domain=>{const option=node('option','',domain);option.value=domain;filter.append(option);});
-    $('load-error').hidden=true;selectSession(d.sessions[0]);renderVideos();$('session-filter').disabled=false;
+    $('load-error').hidden=true;const pending=d.sessions.find(s=>s.id===pendingSessionId);selectSession(pending||d.sessions[0]);if(pending&&pendingSessionEvent==='last')renderEvent(pending.events.length-1);pendingSessionId=null;pendingSessionEvent='first';renderVideos();$('session-filter').disabled=false;
   }catch{ $('load-error').hidden=false;$('dash-source').textContent='Data temporarily unavailable';$('sessions-list').replaceChildren(node('p','loading-copy','Could not load the audit record. Use the retry button below.'));stopPlayback(); }
 }
 $('retry-data').addEventListener('click',loadEvidence);loadEvidence();

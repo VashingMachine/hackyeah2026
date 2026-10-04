@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-04T08:22:06.897Z",
+  "target": "English jury presentation interaction behavior",
+  "preview": "Static local HTTP server at http://127.0.0.1:8791/presentation.html; direct-hash smoke also run against root preview at http://127.0.0.1:8790/presentation.html",
+  "browser": {
+    "name": "Chromium via bundled Playwright",
+    "desktopViewport": "1440x1000",
+    "mobileViewport": "390x844",
+    "reducedMotion": true
+  },
+  "sourceSha256": {
+    "source/dist/presentation.html": "427fb278eb7e1ff7f2a3342f9440214339cc62e1ba60d5e1c6a9fcaaa0a8f5b1",
+    "source/dist/presentation.js": "21eb928a706c9ff124bc228cce11fd7c10e7ccf7bf3d6e54c0f4f291aa71e730",
+    "source/dist/jury-guide.js": "7e1c037b9fda9c00baa13e144abf8f1af94e5036ec011a3670b88ed308fba6d5",
+    "source/dist/jury.css": "335a0f20013c0f672a57730c4233eb14447b88c920ebec57e16f3d1cf2b24748"
+  },
+  "suites": [
+    {
+      "name": "desktop interaction suite",
+      "passed": 20,
+      "total": 20,
+      "checks": [
+        "all three disclosures start closed",
+        "initial #replay opens audit details",
+        "closing audit disclosure stops its replay",
+        "approval flow updates request, rule and exact effect token",
+        "approval flow points to kyc-approval evidence",
+        "deny flow displays friendly label and exact deny token",
+        "flow evidence selects configured session at first event",
+        "demo-session control opens audit details",
+        "Inspect result selects HR session at final event",
+        "Inspect result opens audit details",
+        "selected result event is the final event",
+        "initial #polityki opens policy details",
+        "policy preset selects exact field by ID",
+        "policy preset resets to field map and focuses explanation",
+        "navigation to #proces opens sequence details",
+        "process playback starts",
+        "closing sequence details stops process playback",
+        "audit playback starts",
+        "closing audit details stops audit playback",
+        "no browser console or page errors"
+      ],
+      "errors": []
+    },
+    {
+      "name": "delayed evidence load and closed-disclosure policy preset",
+      "passed": 1,
+      "total": 1,
+      "assertions": [
+        "a click before evidence resolves is queued and selects KYC session at first event",
+        "audit disclosure opens",
+        "policy preset from a fresh page opens disclosure, selects global.files.read_roots and focuses detail"
+      ],
+      "errors": []
+    },
+    {
+      "name": "mobile flow and policy preset",
+      "passed": 1,
+      "total": 1,
+      "assertions": [
+        "at 390px viewport document/body width remain 390px",
+        "deny example displays Stop here",
+        "topic-policies-forbidden selects topic_policies.*.forbidden and focuses detail"
+      ],
+      "errors": []
+    },
+    {
+      "name": "root-preview direct hash smoke",
+      "passed": 3,
+      "total": 3,
+      "assertions": [
+        "#replay opens audit-details",
+        "#proces opens sequence-details",
+        "#polityki opens policy-details"
+      ],
+      "errors": []
+    }
+  ],
+  "limitations": [
+    "Browser QA used the static local preview for interaction tests; root preview was used for direct hash smoke.",
+    "The static preview server runs in this task session and was not started by this QA receipt."
+  ]
+}
