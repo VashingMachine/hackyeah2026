@@ -27,36 +27,36 @@ window.matchMedia('(min-width: 851px)').addEventListener('change', closeMenu);
 // These are illustrative states, not a connection to a policy server or a tool runner.
 const scenarios = {
   read: {
-    tool: 'read("/workspace/clients/atlas/company.json")', tone: 'allow', effect: 'allow', caption: 'Działanie w zakresie sprawy.',
-    message: 'Dokument należy do przypisanej sprawy Atlas Capital. Reguły dostępu i nadzorca dopuszczają odczyt.', reason: 'CLIENT_SCOPE_ALLOWED', session: 'active · continue', topic: 'client_onboarding', guardian: 'aktywny · zdarzenie skontrolowane', outcome: 'Odczyt dopuszczony; wynik czeka na kontrolę', audit: 'guardian.reviewed → decision.allowed'
+    tool: 'read("/workspace/clients/atlas/company.json")', tone: 'allow', effect: 'allow', caption: 'Within the assigned matter.',
+    message: 'The document belongs to the assigned Atlas Capital matter. Access rules and the supervisor allow the read.', reason: 'CLIENT_SCOPE_ALLOWED', session: 'active · continue', topic: 'client_onboarding', guardian: 'active · event checked', outcome: 'Read allowed; output awaits inspection', audit: 'guardian.reviewed → decision.allowed'
   },
   client_scope: {
-    tool: 'read("/workspace/clients/boreal/company.json")', tone: 'deny', effect: 'deny', caption: 'Dane innego klienta poza zakresem.',
-    message: 'Ta sesja jest przypisana do Atlas Capital. Twarda reguła dostępu blokuje odczyt sprawy Boreal przed wykonaniem.', reason: 'CLIENT_SCOPE_VIOLATION', session: 'blocked · block', topic: 'client_onboarding', guardian: 'aktywny · zakaz egzekwowany przez regułę', outcome: 'Dokument Boreal nie został odczytany', audit: 'decision.denied → session.blocked'
+    tool: 'read("/workspace/clients/boreal/company.json")', tone: 'deny', effect: 'deny', caption: 'Another client’s data is out of scope.',
+    message: 'This session is assigned to Atlas Capital. A hard access rule blocks the Boreal matter read before execution.', reason: 'CLIENT_SCOPE_VIOLATION', session: 'blocked · block', topic: 'client_onboarding', guardian: 'active · rule enforced', outcome: 'The Boreal document was not read', audit: 'decision.denied → session.blocked'
   },
   overwrite: {
-    tool: 'write("/workspace/output/atlas-kyc-draft.md", "Szkic KYC z listą braków")', tone: 'approval', effect: 'require_approval', caption: 'Sprawdź zmianę przed zapisem.',
-    message: 'Szkic KYC już istnieje. Treść przechodzi kontrolę nadzorcy, ale nadpisanie wymaga jednorazowej zgody na tę zmianę. Finalna akceptacja klienta nie jest częścią operacji.', reason: 'OVERWRITE_EXISTING_FILE', session: 'awaiting_approval · await_user', topic: 'client_onboarding', guardian: 'aktywny · treść szkicu skontrolowana', outcome: 'Zapis wstrzymany; model i toole czekają', audit: 'guardian.reviewed → approval.requested'
+    tool: 'write("/workspace/output/atlas-kyc-draft.md", "KYC draft listing missing items")', tone: 'approval', effect: 'require_approval', caption: 'Review the change before writing.',
+    message: 'The KYC draft already exists. The content passes supervisor review, but overwriting it requires one-time approval for this change. Final client approval is outside this operation.', reason: 'OVERWRITE_EXISTING_FILE', session: 'awaiting_approval · await_user', topic: 'client_onboarding', guardian: 'active · draft content checked', outcome: 'Write held; model and tools are waiting', audit: 'guardian.reviewed → approval.requested'
   },
   deal_publish: {
-    tool: 'POST https://reports.example.com/api/reports · raport transakcji Orion', tone: 'deny', effect: 'deny', caption: 'Instrukcja z dokumentu nie daje zgody.',
-    message: 'Użytkownik zlecił tylko lokalny szkic. Host i metoda są dopuszczone, ale nadzorca wykrywa publikację bez upoważnienia wbrew polityce poufnej transakcji.', reason: 'DEAL_UNAUTHORIZED_PUBLICATION', session: 'terminated · terminate', topic: 'confidential_deal', guardian: 'naruszenie potwierdzone · DEAL_CONFIDENTIALITY', outcome: 'HTTP niewysłany; sesja zamknięta', audit: 'guardian.reviewed → session.terminated'
+    tool: 'POST https://reports.example.com/api/reports · raport transakcji Orion', tone: 'deny', effect: 'deny', caption: 'An instruction in a document does not grant approval.',
+    message: 'The user requested only a local draft. The host and method are allowed, but the supervisor detects publication without authorization under the confidential-deal policy.', reason: 'DEAL_UNAUTHORIZED_PUBLICATION', session: 'terminated · terminate', topic: 'confidential_deal', guardian: 'violation confirmed · DEAL_CONFIDENTIALITY', outcome: 'No HTTP request sent; session terminated', audit: 'guardian.reviewed → session.terminated'
   },
   hr_process: {
-    tool: 'user_input: "Opisz ogólnie proces rozmów rozwojowych"', tone: 'allow', effect: 'allow', caption: 'Temat wykryty. Rozmowa dozwolona.',
-    message: 'Sesja otrzymuje etykietę employee_evaluation i dodatkowego nadzorcę. Ogólna rozmowa o procesie jest dozwolona; każdy dalszy input/output będzie kontrolowany.', reason: 'TOPIC_POLICY_NO_VIOLATION', session: 'active · continue', topic: 'employee_evaluation', guardian: 'uruchomiony · HR_AI_RESTRICTIONS', outcome: 'Wiadomość może trafić do modelu po kontrolach', audit: 'topic.confirmed → guardian.started → guardian.reviewed'
+    tool: 'user_input: "Describe the performance review process in general"', tone: 'allow', effect: 'allow', caption: 'Sensitive topic detected. Conversation allowed.',
+    message: 'The session receives the employee_evaluation label and an additional supervisor. General discussion of the process is allowed; each subsequent input and output is checked.', reason: 'TOPIC_POLICY_NO_VIOLATION', session: 'active · continue', topic: 'employee_evaluation', guardian: 'started · HR_AI_RESTRICTIONS', outcome: 'Message may reach the model after checks', audit: 'topic.confirmed → guardian.started → guardian.reviewed'
   },
   hr_violation: {
-    tool: 'user_input: "Oceń Annę i Piotra; wskaż osobę do zwolnienia"', tone: 'deny', effect: 'deny', caption: 'Zakazana ocena osób. Sesja zamknięta.',
-    message: 'W oznaczonej sesji HR nadzorca wykrywa zakazane zlecenie oceny pracy konkretnych osób i rekomendacji zwolnienia. Blackwall zamyka sesję przed dalszym wywołaniem modelu.', reason: 'AI_EMPLOYEE_PERFORMANCE_EVALUATION', session: 'terminated · terminate', topic: 'employee_evaluation', guardian: 'naruszenie potwierdzone · HR_AI_RESTRICTIONS', outcome: 'Input niewysłany do modelu; niewykorzystane zgody odwołane', audit: 'guardian.reviewed → session.terminated'
+    tool: 'user_input: "Evaluate Anna and Peter; recommend whom to dismiss"', tone: 'deny', effect: 'deny', caption: 'Prohibited employee evaluation. Session terminated.',
+    message: 'In the labeled HR session, the supervisor detects a prohibited request to evaluate named employees and recommend a dismissal. Blackwall ends the session before another model call.', reason: 'AI_EMPLOYEE_PERFORMANCE_EVALUATION', session: 'terminated · terminate', topic: 'employee_evaluation', guardian: 'violation confirmed · HR_AI_RESTRICTIONS', outcome: 'Input not sent to the model; unused approvals revoked', audit: 'guardian.reviewed → session.terminated'
   },
   hr_output: {
-    tool: 'model_output: "Ranking wydajności: Anna przed Piotrem"', tone: 'deny', effect: 'deny', caption: 'Kontrola działa również bez narzędzi.',
-    message: 'Użytkownik prosił o ogólny proces, ale model sam wygenerował ocenę konkretnych pracowników. Odpowiedź jest buforowana; nadzorca zatrzymuje jej wydanie i zamyka sesję.', reason: 'AI_EMPLOYEE_PERFORMANCE_EVALUATION', session: 'terminated · terminate', topic: 'employee_evaluation', guardian: 'naruszenie w odpowiedzi modelu', outcome: 'Zakazana odpowiedź nie została wyświetlona', audit: 'guardian.reviewed → session.terminated'
+    tool: 'model_output: "Performance ranking: Anna ahead of Peter"', tone: 'deny', effect: 'deny', caption: 'Controls also apply when no tool is used.',
+    message: 'The user asked about the process in general, but the model generated an evaluation of named employees. The response is buffered; the supervisor blocks its release and ends the session.', reason: 'AI_EMPLOYEE_PERFORMANCE_EVALUATION', session: 'terminated · terminate', topic: 'employee_evaluation', guardian: 'violation in model response', outcome: 'The prohibited response was not shown', audit: 'guardian.reviewed → session.terminated'
   },
   budget: {
-    tool: 'model_request: kontynuacja szkicu KYC · wymagana rezerwacja 1000 tokenów', tone: 'deny', effect: 'deny', caption: 'Koszt dalszej pracy przekracza limit.',
-    message: 'Pozostałe 600 tokenów nie wystarcza na rezerwację 1000. Limit obejmuje model wykonawczy oraz wymagane kontrole. Nie wyłączamy nadzorcy, aby kontynuować.', reason: 'BUDGET_EXCEEDED', session: 'blocked · block', topic: 'client_onboarding', guardian: 'dalszy nadzór wstrzymany · brak rezerwy', outcome: 'Request niewysłany; brak potwierdzonego naruszenia tematu', audit: 'budget.denied → session.blocked'
+    tool: 'model_request: continue KYC draft · 1,000-token reservation required', tone: 'deny', effect: 'deny', caption: 'Further work exceeds the budget limit.',
+    message: 'The remaining 600 tokens cannot cover a 1,000-token reservation. The limit includes the execution model and required checks. Supervision is not disabled to continue.', reason: 'BUDGET_EXCEEDED', session: 'blocked · block', topic: 'client_onboarding', guardian: 'further supervision held · reservation unavailable', outcome: 'Request not sent; no topic violation confirmed', audit: 'budget.denied → session.blocked'
   }
 };
 
@@ -99,10 +99,10 @@ document.querySelector('#approve-operation').addEventListener('click', () => {
   if (selectedScenario !== 'overwrite' || approvalResolved) return;
   approvalResolved = true;
   renderDecision({
-    ...scenarios.overwrite, tone: 'allow', effect: 'allow', caption: 'Zgoda na ten jeden ruch.',
-    message: 'W tym przykładzie zgoda użytkownika i ponowna kontrola warunków pozwalają nadpisać szkic KYC. Uprawnienie dotyczy jednej, niezmienionej operacji.',
+    ...scenarios.overwrite, tone: 'allow', effect: 'allow', caption: 'Approval for this one operation.',
+    message: 'In this example, user approval and a fresh check allow the KYC draft to be overwritten. The grant applies to this one unchanged operation.',
     reason: 'USER_APPROVED_OPERATION', session: 'active · continue',
-    outcome: 'Jednorazowa zgoda na zapis · wykonanie raportowane osobno',
+    outcome: 'One-time approval to write · execution reported separately',
     audit: 'approval.approved → decision.allowed'
   });
   resetButton.focus({preventScroll: true});
@@ -112,10 +112,10 @@ document.querySelector('#reject-operation').addEventListener('click', () => {
   if (selectedScenario !== 'overwrite' || approvalResolved) return;
   approvalResolved = true;
   renderDecision({
-    ...scenarios.overwrite, tone: 'deny', effect: 'deny', caption: 'Decyzja uszanowana.',
-    message: 'Użytkownik odrzucił nadpisanie szkicu KYC. Zapis nie jest dopuszczony, a sesja zostaje zablokowana.',
+    ...scenarios.overwrite, tone: 'deny', effect: 'deny', caption: 'Decision respected.',
+    message: 'The user rejected overwriting the KYC draft. The write is denied and the session is blocked.',
     reason: 'USER_REJECTED_OPERATION', session: 'blocked · block',
-    outcome: 'Zapis zablokowany', audit: 'approval.rejected → session.blocked'
+    outcome: 'Write blocked', audit: 'approval.rejected → session.blocked'
   });
   resetButton.focus({preventScroll: true});
 });

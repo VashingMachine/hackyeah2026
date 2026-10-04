@@ -1,0 +1,17 @@
+{
+  "checkedStagedFiles": 44,
+  "credentialValuesChecked": 2,
+  "credentialMatches": 0,
+  "sourceCommit": "1e92d395c4c72738e14958b652a8061154359681",
+  "independentReviews": [
+    {
+      "agent": "policy_explainer",
+      "result": "PASS after fixing conditional Guardian wording and terminated state terminology"
+    },
+    {
+      "agent": "session_explanations",
+      "result": "PASS; read/write/edit size limit explanation was completed from runtime code"
+    }
+  ],
+  "scope": "English website, original evidence preservation, English nine-slide deck and publication snapshot. No new model/API calls."
+}

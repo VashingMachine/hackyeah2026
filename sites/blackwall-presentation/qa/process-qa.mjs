@@ -3,13 +3,14 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { chromium } from '/Users/dkwiatkowski/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
 
-const root = path.resolve(import.meta.dirname, '../source/dist');
-const output = import.meta.dirname;
+const root = process.env.SITE_QA_ROOT || path.resolve(import.meta.dirname, fs.existsSync(path.resolve(import.meta.dirname, '../source/dist')) ? '../source/dist' : '../published/dist');
+const output = process.env.SITE_QA_OUTPUT || import.meta.dirname;
+fs.mkdirSync(output, {recursive:true});
 const url = 'http://127.0.0.1:8790/presentation.html#proces';
 const bytes = fs.readFileSync(path.join(root, 'assets/process-flow.json'));
 const data = JSON.parse(bytes);
 const hash = crypto.createHash('sha256').update(bytes).digest('hex');
-const expectedHash = '78e0d5bced49d852469e2966c335a7e796391f631be12d9ec91fde0a1c8d4a87';
+const expectedHash = process.env.SITE_PROCESS_EXPECTED_SHA || '851c39566cbed0c43ba8caa52c9614422e0a495ede0ac8fae149a93bc1a1f1aa';
 const checks = [], findings = [], errors = [], failedResponses = [];
 const norm = value => (value ?? '').replace(/\s+/g, ' ').trim();
 const check = (name, passed, detail = '') => {
@@ -29,13 +30,13 @@ page.on('response', response => {
 });
 await page.goto(url, { waitUntil: 'networkidle' });
 await page.waitForFunction(() => document.querySelector('#process-scenario')?.options.length > 0);
-check('READY3 data hash matches the browser-tested fixture', hash === expectedHash, hash);
+check('Source data hash matches the reviewed fixture', hash === expectedHash, hash);
 check('sequence fixture has expected coverage totals', data.scenarios.length === 8 && data.nodes.length === 10
   && data.scenarios.reduce((n, s) => n + s.steps.length, 0) === 48
   && data.scenarios.reduce((n, s) => n + s.sequenceMessages.length, 0) === 114);
 check('default scenario is tool-allow', await page.locator('#process-scenario').inputValue() === 'tool-allow');
 check('scenario selector and route count match fixture', await page.locator('#process-scenario option').count() === 8
-  && norm(await page.locator('#process-routes-count').textContent()).toLowerCase() === '8 ścieżek · 10 komponentów');
+  && norm(await page.locator('#process-routes-count').textContent()).toLowerCase() === '8 paths · 10 components');
 
 let testedSteps = 0, testedMessages = 0, testedConditions = 0;
 const scenarioResults = [];
@@ -90,7 +91,7 @@ for (const scenario of data.scenarios) {
     const detailMatch = norm(await page.locator('#process-step-label').textContent()) === `${i + 1} / ${scenario.steps.length}`
       && norm(await page.locator('#process-step-title').textContent()) === norm(step.title)
       && norm(await page.locator('#process-step-description').textContent()) === norm(step.description)
-      && norm(await page.locator('#process-step-condition').textContent()) === norm(step.condition || 'ETAP WYBRANEJ ŚCIEŻKI')
+      && norm(await page.locator('#process-step-condition').textContent()) === norm(step.condition || 'STEP ON THE SELECTED PATH')
       && JSON.stringify((await page.locator('#process-step-events .process-event-chip').allTextContents()).map(norm)) === JSON.stringify(step.events || []);
     check(`step ${scenario.id} ${i + 1}: detail and every associated sequence message`, activeMatch && detailMatch,
       activeMatch && detailMatch ? '' : JSON.stringify({ activeGroups, expectedActive, pressedRows, step: i + 1 }));

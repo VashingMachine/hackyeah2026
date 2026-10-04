@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import { chromium } from '/Users/dkwiatkowski/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
-const output=path.resolve(import.meta.dirname);
+const output=process.env.SITE_QA_OUTPUT || path.resolve(import.meta.dirname);fs.mkdirSync(output,{recursive:true});
 const checks=[];const check=(name,condition)=>{assert.ok(condition,name);checks.push(name);};
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:1});
@@ -42,7 +42,7 @@ await page.locator('#replay-reset').click();await page.selectOption('#replay-spe
 check('Replay automatically advances through real events',!(await page.locator('#event-position').textContent()).startsWith('1/'));
 await page.locator('#replay-play').click();const paused=await page.locator('#event-position').textContent();await page.waitForTimeout(850);
 check('Pause stops event playback',await page.locator('#event-position').textContent()===paused);
-const clips=JSON.parse(fs.readFileSync(path.resolve(import.meta.dirname,'../source/dist/assets/evidence.json'))).videos;
+const clips=JSON.parse(fs.readFileSync(path.resolve(process.env.SITE_QA_ROOT || path.resolve(import.meta.dirname,fs.existsSync(path.resolve(import.meta.dirname,'../source/dist'))?'../source/dist':'../published/dist'),'assets/evidence.json'))).videos;
 for(const clip of clips){await page.locator(`[data-video="${clip.id}"]`).click();await page.waitForFunction(()=>{const v=document.querySelector('#demo-video');return v.readyState>=1&&Number.isFinite(v.duration);});const actual=await page.locator('#demo-video').evaluate(v=>{v.pause();return v.duration;});check(`Video metadata and playback source: ${clip.id}`,Math.abs(actual-clip.duration)<.06);}
 await page.locator('#present-toggle').click();check('Presentation mode activates',await page.locator('body').evaluate(b=>b.classList.contains('presentation-mode')));
 await page.waitForTimeout(1000);const startingChapter=Number((await page.locator('#slide-label').textContent()).slice(0,2));

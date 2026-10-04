@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { z } from '../../../blackwall/node_modules/zod/index.js';
 import { PolicySchema } from '../../../blackwall/src/config/schema.ts';
 import { PolicyPublicationSchema } from '../../../blackwall/src/config/publication.ts';
@@ -91,4 +91,32 @@ const examples=[
  {id:'publish-topic-catalog',title:'Opublikuj kompletny katalog tematów',description:'Zmiana topics wymaga równoczesnego topic_policies. Przykład ma charakter fikcyjny i nie zawiera sekretów.',patch:{expected_version:3,changes:{topics:{client_onboarding:{description:'Obsługa klienta',policy_id:'client-data',examples:['pytanie o status sprawy'],similarity_threshold:0.84}},topic_policies:{'client-data':{version:1,forbidden:'Ujawnienie danych bez upoważnienia',allowed:'Ogólne informacje bez danych klienta',reason_code:'CLIENT_DATA_DISCLOSURE'}}}},fieldIds:['topics-description','topics-policy-id','topics-examples','topics-similarity-threshold','topic-policies-forbidden']}
 ];
 const guide={schemaVersion:1,source:{policySchema:'blackwall/src/config/schema.ts',publicationSchema:'blackwall/src/config/publication.ts',runtime:['blackwall/src/engine/core.ts','blackwall/src/engine/files.ts','blackwall/src/engine/network.ts','blackwall/src/config/effective.ts','blackwall/src/topics/detector.ts','blackwall/src/judge/guardian.ts','blackwall/src/judge/jev.ts'],evidence:'sites/blackwall-presentation/source/dist/assets/evidence.json',schemaGeneration:'z.toJSONSchema exported Zod schemas; npm dependencies installed under blackwall/'},groups,fields:rows,examples,scopeNote:'Przewodnik opisuje pola konfiguracji i zachowanie widoczne w kodzie. JSON Schema waliduje strukturę i proste zakresy, ale nie zastępuje kontroli semantycznych: odwołań między katalogami, istnienia aliasów, spójności progów z runtime, walidacji ścieżek, wersji publikacji ani semantycznej oceny Jev/guardian. Temat przypisany przez użytkownika z konfiguracji jest zaufanym kontekstem; wykrycie embeddingiem tworzy kandydata, a guardian osobno ocenia bieżące zdarzenie według zakazanych i dozwolonych klauzul. Profile isolated oraz require_isolation opisują wymóg konfiguracyjny, lecz nie dostarczają sandboxa systemu operacyjnego. threat_feed.path jest ustawiany przy uruchomieniu, a zawartość feedu można publikować przez API/UI. Aliasów modeli, dostawców, ścieżek bazy, tokenu, workdir ani przypisań topic_ids nie zmienia publikacja runtime. Pełna publikacja katalogu topics wymaga topic_policies. Obiekty zmian są scalane z aktywną konfiguracją, ale przekazane tablice zastępują poprzednie listy. Tryb observe nie wyłącza twardych blokad. Brak centralnego SSO nie jest funkcją tego schematu ani przewodnika.'};
+
+// Keep generated runtime examples and evidence references, while using the reviewed English
+// prose for the public guide. This is a prose-only localization; paths, IDs, and values remain
+// generated from the schema/runtime source above.
+// The reviewed guide ships alongside this generator in the parent content directory, so
+// regeneration works from a published checkout without the separate source worktree.
+const englishGuide = JSON.parse(await readFile(new URL('./policy-guide.json', import.meta.url), 'utf8'));
+guide.groups = guide.groups.map(group => {
+ const translated = englishGuide.groups.find(item => item.id === group.id);
+ return translated ? { ...group, title: translated.title, description: translated.description } : group;
+});
+guide.fields = guide.fields.map(field => {
+ const translated = englishGuide.fields.find(item => item.id === field.id || item.path === field.path);
+ return translated ? {
+  ...field,
+  title: translated.title,
+  description: translated.description,
+  example: translated.example,
+  effect: translated.effect,
+  limits: translated.limits,
+  evidence: { ...field.evidence, note: translated.evidence.note }
+ } : field;
+});
+guide.examples = guide.examples.map(example => {
+ const translated = englishGuide.examples.find(item => item.id === example.id);
+ return translated ? { ...example, title: translated.title, description: translated.description, patch: translated.patch } : example;
+});
+guide.scopeNote = englishGuide.scopeNote;
 await writeFile(new URL('policy-guide.json',out),JSON.stringify(guide,null,2)+'\n');

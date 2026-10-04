@@ -10,13 +10,13 @@
   const actorOrder = ['pi', 'blackwall', 'policies', 'embeddings', 'guardian', 'jev', 'llm', 'approval', 'executor', 'audit'];
   const icons = {pi: 'π', blackwall: '▥', llm: '◈', embeddings: '∿', guardian: '◎', jev: '◇', policies: '{ }', approval: '✓?', executor: '›_', audit: '≡'};
   const mapLabels = {
-    pi: ['Pi', 'chat + tool_call'], blackwall: ['Blackwall', 'gateway + Core · bramka kontroli'],
-    llm: ['Model agenta', 'prompt ↔ odpowiedź / tool_call'], embeddings: ['Embeddingi', 'OpenAI / cache → wektory'],
-    guardian: ['Guardian', 'nadzór treści · LLM'], jev: ['Jev', 'ocena proponowanej operacji'],
-    policies: ['Polityki', 'snapshot Core · lokalnie'], approval: ['Człowiek', 'zgoda w Pi / przegląd admina'],
-    executor: ['Executor Pi', 'lokalnie, po udanym consume'], audit: ['SQLite / audyt', 'decyzje · stan · receipts']
+    pi: ['Pi', 'chat + tool_call'], blackwall: ['Blackwall', 'gateway + Core · control gateway'],
+    llm: ['Agent model', 'prompt ↔ response / tool_call'], embeddings: ['Embeddings', 'OpenAI / vector cache'],
+    guardian: ['Guardian', 'event supervision · LLM'], jev: ['Jev', 'proposed-operation review'],
+    policies: ['Policy', 'Core snapshot · local'], approval: ['Human', 'Pi approval / admin review'],
+    executor: ['Pi executor', 'local, after successful consume'], audit: ['SQLite / audit', 'decisions · state · receipts']
   };
-  const outcomeLabels = {'model-safe': 'Odpowiedź dopuszczona', 'tool-allow': 'allow → wykonanie', 'tool-approval': 'Ponowna ocena po zgodzie', 'hard-deny': 'deny · brak wykonania', 'topic-violation': 'terminated', 'topic-uncertain': 'Przegląd administratora', publication: 'Nowa wersja aktywna', 'jev-deny': 'deny · brak wykonania'};
+  const outcomeLabels = {'model-safe': 'Response allowed', 'tool-allow': 'allow → execution', 'tool-approval': 'Re-evaluated after approval', 'hard-deny': 'deny · not executed', 'topic-violation': 'terminated', 'topic-uncertain': 'Administrator review', publication: 'New version active', 'jev-deny': 'deny · not executed'};
   const ns = 'http://www.w3.org/2000/svg';
   let data, scenario, stepIndex = 0, selectedNode, timer = null, messages = [], sequenceWidth = 1100;
   const svg = (tag, attributes, text) => {
@@ -27,7 +27,7 @@
   };
   function stop() {
     clearTimeout(timer); timer = null;
-    $('process-play').textContent = '▶'; $('process-play').setAttribute('aria-label', 'Odtwórz kroki procesu');
+    $('process-play').textContent = '▶'; $('process-play').setAttribute('aria-label', 'Play process steps');
   }
   function valueText(value) { return typeof value === 'string' ? value : JSON.stringify(value, null, 2); }
   function chips(target, values) {
@@ -46,7 +46,7 @@
     const policies = $('process-detail-policies'); policies.replaceChildren();
     (node.policyFields || []).forEach(path => {
       const button = el('button', 'feature-chip', path); button.type = 'button';
-      button.title = 'Znajdź opis tego pola w przewodniku po politykach';
+      button.title = 'Find this field in the policy guide';
       button.addEventListener('click', () => {
         const search = $('policy-search'); search.value = path.endsWith('.*') ? path.slice(0, -1) : path;
         $('policy-group').value = 'all'; $('policy-scope').value = 'all';
@@ -56,7 +56,7 @@
       });
       policies.append(button);
     });
-    if (!node.policyFields?.length) policies.append(el('span', 'process-no-policy', 'W tym komponencie brak osobnego pola polityki.'));
+    if (!node.policyFields?.length) policies.append(el('span', 'process-no-policy', 'This component has no dedicated policy field.'));
     chips($('process-detail-events'), node.auditEvents);
     $('process-detail-sources').replaceChildren(...(node.sources || []).map(source => el('li', '', typeof source === 'string' ? source : `${source.path}${source.line ? ':' + source.line : ''}`)));
     document.querySelectorAll('[data-process-node]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.processNode === id)));
@@ -86,13 +86,13 @@
     const map = $('process-map'); map.replaceChildren();
     map.classList.add('process-sequence'); map.style.width = sequenceWidth + 'px'; map.style.height = height + 'px';
     const wires = svg('svg', {viewBox: `0 0 ${sequenceWidth} ${height}`, class: 'process-wires', role: 'img', 'aria-labelledby': 'process-svg-title process-svg-description'});
-    wires.append(svg('title', {id: 'process-svg-title'}, 'Sequence Diagram — ' + scenario.title), svg('desc', {id: 'process-svg-description'}, 'Pionowe linie oznaczają uczestników. Czas biegnie od góry do dołu. Strzałki pokazują kierunek komunikatu; przerywane strzałki oznaczają odpowiedzi. Warunkowe komunikaty opisano w nawiasach. Kliknij wiersz, aby poznać szczegóły kroku.'));
+    wires.append(svg('title', {id: 'process-svg-title'}, 'Sequence diagram — ' + scenario.title), svg('desc', {id: 'process-svg-description'}, 'Vertical lines represent participants. Time flows from top to bottom. Arrows show message direction; dashed arrows are responses. Conditional messages are noted in brackets. Select a row to see step details.'));
     const defs = svg('defs');
     ['normal', 'active'].forEach(name => {
       const marker = svg('marker', {id: 'process-arrow-' + name, markerWidth: 7, markerHeight: 7, refX: 6, refY: 3.5, orient: 'auto'});
       marker.append(svg('path', {d: 'M0,0 L7,3.5 L0,7 Z', fill: name === 'active' ? '#ffc26a' : '#88a6b7'})); defs.append(marker);
     }); wires.append(defs);
-    wires.append(svg('text', {x: 14, y: 115, class: 'sequence-time-label'}, 'CZAS ↓'));
+    wires.append(svg('text', {x: 14, y: 115, class: 'sequence-time-label'}, 'TIME ↓'));
     actors.forEach(id => wires.append(svg('line', {x1: x(id), x2: x(id), y1: 87, y2: height - 20, class: 'sequence-lifeline'})));
     messages.forEach((message, index) => {
       if (message.kind !== 'request' || message.from === message.to) return;
@@ -132,7 +132,7 @@
       const from = data.nodes.find(n => n.id === message.from).title, to = data.nodes.find(n => n.id === message.to).title;
       const button = el('button', 'sequence-row'); button.type = 'button'; button.dataset.sequenceMessage = index;
       button.style.top = 112 + index * 82 + 'px'; button.style.height = '80px';
-      button.setAttribute('aria-label', `Komunikat ${index + 1}: ${from} → ${to}. ${message.label}${message.condition ? '. Warunek: ' + message.condition : ''}`);
+      button.setAttribute('aria-label', `Message ${index + 1}: ${from} → ${to}. ${message.label}${message.condition ? '. Condition: ' + message.condition : ''}`);
       button.title = `${from} → ${to}: ${message.label}`;
       button.addEventListener('click', () => { stop(); renderStep(message.step, index); }); map.append(button);
     });
@@ -142,17 +142,17 @@
     const step = scenario.steps[index];
     $('process-step-label').textContent = `${index + 1} / ${scenario.steps.length}`;
     $('process-step-title').textContent = step.title; $('process-step-description').textContent = step.description;
-    $('process-step-condition').textContent = step.condition || 'ETAP WYBRANEJ ŚCIEŻKI';
+    $('process-step-condition').textContent = step.condition || 'STEP ON THE SELECTED PATH';
     chips($('process-step-events'), step.events);
     $('process-prev').disabled = index === 0; $('process-next').disabled = index === scenario.steps.length - 1;
-    $('process-outcome').textContent = index === scenario.steps.length - 1 ? outcomeLabels[scenario.id] || 'Koniec ścieżki' : 'Ścieżka w toku';
+    $('process-outcome').textContent = index === scenario.steps.length - 1 ? outcomeLabels[scenario.id] || 'End of path' : 'Path in progress';
     $('process-outcome').dataset.outcome = index === scenario.steps.length - 1 ? scenario.id : 'pending';
     $('process-final-summary').hidden = index !== scenario.steps.length - 1;
     $('process-final-summary').textContent = scenario.outcome;
     selectNode(step.node);
     const related = messages.filter(m => m.step === index);
     const first = related[0];
-    $('process-hop').textContent = first ? `${data.nodes.find(n => n.id === first.from).title} → ${data.nodes.find(n => n.id === first.to).title} · ${first.label}${related.length > 1 ? ' · ' + related.length + ' komunikaty w tym kroku' : ''}` : step.title;
+    $('process-hop').textContent = first ? `${data.nodes.find(n => n.id === first.from).title} → ${data.nodes.find(n => n.id === first.to).title} · ${first.label}${related.length > 1 ? ' · ' + related.length + ' messages in this step' : ''}` : step.title;
     document.querySelectorAll('[data-process-node]').forEach(button => { button.dataset.active = String(button.dataset.processNode === step.node); });
     document.querySelectorAll('[data-sequence-group]').forEach(group => {
       const active = Number(group.dataset.sequenceStep) === index;
@@ -179,7 +179,7 @@
     }); renderStep(0);
   }
   function schedule() {
-    $('process-play').textContent = 'Ⅱ'; $('process-play').setAttribute('aria-label', 'Wstrzymaj kroki procesu');
+    $('process-play').textContent = 'Ⅱ'; $('process-play').setAttribute('aria-label', 'Pause process steps');
     timer = setTimeout(() => { if (stepIndex < scenario.steps.length - 1) { renderStep(stepIndex + 1); schedule(); } else stop(); }, 2300);
   }
   async function load() {
@@ -193,13 +193,13 @@
       if (!d.scenarios.every(s => Array.isArray(s.sequenceMessages) && s.sequenceMessages.length && s.sequenceMessages.every(m => actorOrder.includes(m.from) && actorOrder.includes(m.to) && m.label && Number.isInteger(m.step) && m.step >= 0 && m.step < s.steps.length && ['request', 'response', 'self', 'audit', 'policy'].includes(m.kind)) && s.steps.every((_, i) => s.sequenceMessages.some(m => m.step === i)))) throw new Error('Invalid sequence');
       data = d;
       $('process-scenario').replaceChildren(...d.scenarios.map(s => { const option = el('option', '', s.title); option.value = s.id; return option; }));
-      $('process-routes-count').textContent = d.scenarios.length + ' ścieżek · ' + d.nodes.length + ' komponentów';
+      $('process-routes-count').textContent = d.scenarios.length + ' paths · ' + d.nodes.length + ' components';
       $('process-notes').replaceChildren(...(d.notes || []).map(note => el('p', '', note)));
       ['process-scenario', 'process-play', 'process-reset'].forEach(id => { $(id).disabled = false; });
       $('process-detail').hidden = false; selectScenario(d.scenarios.find(s => s.id === 'tool-allow')?.id || d.scenarios[0].id);
     } catch {
       data = null; scenario = null; $('process-detail').hidden = true;
-      $('process-map').replaceChildren(el('p', 'loading-copy', 'Nie udało się wczytać mapy komponentów.'));
+      $('process-map').replaceChildren(el('p', 'loading-copy', 'Could not load the process map.'));
       $('process-load-error').hidden = false;
     }
   }

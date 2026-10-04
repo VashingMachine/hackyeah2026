@@ -1,0 +1,1055 @@
+{
+  "generated_at": "2026-10-04T07:50:50.732Z",
+  "scope": "English localization, recorded evidence preservation and desktop/mobile UI. No new model or API calls.",
+  "checks": [
+    {
+      "name": "Sequence participants, message routing, ordering, response kinds, conditions and policy links remain intact",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Recorded audit event IDs, types, statuses, reasons, tools and effects remain unchanged",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Recorded model configuration and numerical evidence remain unchanged",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Original user prompts and replay proposals remain verbatim",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Policy field identity, JSON types, groups, editability and feature links remain unchanged",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "policy.schema.json retains the application validation contract",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "policy-publication.schema.json retains the application validation contract",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Original clips and posters retain source files and durations",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Main page declares English and has English metadata",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Initial visible presentation copy is English",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English session explanation: kyc-approval",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English original is not redundantly translated: kyc-approval",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-approval event 1",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-approval event 2",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-approval event 3",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-approval event 4",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-approval event 5",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-approval event 6",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-approval event 7",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-approval event 8",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-approval event 9",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English session explanation: client-path-gate",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English original is not redundantly translated: client-path-gate",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: client-path-gate event 1",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: client-path-gate event 2",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: client-path-gate event 3",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English session explanation: ma-publication-block",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English original is not redundantly translated: ma-publication-block",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: ma-publication-block event 1",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: ma-publication-block event 2",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: ma-publication-block event 3",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: ma-publication-block event 4",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: ma-publication-block event 5",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: ma-publication-block event 6",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: ma-publication-block event 7",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: ma-publication-block event 8",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: ma-publication-block event 9",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English session explanation: hr-polish-violation",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English translation is provided for original Polish prompt: hr-polish-violation",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English translation matches source: hr-polish-violation",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: hr-polish-violation event 1",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: hr-polish-violation event 2",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: hr-polish-violation event 3",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: hr-polish-violation event 4",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: hr-polish-violation event 5",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: hr-polish-violation event 6",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: hr-polish-violation event 7",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: hr-polish-violation event 8",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English session explanation: kyc-unseeded-embedding",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English translation is provided for original Polish prompt: kyc-unseeded-embedding",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English translation matches source: kyc-unseeded-embedding",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-unseeded-embedding event 1",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-unseeded-embedding event 2",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-unseeded-embedding event 3",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-unseeded-embedding event 4",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-unseeded-embedding event 5",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-unseeded-embedding event 6",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-unseeded-embedding event 7",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-unseeded-embedding event 8",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-unseeded-embedding event 9",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: kyc-unseeded-embedding event 10",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English session explanation: uncertain-review-continuation",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English original is not redundantly translated: uncertain-review-continuation",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: uncertain-review-continuation event 1",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: uncertain-review-continuation event 2",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: uncertain-review-continuation event 3",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: uncertain-review-continuation event 4",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: uncertain-review-continuation event 5",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English audit explanation: uncertain-review-continuation event 6",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: schema_version",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: policy_id",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: version",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: mode",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: profile",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: profiles.*.semantic_evaluate",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: profiles.*.min_allow_probability",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: profiles.*.min_confidence",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: profiles.*.secrets",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: profiles.*.pii",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: profiles.*.on_uncertain",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: default_effect",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: denials.default_session_action",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: denials.allow_correction_for",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: denials.max_correction_attempts",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: approvals.enabled",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: approvals.eligible_reason_codes",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: approvals.ttl_seconds",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.tools.allow",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.tools.deny",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.files.read_roots",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.files.write_roots",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.files.deny_basenames",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.files.allowed_extensions",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.files.reject_symlinks",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.files.max_bytes",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.files.require_approval_roots",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.network.allowed_schemes",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.network.allow_hosts",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.network.allow_subdomains",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.network.allowed_ports",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.network.allowed_methods",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.network.deny_non_public_ips",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.network.follow_redirects",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.network.allow_endpoints",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.network.fixture_exceptions",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.budgets.session_total_tokens",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.budgets.session_tool_attempts",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.budgets.session_model_requests",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.budgets.session_wall_seconds",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.budgets.session_cost_usd_micros",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.budgets.tool_timeout_seconds",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.shell.enabled",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.shell.max_command_bytes",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.shell.timeout_seconds",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.shell.execution_profile",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.shell.require_isolation",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.models.allow_aliases",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.models.max_input_tokens",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.models.max_output_tokens",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: global.content.max_inspection_bytes",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.tools.allow",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.tools.deny",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.files.write_roots",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.files.deny_basenames",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.files.allowed_extensions",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.files.reject_symlinks",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.files.max_bytes",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.files.require_approval_roots",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.network.allowed_schemes",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.network.allow_hosts",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.network.allow_subdomains",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.network.allowed_ports",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.network.allowed_methods",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.network.deny_non_public_ips",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.network.follow_redirects",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.network.allow_endpoints",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.network.fixture_exceptions",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.budgets.session_total_tokens",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.budgets.session_tool_attempts",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.budgets.session_model_requests",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.budgets.session_wall_seconds",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.budgets.session_cost_usd_micros",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.budgets.tool_timeout_seconds",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.shell.enabled",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.shell.max_command_bytes",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.shell.timeout_seconds",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.shell.execution_profile",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.shell.require_isolation",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.models.allow_aliases",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.models.max_input_tokens",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.models.max_output_tokens",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.content.max_inspection_bytes",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: model_aliases.*.provider",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: model_aliases.*.model",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: model_aliases.*.reasoning_effort",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: model_aliases.*.input_usd_micros_per_mtok",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: model_aliases.*.output_usd_micros_per_mtok",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: semantic.provider",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: semantic.model",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: semantic.timeout_ms",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: semantic.rubric_version",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_supervision.enabled",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_supervision.embedding.provider",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_supervision.embedding.model",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_supervision.guardian_model_alias",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_supervision.chunk_chars",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_supervision.overlap_chars",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_supervision.max_history_events",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_supervision.on_error",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_supervision.default_similarity_threshold",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topics.*.description",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topics.*.policy_id",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topics.*.examples",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topics.*.similarity_threshold",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_policies.*.version",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_policies.*.forbidden",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_policies.*.allowed",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: topic_policies.*.reason_code",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.token",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.description",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.topic_ids",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: users.*.workdir",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: threat_feed.path",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: audit.db_path",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: expected_version",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: changes",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: changes.topic_thresholds.*",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English policy explanation: changes.users.*",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English sequence explanation: model-safe",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English sequence explanation: tool-allow",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English sequence explanation: tool-approval",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English sequence explanation: hard-deny",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English sequence explanation: topic-violation",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English sequence explanation: topic-uncertain",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English sequence explanation: publication",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English sequence explanation: jev-deny",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English recording description: kyc-approved-write",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English recording description: client-scope-block",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English recording description: ma-replay-block",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English recording description: hr-pl-first-violation",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English recording description: shell-jev-review",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English recording description: openai-embedding-candidate",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English recording description: authorized-post",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "English recording description: runtime-publication",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Desktop has no horizontal page overflow",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Mobile has no horizontal page overflow",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Alternate presentation entry point is English",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "No uncaught browser errors",
+      "result": "PASS",
+      "detail": ""
+    }
+  ],
+  "errors": [],
+  "passed": 208,
+  "total": 208,
+  "sourceHashes": {
+    "evidence.json": "dbf22fb30371dc05e4a0342cd387048a41c13409bb1920d1e1ee1c4dd1a7c884",
+    "session-contexts.json": "694919b31ed69c36121c3f4c8521e61985d40e4e1dc6c9467640e284019d95a4",
+    "process-flow.json": "851c39566cbed0c43ba8caa52c9614422e0a495ede0ac8fae149a93bc1a1f1aa",
+    "policy-guide.json": "df89e7a3705a6c510357f18e69cdc061d86e091f8cca844d61a498e8c58df0d5"
+  }
+}

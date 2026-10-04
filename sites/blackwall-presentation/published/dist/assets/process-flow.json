@@ -4,12 +4,12 @@
     {
       "id": "pi",
       "title": "Pi",
-      "subtitle": "Interfejs agenta i lokalny dispatcher narzędzi",
-      "description": "Wtyczka rejestruje dostawcę Blackwall dla czatu. Wywołanie modelu i wykonanie narzędzia przechodzą dwiema oddzielnymi ścieżkami: czat przez /v1/chat/completions, każde tool_call przez /v1/tool-decisions. Wtyczka pokazuje prośbę o zgodę w interfejsie i uruchamia lokalne narzędzie dopiero po zużyciu grantu.",
-      "input": "Wiadomość użytkownika, odpowiedź modelu, wynik narzędzia albo decyzja o zgodzie.",
-      "output": "Żądanie modelu, żądanie decyzji narzędzia, lokalne wykonanie lub odpowiedź dla użytkownika.",
+      "subtitle": "Agent interface and local tool dispatcher",
+      "description": "The plugin registers Blackwall as the chat provider. Model calls and tool execution follow two separate server paths: chat uses /v1/chat/completions, and every tool_call uses /v1/tool-decisions. The plugin shows approval requests in its UI and starts a local tool only after consuming a grant.",
+      "input": "User message, model response, tool result, or approval decision.",
+      "output": "Model request, tool-decision request, local execution, or response to the user.",
       "conditions": [
-        "Brak konfiguracji lub niedostępny Blackwall blokuje narzędzie; wtyczka nie wybiera lokalnego domyślnego zezwolenia."
+        "Missing configuration or unavailable Blackwall blocks the tool; the plugin does not choose a local default allow."
       ],
       "policyFields": [
         "users.*.workdir",
@@ -47,13 +47,13 @@
     {
       "id": "blackwall",
       "title": "Blackwall",
-      "subtitle": "Proxy modelu, Core polityki i bramka narzędzi",
-      "description": "Centralny serwer uwierzytelnia sesję, sprawdza wejście i odpowiedź modelu, nadzoruje tekst, podejmuje decyzje dla narzędzi, wydaje i zużywa jednorazowe granty oraz zapisuje audyt. Odpowiedź modelu jest buforowana i sprawdzana przed zwróceniem do Pi; SSE jest składane z już sprawdzonej odpowiedzi. wtyczka Pi raportuje rozpoczęcie i zakończenie przez /v1/execution-events; sam Core nie uruchamia lokalnego narzędzia.",
-      "input": "Żądanie czatu, treść do inspekcji, propozycja narzędzia, rozstrzygnięcie zgody albo publikacja administratora.",
-      "output": "Sprawdzone żądanie upstream, odpowiedź dla Pi, odmowa, prośba o zgodę albo jednorazowy grant wykonania.",
+      "subtitle": "Model proxy, policy Core, and tool gateway",
+      "description": "The central server authenticates the session, checks model input and output, supervises text, decides tool requests, issues and consumes one-time grants, and records the audit. The model response is buffered and checked before it is returned to Pi; SSE is synthesized from the already-checked response. The Pi plugin reports start and completion through /v1/execution-events; Core does not run local tools.",
+      "input": "Chat request, content for inspection, tool proposal, approval resolution, or administrator publication.",
+      "output": "Checked upstream request, response to Pi, denial, approval request, or one-time execution grant.",
       "conditions": [
-        "Zamknięta, zablokowana, reviewing lub awaiting_approval sesja nie przechodzi do modelu ani do narzędzi.",
-        "W trybie observe miękka odmowa może dopuścić i wykonać operację, zapisując observed_effect; hard denial i USER_REJECTED nadal blokują."
+        "A terminated, blocked, reviewing, or awaiting_approval session cannot proceed to the model or tools.",
+        "In observe mode, a soft denial may allow and execute an operation while recording observed_effect; hard denials and USER_REJECTED still block."
       ],
       "policyFields": [
         "mode",
@@ -113,14 +113,14 @@
     },
     {
       "id": "llm",
-      "title": "Model agenta",
-      "subtitle": "Provider i model wskazane przez alias polityki",
-      "description": "Blackwall wybiera dostawca/model z aliasu, rezerwuje budżet, wysyła prompt i odbiera pełną odpowiedź. Bramka obsługuje OpenAI i Anthropic; w demonstracji używany jest OpenAI. Odpowiedź może zawierać tekst, tool_call albo oba elementy. Jest to rola modelu agenta, odrębna od ról Guardian i Jev.",
-      "input": "Prompt i definicje narzędzi po przejściu kontroli bramką.",
-      "output": "Buforowany tekst lub propozycja function/tool call.",
+      "title": "Agent model",
+      "subtitle": "Provider and model selected by policy alias",
+      "description": "Blackwall selects a provider/model from the alias, reserves budget, sends the prompt, and receives the complete response. The gateway supports OpenAI and Anthropic; the demo uses OpenAI. The response can contain text, a tool_call, or both. This is the agent-model role, separate from Guardian and Jev.",
+      "input": "Prompt and tool definitions after gateway checks.",
+      "output": "Buffered text or a proposed function/tool call.",
       "conditions": [
-        "Nie jest wywoływany po blokadzie wejścia, stanu sesji, allowlisty modelu, limitu promptu ani budżetu.",
-        "Wyjściowy tekst i argumenty tool_call są sprawdzane przez Blackwall przed zwolnieniem."
+        "Not called after an input, session-state, model-allowlist, prompt-size, or budget block.",
+        "Output text and tool_call arguments are checked by Blackwall before release."
       ],
       "policyFields": [
         "model_aliases.*",
@@ -160,15 +160,15 @@
     },
     {
       "id": "embeddings",
-      "title": "Embeddingi — OpenAI / cache wektorów",
-      "subtitle": "Podobieństwo → kandydat tematu, samo w sobie bez werdyktu",
-      "description": "Dostawca embeddingów zwraca wektory dla tekstu zdarzenia i przykładów katalogu. Lokalne obliczenie cosine, zastosowanie progów i wybór kandydatów wykonuje detektor tematów w Blackwall. Cache może ograniczyć ponowne wywołania OpenAI. Sam wektor ani podobieństwo nie jest dowodem naruszenia.",
-      "input": "Zredagowany tekst user_input, model_output, tool_arguments, tool_output lub model_input oraz przykłady katalogu tematów.",
-      "output": "Wektory embeddingów (z OpenAI lub cache). Blackwall oblicza podobieństwa, progi i kandydatów tematów.",
+      "title": "Embeddings — OpenAI / vector cache",
+      "subtitle": "Similarity → topic candidate; no verdict by itself",
+      "description": "The embedding provider returns vectors for event text and catalog examples. Blackwall’s topic detector computes cosine similarity, applies thresholds, and selects candidates locally. A cache can reduce repeated OpenAI calls. A vector or similarity score alone is not evidence of a violation.",
+      "input": "Redacted text from user_input, model_output, tool_arguments, tool_output, or model_input, plus topic-catalog examples.",
+      "output": "Embedding vectors (from OpenAI or cache). Blackwall computes similarities, applies thresholds, and selects topic candidates.",
       "conditions": [
-        "Działa tylko, gdy topic_supervision.enabled=true.",
-        "Błąd embeddingów lub przekroczenie budżetu blokuje blokuje działanie (fail-closed).",
-        "Przypisanie tematu z users.*.topic_ids jest zaufaną etykietą i nie pochodzi z embeddingów."
+        "Runs only when topic_supervision.enabled=true.",
+        "An embedding error or exhausted budget blocks the operation (fail-closed).",
+        "A topic assigned through users.*.topic_ids is a trusted label, not an embedding result."
       ],
       "policyFields": [
         "topic_supervision.embedding.*",
@@ -213,15 +213,15 @@
     {
       "id": "guardian",
       "title": "Guardian",
-      "subtitle": "Nadzorca zdarzeń sesji; oddzielny cel od modelu agenta",
-      "description": "Gdy sesja ma temat przypisany lub aktywnego kandydata, Guardian ocenia bieżące zdarzenie względem dozwolonych i zakazanych klauzul, z zaufaną polityką oraz ograniczoną historią. Kod wykonuje oddzielne wywołanie nadzorcy; skonfigurowany dostawca może być OpenAI lub Anthropic. Werdykt violation jest egzekwowany dopiero z cytatem będącym podciągiem zdarzenia i zweryfikowaną klauzulą forbidden.",
-      "input": "Jedno bieżące zdarzenie, historia sesji, przypisane/kandydujące tematy i zaufane klauzule polityki.",
-      "output": "no_identified_violation, violation albo uncertain oraz aktualizacja etykiet kandydatów.",
+      "subtitle": "Session-event supervisor; separate role from the agent model",
+      "description": "When a session has an assigned topic or an active candidate, Guardian evaluates the current event against allowed and forbidden clauses, trusted policy, and limited history. The code makes a separate supervisor call; the configured provider can be OpenAI or Anthropic. A violation is enforced only when it includes a quote that is a substring of the event and a verified forbidden clause.",
+      "input": "One current event, session history, assigned/candidate topics, and trusted policy clauses.",
+      "output": "no_identified_violation, violation, or uncertain, plus candidate-label updates.",
       "conditions": [
-        "no_identified_violation → zdarzenie może przejść.",
-        "violation z dowodem → sesja jest terminowana.",
-        "uncertain lub nieweryfikowalna klauzula/dowód → sesja wchodzi w reviewing; dalsze narzędzia są blokowane.",
-        "Guardian error lub budżet kontrolny nieprzyznany → blokada."
+        "no_identified_violation → the event may proceed.",
+        "violation with evidence → the session is terminated.",
+        "uncertain or an unverifiable clause/evidence → the session enters reviewing; further tools are blocked.",
+        "Guardian error or an ungranted control budget → block."
       ],
       "policyFields": [
         "topic_supervision.guardian_model_alias",
@@ -269,14 +269,14 @@
     {
       "id": "jev",
       "title": "Jev",
-      "subtitle": "Semantyczna ocena propozycji operacji, osobna od Guardian",
-      "description": "Jev porównuje zaufane zadanie użytkownika z konkretną proponowaną operacją, zweryfikowanymi faktami i kontekstem polityki. Nie ocenia każdego tekstowego eventu. Każde dozwolone wywołanie bash jest oceniane; pozostałe narzędzia zależą od profiles.*.semantic_evaluate. Jev deny zatrzymuje propozycję; wynik niepewny może wymagać zgody, jeśli wszystkie kody są kwalifikowane.",
-      "input": "Proponowane narzędzie i argumenty, zaufane zadanie, fakty kontrolach deterministycznych oraz kontekst polityki.",
-      "output": "allow, deny albo uncertain z kodami powodów.",
+      "subtitle": "Semantic review of proposed operations, separate from Guardian",
+      "description": "Jev compares the trusted user task with a specific proposed operation, verified facts, and policy context. It does not review every text event. Every allowed bash call is reviewed; other tools depend on profiles.*.semantic_evaluate. A Jev denial stops the proposal; an uncertain result may require approval if all reason codes are eligible.",
+      "input": "Proposed tool and arguments, trusted task, deterministic-check facts, and policy context.",
+      "output": "allow, deny, or uncertain with reason codes.",
       "conditions": [
-        "Jest wywoływany po stanie, budżecie, allowliście narzędzi, kontrolach deterministycznych, skanie sekretów/feedu i nadzór zdarzeń.",
-        "semantic_evaluate: all; mutating_and_outbound; shell_and_outbound; none. Bash jest wyjątkiem i zawsze trafia do Jev.",
-        "Nie jest elementem łańcucha embedding → Jev; Guardian i Jev otrzymują inne wejścia i odpowiadają na inne pytania."
+        "Called after session state, budget, tool allowlist, deterministic checks, secret/feed scan, and event supervision.",
+        "semantic_evaluate: all; mutating_and_outbound; shell_and_outbound; none. Bash is an exception and always goes to Jev.",
+        "Jev is not part of an embeddings → Jev chain; Guardian and Jev receive different inputs and answer different questions."
       ],
       "policyFields": [
         "semantic.*",
@@ -315,16 +315,16 @@
     },
     {
       "id": "policies",
-      "title": "Aktywna polityka i katalog",
-      "subtitle": "Wspólna płaszczyzna konfiguracji dla każdej gałęzi",
-      "description": "Aktywny Policy, efektywne zakresy global/user, profile, katalog tematów, polityki tematyczne, feed i wersja sterują bramką, nadzorem, decyzjami narzędzi i parametrami executorów. Publikacja runtime waliduje kandydata i czeka przez PublicationGate na aktywne lease żądań HTTP; nie czeka na lokalne narzędzia Pi. Transakcja zapisuje konfigurację, unieważnia oczekujące zgody i granty available oraz przełącza Core. Już claimed i uruchomiony executor Pi może działać dalej.",
-      "input": "Konfiguracja bazowa oraz uwierzytelniona publikacja z expected_version / expected_feed_version.",
-      "output": "Nowa aktywna wersja polityki i feedu używana przez kolejne kontrole każdej sesji.",
+      "title": "Active policy and catalog",
+      "subtitle": "Shared configuration plane for every branch",
+      "description": "The active policy, effective global/user scopes, profiles, topic catalog, topic policies, feed, and version govern the gateway, supervision, tool decisions, and executor settings. Runtime publication validates a candidate and uses PublicationGate to wait for active HTTP request leases; it does not wait for local Pi tools. A transaction stores the configuration, invalidates pending approvals and available grants, and swaps Core. A claimed and already-running Pi executor can continue.",
+      "input": "Base configuration and authenticated publication with expected_version / expected_feed_version.",
+      "output": "A new active policy and feed version used by subsequent checks in every session.",
       "conditions": [
-        "Nieaktualna wersja zwraca konflikt; niewłaściwa struktura albo błędy semantyczne nie zmieniają aktywnej konfiguracji.",
-        "Publikacja katalogu wymaga pełnej pary topics + topic_policies.",
-        "Wczesna odmowa nie zawsze zawiera metadane wykonania; późniejsze consume grantu może wtedy odrzucić żądanie.",
-        "Publikacja unieważnia granty w stanie available, nie claimed; lokalny executor już uruchomiony w Pi może dokończyć działanie."
+        "A stale version returns a conflict; invalid structure or semantic errors leave active configuration unchanged.",
+        "Publishing a topic catalog requires the complete topics + topic_policies pair.",
+        "An early denial may not include execution metadata; a later grant consume may then reject the request.",
+        "Publication invalidates grants in available state, not claimed grants; a local Pi executor already running may finish."
       ],
       "policyFields": [
         "mode",
@@ -380,16 +380,16 @@
     },
     {
       "id": "approval",
-      "title": "Zgoda użytkownika lub przegląd admina",
-      "subtitle": "Dwie różne ścieżki ręcznego rozstrzygnięcia",
-      "description": "Prośba o pojedynczą zgodę na operację trafia do interfejsie Pi; jest możliwa tylko przy approvals.enabled i gdy każdy wymagany reason code jest na kwalifikowane_reason_codes. Odrębnie Guardian uncertain zatrzymuje sesję w reviewing i tworzy topic review rozstrzygany przez administratora. Zgoda użytkownika nie znosi zakazu tematycznego; administrator wybiera no_violation albo violation i nie ma opcji uchylenia zakazu.",
-      "input": "require_approval dla kwalifikowanej operacji albo topic review po wyniku uncertain.",
-      "output": "Approve/reject dla jednej operacji; oddzielnie admin no_violation/violation dla review.",
+      "title": "User approval or administrator review",
+      "subtitle": "Two distinct human-resolution paths",
+      "description": "A one-time operation approval is shown in the Pi interface. It is available only when approvals.enabled and every required reason code is in eligible_reason_codes. Separately, Guardian uncertain pauses the session in reviewing and creates a topic review for an administrator. User approval does not override a topic prohibition; the administrator chooses no_violation or violation and has no override option.",
+      "input": "require_approval for an eligible operation, or a topic review after an uncertain result.",
+      "output": "Approve/reject for one operation; separately, admin no_violation/violation for a review.",
       "conditions": [
-        "Zgoda użytkownika jest ograniczona do jednej operacji i wygasa; po zatwierdzeniu Core ponownie liczy decyzję.",
-        "Odrzucenie, wygaśnięcie albo publikacja w trakcie oczekiwania uniemożliwia wykonanie.",
-        "Wynik administrator wybierze violation kończy sesję; no_violation wznawia ją.",
-        "Jeśli Pi nie udostępnia UI, wtyczka nie może poprosić o zgodę i blokuje operację bez automatycznego zatwierdzenia."
+        "User approval is limited to one operation and expires; after approval, Core recalculates the decision.",
+        "Rejection, expiration, or publication while waiting prevents execution.",
+        "An administrator decision of violation terminates the session; no_violation resumes it.",
+        "If Pi has no UI, the plugin cannot ask for approval and blocks the operation without auto-approval."
       ],
       "policyFields": [
         "approvals.enabled",
@@ -431,16 +431,16 @@
     },
     {
       "id": "executor",
-      "title": "Executor i grant jednorazowy",
-      "subtitle": "Deterministycznie sprawdzone, związane z argumentami i zużywane przed startem",
-      "description": "Core tworzy krótko ważny grant dopiero po decyzji allow. Wtyczka natychmiast wysyła consume z tym samym request/tool/arguments/cwd. Core sprawdza status sesji, wersję polityki, hash argumentów i katalogu, ponawia kontrolę deterministyczną oraz atomowo claimuje grant. Dopiero potem Pi uruchamia lokalny executor plików, powłoki lub HTTP; Core nie uruchamia narzędzia. Wtyczka sprawdza wynik przed pokazaniem w interfejsie i kolejnym kontekstem modelu.",
-      "input": "Dozwolona decyzja, dokładne argumenty narzędzia i kontekst katalogiem roboczym.",
-      "output": "Lokalnie wykonany wynik zwracany do wtyczki Pi; ujawniany dopiero po inspekcji.",
+      "title": "Executor and one-time grant",
+      "subtitle": "Deterministically checked, argument-bound, and consumed before start",
+      "description": "Core creates a short-lived grant only after an allow decision. The plugin immediately sends consume with the same request/tool/arguments/cwd. Core checks session state, policy version, argument and directory hashes, repeats deterministic checks, and atomically claims the grant. Only then does Pi run the local file, shell, or HTTP executor; Core does not run the tool. The plugin inspects the result before showing it in the UI or adding it to model context.",
+      "input": "Allowed decision, exact tool arguments, and working-directory context.",
+      "output": "Locally executed result returned to the Pi plugin; disclosed only after inspection.",
       "conditions": [
-        "Grant jest związany z sesją, żądaniem, narzędziem, argumentami i katalogiem roboczym, hashem zasobu i wersją polityki.",
-        "Niedopasowany, wygasły, wcześniej zużyty albo unieważniony grant nie uruchamia narzędzia.",
-        "Pliki i HTTP mają własne executory; grant nie jest samym wykonaniem.",
-        "Natywna powłoka działa z uprawnieniami systemowymi procesu Pi; limit czasu i require_isolation nie zapewniają izolacji ani sandboxa systemu operacyjnego."
+        "The grant is bound to the session, request, tool, arguments, working directory, resource hash, and policy version.",
+        "A mismatched, expired, previously consumed, or invalidated grant does not start the tool.",
+        "Files and HTTP use their own executors; a grant is not execution itself.",
+        "The native shell runs with the Pi process’s operating-system permissions; timeout and require_isolation do not provide operating-system isolation or a sandbox."
       ],
       "policyFields": [
         "global.tools",
@@ -497,14 +497,14 @@
     },
     {
       "id": "audit",
-      "title": "Audit i sesje",
-      "subtitle": "Dowód przebiegu; nie jest dodatkowym modelem decyzyjnym",
-      "description": "SQLite przechowuje statusy sesji, decyzje, wyniki nadzoru, approvals, granty wykonania i publikacje. Zdarzenie auditowe potwierdza zapis/receipt, ale sama decyzja allow nie potwierdza startu ani końca wykonania; potrzebne są potwierdzenia wykonania.",
-      "input": "Zdarzenia Core, gateway, wykonawcy, resolverów zgód i publikacji.",
-      "output": "Historia dla interfejsie, dalszych kontroli i przeglądu administratora.",
+      "title": "Audit and sessions",
+      "subtitle": "Evidence of the run; not another decision model",
+      "description": "SQLite stores session states, decisions, supervision results, approvals, execution grants, and publications. An audit event confirms a record or receipt, but an allow decision alone does not confirm execution start or completion; execution receipts are needed.",
+      "input": "Core, gateway, executor, approval-resolution, and publication events.",
+      "output": "History for the UI, later checks, and administrator review.",
       "conditions": [
-        "Wrażliwe treści są redagowane lub pomijane w widokach demonstracyjnych.",
-        "Publikacja zachowuje surową historię sesji, ale wcześniej-cleared zdarzenia nie upoważniają do ruchu pod nową wersją."
+        "Sensitive content is redacted or omitted in demo views.",
+        "Publication preserves raw session history, but events cleared earlier do not authorize traffic under a new version."
       ],
       "policyFields": [
         "audit.db_path",
@@ -549,63 +549,63 @@
       "id": "chat-request",
       "from": "pi",
       "to": "blackwall",
-      "label": "POST /v1/chat/completions — alias modelu i wiadomości",
+      "label": "POST /v1/chat/completions — model alias and messages",
       "kind": "request"
     },
     {
       "id": "upstream-model-request",
       "from": "blackwall",
       "to": "llm",
-      "label": "Po kontrolach sesji, DLP, tematów, allowlisty modeli i budżetu",
+      "label": "After session, DLP, topic, model-allowlist, and budget checks",
       "kind": "request"
     },
     {
       "id": "upstream-model-response",
       "from": "llm",
       "to": "blackwall",
-      "label": "Buforowany tekst lub wywołania narzędzi",
+      "label": "Buffered text or tool calls",
       "kind": "response"
     },
     {
       "id": "chat-response",
       "from": "blackwall",
       "to": "pi",
-      "label": "Do Pi dopiero po inspekcji tekstu i argumentów tool_call",
+      "label": "To Pi only after inspecting text and tool_call arguments",
       "kind": "response"
     },
     {
       "id": "tool-decision-request",
       "from": "pi",
       "to": "blackwall",
-      "label": "POST /v1/tool-decisions przed każdym uruchomieniem",
+      "label": "POST /v1/tool-decisions before every execution",
       "kind": "request"
     },
     {
       "id": "tool-decision-response",
       "from": "blackwall",
       "to": "pi",
-      "label": "deny / require_approval / allow wraz z metadanymi wykonania",
+      "label": "deny / require_approval / allow with execution metadata",
       "kind": "response"
     },
     {
       "id": "user-approval-request",
       "from": "blackwall",
       "to": "approval",
-      "label": "Prośba o jednorazową zgodę w interfejsie Pi",
+      "label": "One-time approval request in the Pi interface",
       "kind": "request"
     },
     {
       "id": "user-approval-resolution",
       "from": "approval",
       "to": "blackwall",
-      "label": "POST /v1/approvals/:id/resolve; Core ponownie sprawdza decyzję",
+      "label": "POST /v1/approvals/:id/resolve; Core rechecks the decision",
       "kind": "response"
     },
     {
       "id": "admin-review-request",
       "from": "blackwall",
       "to": "approval",
-      "label": "Osobny przegląd tematu po wyniku uncertain Guardian",
+      "label": "Separate topic review after a Guardian uncertain result",
       "kind": "request"
     },
     {
@@ -619,56 +619,56 @@
       "id": "consume-grant",
       "from": "pi",
       "to": "blackwall",
-      "label": "POST /tool-decisions/:id/consume z tymi samymi argumentami",
+      "label": "POST /tool-decisions/:id/consume with the same arguments",
       "kind": "request"
     },
     {
       "id": "execute-tool",
       "from": "pi",
       "to": "executor",
-      "label": "Pi uruchamia narzędzie po udanym consume",
+      "label": "Pi starts the tool after successful consume",
       "kind": "request"
     },
     {
       "id": "inspect-tool-result",
       "from": "pi",
       "to": "blackwall",
-      "label": "Wtyczka wysyła lokalny wynik do /v1/content/inspect przed ujawnieniem",
+      "label": "The plugin sends the local result to /v1/content/inspect before disclosure",
       "kind": "request"
     },
     {
       "id": "release-tool-result",
       "from": "blackwall",
       "to": "pi",
-      "label": "Pi otrzymuje decyzję: allow / redact / withhold",
+      "label": "Pi receives the decision: allow / redact / withhold",
       "kind": "response"
     },
     {
       "id": "result-to-agent",
       "from": "executor",
       "to": "pi",
-      "label": "Lokalny wynik wraca do Pi; agent dostaje go po inspekcji",
+      "label": "The local result returns to Pi; the agent receives it after inspection",
       "kind": "response"
     },
     {
       "id": "embedding-request",
       "from": "blackwall",
       "to": "embeddings",
-      "label": "Fragmenty zdarzenia i przykłady z katalogu tematów",
+      "label": "Event fragments and topic-catalog examples",
       "kind": "request"
     },
     {
       "id": "embedding-result",
       "from": "embeddings",
       "to": "blackwall",
-      "label": "Wektory; Blackwall oblicza podobieństwo i stosuje próg",
+      "label": "Vectors; Blackwall computes similarity and applies the threshold",
       "kind": "response"
     },
     {
       "id": "guardian-event-review",
       "from": "blackwall",
       "to": "guardian",
-      "label": "Tylko przy przypisanym temacie lub aktywnym kandydacie",
+      "label": "Only when a topic is assigned or an active candidate exists",
       "kind": "request"
     },
     {
@@ -682,71 +682,71 @@
       "id": "jev-operation-review",
       "from": "blackwall",
       "to": "jev",
-      "label": "Propozycja narzędzia po kontrolach deterministycznych, jeśli wymaga jej profil",
+      "label": "Tool proposal after deterministic checks, when required by the profile",
       "kind": "request"
     },
     {
       "id": "jev-verdict",
       "from": "jev",
       "to": "blackwall",
-      "label": "allow / deny / uncertain dla tej operacji",
+      "label": "allow / deny / uncertain for this operation",
       "kind": "response"
     },
     {
       "id": "runtime-publish",
       "from": "policies",
       "to": "blackwall",
-      "label": "Administrator wysyła expected_version oraz poprawkę controls lub feedu",
+      "label": "Administrator sends expected_version and a controls or feed patch",
       "kind": "policy"
     },
     {
       "id": "runtime-active-policy",
       "from": "blackwall",
       "to": "policies",
-      "label": "Sprawdzony, wersjonowany snapshot po PublicationGate",
+      "label": "Validated, versioned snapshot after PublicationGate",
       "kind": "policy"
     },
     {
       "id": "active-policy-crosscut",
       "from": "policies",
       "to": "blackwall",
-      "label": "Bieżące Core.policy, zakresy i feed sterują każdą ścieżką",
+      "label": "Current Core.policy, scopes, and feed govern every path",
       "kind": "policy"
     },
     {
       "id": "audit-decisions",
       "from": "blackwall",
       "to": "audit",
-      "label": "Zdarzenia, statusy, decyzje, potwierdzenia wykonania i publikacje",
+      "label": "Events, states, decisions, execution receipts, and publications",
       "kind": "audit"
     },
     {
       "id": "audit-runtime-publication",
       "from": "policies",
       "to": "audit",
-      "label": "policy.published / feed.published wraz z numerem wersji",
+      "label": "policy.published / feed.published with version numbers",
       "kind": "audit"
     },
     {
       "id": "execution-receipt",
       "from": "pi",
       "to": "blackwall",
-      "label": "Wtyczka zgłasza started / completed / failed przez /v1/execution-events",
+      "label": "The plugin reports started / completed / failed through /v1/execution-events",
       "kind": "audit"
     }
   ],
   "scenarios": [
     {
       "id": "model-safe",
-      "title": "Bezpieczna odpowiedź modelu",
-      "summary": "Czat przechodzi bramkę wejścia, trafia do modelu, a odpowiedź jest sprawdzana zanim wróci do Pi.",
-      "outcome": "Cała struktura promptu, w tym system/developer i wcześniejsze wypowiedzi assistant, jest skanowana pod kątem sekretów; topic/Guardian oceniają zdarzenia sesji w chwili ich nadejścia, a odpowiedź modelu jest sprawdzana przed zwolnieniem.",
+      "title": "Safe model response",
+      "summary": "Chat passes the input gateway and reaches the model; the response is checked before it returns to Pi.",
+      "outcome": "The full prompt structure, including system/developer and prior assistant messages, is scanned for secrets. Topic supervision reviews session events as they arrive, and the model response is inspected before release.",
       "steps": [
         {
           "node": "pi",
           "edge": "chat-request",
-          "title": "Pi wysyła czat",
-          "description": "Wtyczka kieruje model przez dostawca Blackwall.",
+          "title": "Pi sends chat",
+          "description": "The plugin routes the model request through the Blackwall provider.",
           "events": [
             "content.user_input"
           ]
@@ -754,8 +754,8 @@
         {
           "node": "blackwall",
           "edge": "embedding-request",
-          "title": "Kontrola wejścia",
-          "description": "Bramka sprawdza sesję i alias modelu oraz skanuje całą strukturę promptu pod kątem sekretów; DLP i topic supervision obejmują bieżące zdarzenie użytkownika.",
+          "title": "Check input",
+          "description": "The gateway checks the session and model alias and scans the full prompt structure for secrets; DLP and topic supervision cover the current user event.",
           "events": [
             "topic.checked"
           ]
@@ -763,28 +763,28 @@
         {
           "node": "embeddings",
           "edge": "embedding-result",
-          "title": "Sprawdź temat",
-          "description": "Podobieństwo ponad próg tworzy kandydata; samo dopasowanie nie jest naruszeniem.",
+          "title": "Check topic",
+          "description": "Similarity above the threshold creates a candidate; a match alone is not a violation.",
           "events": [
             "topic.candidate_detected"
           ],
-          "condition": "Dopasowanie dotyczy bieżącego zdarzenia; samo nie jest naruszeniem."
+          "condition": "The match is for the current event; it is not itself a violation."
         },
         {
           "node": "guardian",
           "edge": "guardian-verdict",
-          "title": "Warunkowy przegląd zdarzenia",
-          "description": "Przy przypisanym lub kandydującym temacie Guardian ocenia to bieżące zdarzenie; no_identified_violation przepuszcza je.",
+          "title": "Conditional event review",
+          "description": "When there is an assigned topic or candidate, Guardian assesses the current event; no_identified_violation lets it proceed.",
           "events": [
             "guardian.reviewed"
           ],
-          "condition": "Tylko gdy sesja ma przypisany temat lub aktywny kandydat."
+          "condition": "Only when the session has an assigned topic or active candidate."
         },
         {
           "node": "blackwall",
           "edge": "upstream-model-request",
-          "title": "Wywołaj model agenta",
-          "description": "Po przejściu warunkowych kontroli Blackwall rezerwuje budżet i wywołuje upstream.",
+          "title": "Call agent model",
+          "description": "After conditional checks pass, Blackwall reserves budget and calls the upstream provider.",
           "events": [
             "budget.reserved"
           ]
@@ -792,8 +792,8 @@
         {
           "node": "llm",
           "edge": "upstream-model-response",
-          "title": "Odbierz odpowiedź",
-          "description": "Pełna odpowiedź jest buforowana.",
+          "title": "Receive response",
+          "description": "The full response is buffered.",
           "events": [
             "model.completed"
           ]
@@ -801,8 +801,8 @@
         {
           "node": "blackwall",
           "edge": "chat-response",
-          "title": "Sprawdź i zwolnij",
-          "description": "DLP i nadzór zdarzeń sprawdzają tekst; jeśli odpowiedź przechodzi, gateway zwraca ją do Pi.",
+          "title": "Inspect and release",
+          "description": "DLP and event supervision check the text; if it passes, the gateway returns it to Pi.",
           "events": [
             "model.released",
             "guardian.reviewed"
@@ -810,8 +810,8 @@
         },
         {
           "node": "pi",
-          "title": "Pokaż odpowiedź",
-          "description": "Pi otrzymuje wyłącznie sprawdzoną treść.",
+          "title": "Show response",
+          "description": "Pi receives only checked content.",
           "events": []
         }
       ],
@@ -827,22 +827,22 @@
           "step": 1,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Uwierzytelnij sesję, sprawdź stan i alias modelu",
+          "label": "Authenticate session; check state and model alias",
           "kind": "self"
         },
         {
           "step": 1,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "DLP nowych wiadomości user/tool",
+          "label": "DLP for new user/tool messages",
           "kind": "self",
-          "condition": "Nie były wcześniej sprawdzone"
+          "condition": "Not checked earlier"
         },
         {
           "step": 1,
           "from": "blackwall",
           "to": "embeddings",
-          "label": "Wyślij bieżące zdarzenie do detektora tematów",
+          "label": "Send current event to the topic detector",
           "kind": "request",
           "condition": "topic_supervision.enabled"
         },
@@ -850,7 +850,7 @@
           "step": 2,
           "from": "embeddings",
           "to": "blackwall",
-          "label": "Zwróć wektory embeddingów",
+          "label": "Return embedding vectors",
           "kind": "response",
           "condition": "topic_supervision.enabled"
         },
@@ -858,7 +858,7 @@
           "step": 2,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Detektor: cosine + próg → kandydaci tematu",
+          "label": "Detector: cosine + threshold → topic candidates",
           "kind": "self",
           "condition": "topic_supervision.enabled"
         },
@@ -866,51 +866,51 @@
           "step": 3,
           "from": "blackwall",
           "to": "guardian",
-          "label": "Oceń bieżące zdarzenie i aktywne klauzule",
+          "label": "Assess current event and active clauses",
           "kind": "request",
-          "condition": "topic_supervision.enabled=true; temat przypisany lub aktywny kandydat"
+          "condition": "topic_supervision.enabled=true; assigned topic or active candidate"
         },
         {
           "step": 3,
           "from": "guardian",
           "to": "blackwall",
-          "label": "Zwróć no_identified_violation / violation / uncertain",
+          "label": "Return no_identified_violation / violation / uncertain",
           "kind": "response",
-          "condition": "Guardian został wywołany"
+          "condition": "Guardian was called"
         },
         {
           "step": 4,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Sekrety w całym promptcie i definicjach tools",
+          "label": "Scan secrets in the full prompt and tool definitions",
           "kind": "self"
         },
         {
           "step": 4,
           "from": "blackwall",
           "to": "llm",
-          "label": "Wyślij sprawdzony prompt do modelu agenta",
+          "label": "Send checked prompt to the agent model",
           "kind": "request"
         },
         {
           "step": 5,
           "from": "llm",
           "to": "blackwall",
-          "label": "Zwróć buforowaną odpowiedź modelu",
+          "label": "Return buffered model response",
           "kind": "response"
         },
         {
           "step": 6,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Sprawdź tekst model_output przez DLP i nadzór bieżącego zdarzenia",
+          "label": "Inspect model_output text with DLP and current-event supervision",
           "kind": "self"
         },
         {
           "step": 6,
           "from": "blackwall",
           "to": "embeddings",
-          "label": "Wyślij zdarzenie model_output do detektora",
+          "label": "Send model_output event to detector",
           "kind": "request",
           "condition": "topic_supervision.enabled=true"
         },
@@ -918,7 +918,7 @@
           "step": 6,
           "from": "embeddings",
           "to": "blackwall",
-          "label": "Zwróć wektory embeddingów",
+          "label": "Return embedding vectors",
           "kind": "response",
           "condition": "topic_supervision.enabled=true"
         },
@@ -926,7 +926,7 @@
           "step": 6,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Detektor: cosine + próg → kandydaci tematu",
+          "label": "Detector: cosine + threshold → topic candidates",
           "kind": "self",
           "condition": "topic_supervision.enabled=true"
         },
@@ -934,93 +934,93 @@
           "step": 6,
           "from": "blackwall",
           "to": "guardian",
-          "label": "Oceń bieżące model_output",
+          "label": "Assess current model_output event",
           "kind": "request",
-          "condition": "topic_supervision.enabled=true; temat przypisany lub aktywny kandydat"
+          "condition": "topic_supervision.enabled=true; assigned topic or active candidate"
         },
         {
           "step": 6,
           "from": "guardian",
           "to": "blackwall",
-          "label": "Zwróć werdykt nadzoru",
+          "label": "Return supervision verdict",
           "kind": "response",
-          "condition": "Guardian został wywołany"
+          "condition": "Guardian was called"
         },
         {
           "step": 6,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Przeskanuj tool_calls; sprawdź JSON i DLP argumentów",
+          "label": "Scan tool_calls; validate JSON and DLP-check arguments",
           "kind": "self",
-          "condition": "Dla każdego tool_call w odpowiedzi"
+          "condition": "For each tool_call in the response"
         },
         {
           "step": 6,
           "from": "blackwall",
           "to": "embeddings",
-          "label": "Embeddingi argumentów model_output",
+          "label": "Embed model_output arguments",
           "kind": "request",
-          "condition": "tool_call i topic_supervision.enabled=true"
+          "condition": "tool_call and topic_supervision.enabled=true"
         },
         {
           "step": 6,
           "from": "embeddings",
           "to": "blackwall",
-          "label": "Zwróć wektory embeddingów",
+          "label": "Return embedding vectors",
           "kind": "response",
-          "condition": "Wywołano embeddingi"
+          "condition": "Embeddings were called"
         },
         {
           "step": 6,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Detektor: cosine + próg → kandydaci tematu",
+          "label": "Detector: cosine + threshold → topic candidates",
           "kind": "self",
-          "condition": "Wywołano embeddingi"
+          "condition": "Embeddings were called"
         },
         {
           "step": 6,
           "from": "blackwall",
           "to": "guardian",
-          "label": "Oceń argumenty proponowane przez model",
+          "label": "Assess model-proposed arguments",
           "kind": "request",
-          "condition": "tool_call; topic_supervision.enabled=true; temat przypisany lub kandydat"
+          "condition": "tool_call; topic_supervision.enabled=true; assigned topic or candidate"
         },
         {
           "step": 6,
           "from": "guardian",
           "to": "blackwall",
-          "label": "Zwróć werdykt dla model_output",
+          "label": "Return verdict for model_output",
           "kind": "response",
-          "condition": "Guardian został wywołany"
+          "condition": "Guardian was called"
         },
         {
           "step": 6,
           "from": "blackwall",
           "to": "pi",
-          "label": "Zwróć odpowiedź po pomyślnej inspekcji",
+          "label": "Return response after successful inspection",
           "kind": "response"
         },
         {
           "step": 7,
           "from": "pi",
           "to": "pi",
-          "label": "Pokaż sprawdzoną odpowiedź",
+          "label": "Show checked response",
           "kind": "self"
         }
       ]
     },
     {
       "id": "tool-allow",
-      "title": "Dozwolone narzędzie",
-      "summary": "Pi otrzymuje tool_call, oddzielnie prosi o decyzję, a wykonawca działa dopiero po zużyciu grantu. Pokazany wariant odpowiedzi modelu zawiera tool_call bez dodatkowego tekstu.",
-      "outcome": "Po decyzji allow Pi zużywa grant i raportuje started przed uruchomieniem narzędzia; wynik przechodzi inspekcję, a następnie Pi raportuje completed albo failed.",
+      "title": "Allowed tool",
+      "summary": "Pi receives a tool_call, requests a decision separately, and the executor runs only after grant consumption. The illustrated model response contains a tool_call with no additional text.",
+      "outcome": "After an allow decision, Pi consumes the grant and reports started before the tool runs; the result is inspected, then Pi reports completed or failed.",
       "steps": [
         {
           "node": "llm",
           "edge": "upstream-model-response",
-          "title": "Model proponuje tool_call",
-          "description": "Bramka sprawdziła tekst i argumenty przed zwróceniem tool_call do Pi.",
+          "title": "Model proposes tool_call",
+          "description": "The gateway checked text and arguments before returning the tool_call to Pi.",
           "events": [
             "model.completed"
           ]
@@ -1028,26 +1028,26 @@
         {
           "node": "pi",
           "edge": "tool-decision-request",
-          "title": "Pi pyta o decyzję",
-          "description": "Żądanie tool-decision jest osobnym requestem od czatu.",
+          "title": "Pi requests a decision",
+          "description": "The tool-decision request is separate from the chat request.",
           "events": []
         },
         {
           "node": "blackwall",
           "edge": "jev-operation-review",
-          "title": "Kontrole operacji",
-          "description": "Stan, budżet, lista dozwolonych narzędzi, reguły deterministyczne, sekrety/feed i nadzór zdarzeń biegną w kolejności; Jev uruchamia się jeśli wymaga tego profil.",
+          "title": "Check the operation",
+          "description": "Session state, budget, tool allowlist, deterministic rules, secret/feed checks, and event supervision run in order; Jev is called when the profile requires it.",
           "events": [
             "decision.allowed",
             "judge.evaluated"
           ],
-          "condition": "Zakłada, że Guardian i wymagany Jev nie blokują operacji."
+          "condition": "Assumes Guardian and any required Jev review do not block the operation."
         },
         {
           "node": "blackwall",
           "edge": "tool-decision-response",
-          "title": "Wydaj allow grant",
-          "description": "Core tworzy krótko ważny grant powiązany z żądaniem.",
+          "title": "Issue allow grant",
+          "description": "Core creates a short-lived grant bound to the request.",
           "events": [
             "decision.allowed"
           ]
@@ -1055,8 +1055,8 @@
         {
           "node": "pi",
           "edge": "consume-grant",
-          "title": "Zużyj grant",
-          "description": "Wtyczka wysyła te same argumenty i cwd; serwer sprawdza je ponownie.",
+          "title": "Consume grant",
+          "description": "The plugin sends the same arguments and cwd; the server checks them again.",
           "events": [
             "execution.claimed"
           ]
@@ -1064,8 +1064,8 @@
         {
           "node": "pi",
           "edge": "execution-receipt",
-          "title": "Zgłoś rozpoczęcie wykonania",
-          "description": "Po udanym consume wtyczka zgłasza phase=started; dopiero potem Pi wywołuje lokalny executor.",
+          "title": "Report execution start",
+          "description": "After consume succeeds, the plugin reports phase=started; only then does Pi invoke its local executor.",
           "events": [
             "tool.started"
           ]
@@ -1073,22 +1073,22 @@
         {
           "node": "pi",
           "edge": "execute-tool",
-          "title": "Uruchom lokalny executor",
-          "description": "Po zużyciu grantu Pi uruchamia lokalne narzędzie.",
+          "title": "Run local executor",
+          "description": "After consuming the grant, Pi runs the local tool.",
           "events": []
         },
         {
           "node": "executor",
           "edge": "result-to-agent",
-          "title": "Wynik lokalny wraca do wtyczki",
-          "description": "Wynik wraca do wtyczki; custom executor inspektuje go przed publikacją w Pi.",
+          "title": "Local result returns to plugin",
+          "description": "The result returns to the plugin; a custom executor inspects it before publishing it to Pi.",
           "events": []
         },
         {
           "node": "pi",
           "edge": "inspect-tool-result",
-          "title": "Wtyczka inspektuje wynik",
-          "description": "Custom executor wysyła treść oraz structured/details do /v1/content/inspect przed publikacją wyniku.",
+          "title": "Plugin inspects result",
+          "description": "The custom executor sends content and structured/details to /v1/content/inspect before publishing the result.",
           "events": [
             "content.redacted",
             "content.blocked",
@@ -1098,8 +1098,8 @@
         {
           "node": "blackwall",
           "edge": "release-tool-result",
-          "title": "Blackwall odpowiada decyzją treści",
-          "description": "Serwer zwraca allow/redact albo block; przy block wtyczka wstrzymuje wynik.",
+          "title": "Blackwall returns content decision",
+          "description": "The server returns allow/redact or block; on block the plugin withholds the result.",
           "events": [
             "content.redacted",
             "content.blocked"
@@ -1108,8 +1108,8 @@
         {
           "node": "pi",
           "edge": "execution-receipt",
-          "title": "Zgłoś zakończenie wykonania",
-          "description": "Późniejszy hook Pi tool_result zgłasza completed albo failed dopiero po inspekcji wyniku w custom executorze.",
+          "title": "Report execution completion",
+          "description": "The later Pi tool_result hook reports completed or failed only after the custom executor inspects the result.",
           "events": [
             "tool.completed",
             "tool.failed"
@@ -1118,8 +1118,8 @@
         {
           "node": "pi",
           "edge": "result-to-agent",
-          "title": "Wróć do agenta",
-          "description": "Pi przekazuje agentowi tylko wynik dopuszczony lub zredagowany po inspekcji.",
+          "title": "Return to the agent",
+          "description": "Pi passes the agent only the result allowed or redacted after inspection.",
           "events": [
             "content.tool_output"
           ]
@@ -1130,62 +1130,62 @@
           "step": 0,
           "from": "llm",
           "to": "blackwall",
-          "label": "Zwróć odpowiedź zawierającą tool_call",
+          "label": "Return response containing tool_call",
           "kind": "response"
         },
         {
           "step": 0,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Przeskanuj tool_calls; sprawdź JSON i DLP argumentów",
+          "label": "Scan tool_calls; validate JSON and DLP-check arguments",
           "kind": "self",
-          "condition": "Dla każdego tool_call w odpowiedzi"
+          "condition": "For each tool_call in the response"
         },
         {
           "step": 0,
           "from": "blackwall",
           "to": "embeddings",
-          "label": "Embeddingi argumentów model_output",
+          "label": "Embed model_output arguments",
           "kind": "request",
-          "condition": "tool_call i topic_supervision.enabled=true"
+          "condition": "tool_call and topic_supervision.enabled=true"
         },
         {
           "step": 0,
           "from": "embeddings",
           "to": "blackwall",
-          "label": "Zwróć wektory embeddingów",
+          "label": "Return embedding vectors",
           "kind": "response",
-          "condition": "Wywołano embeddingi"
+          "condition": "Embeddings were called"
         },
         {
           "step": 0,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Detektor: cosine + próg → kandydaci tematu",
+          "label": "Detector: cosine + threshold → topic candidates",
           "kind": "self",
-          "condition": "Wywołano embeddingi"
+          "condition": "Embeddings were called"
         },
         {
           "step": 0,
           "from": "blackwall",
           "to": "guardian",
-          "label": "Oceń argumenty proponowane przez model",
+          "label": "Assess model-proposed arguments",
           "kind": "request",
-          "condition": "tool_call; topic_supervision.enabled=true; temat przypisany lub kandydat"
+          "condition": "tool_call; topic_supervision.enabled=true; assigned topic or candidate"
         },
         {
           "step": 0,
           "from": "guardian",
           "to": "blackwall",
-          "label": "Zwróć werdykt dla model_output",
+          "label": "Return verdict for model_output",
           "kind": "response",
-          "condition": "Guardian został wywołany"
+          "condition": "Guardian was called"
         },
         {
           "step": 0,
           "from": "blackwall",
           "to": "pi",
-          "label": "Przekaż sprawdzony tool_call w odpowiedzi czatu",
+          "label": "Pass checked tool_call in the chat response",
           "kind": "response"
         },
         {
@@ -1199,35 +1199,35 @@
           "step": 2,
           "from": "blackwall",
           "to": "policies",
-          "label": "Odczytaj aktywną konfigurację (lokalnie)",
+          "label": "Read active configuration (local)",
           "kind": "policy"
         },
         {
           "step": 2,
           "from": "policies",
           "to": "blackwall",
-          "label": "Reguły, profile, katalog tematów",
+          "label": "Rules, profiles, and topic catalog",
           "kind": "response"
         },
         {
           "step": 2,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Sprawdź stan sesji, budżet, allowlistę i reguły deterministyczne",
+          "label": "Check session state, budget, allowlist, and deterministic rules",
           "kind": "self"
         },
         {
           "step": 2,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Sprawdź sekrety i threat feed",
+          "label": "Check secrets and threat feed",
           "kind": "self"
         },
         {
           "step": 2,
           "from": "blackwall",
           "to": "embeddings",
-          "label": "Oceń bieżące zdarzenie argumentów narzędzia",
+          "label": "Assess current tool-argument event",
           "kind": "request",
           "condition": "topic_supervision.enabled=true"
         },
@@ -1235,7 +1235,7 @@
           "step": 2,
           "from": "embeddings",
           "to": "blackwall",
-          "label": "Zwróć wektory embeddingów",
+          "label": "Return embedding vectors",
           "kind": "response",
           "condition": "topic_supervision.enabled=true"
         },
@@ -1243,7 +1243,7 @@
           "step": 2,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Detektor: cosine + próg → kandydaci tematu",
+          "label": "Detector: cosine + threshold → topic candidates",
           "kind": "self",
           "condition": "topic_supervision.enabled=true"
         },
@@ -1251,62 +1251,62 @@
           "step": 2,
           "from": "blackwall",
           "to": "guardian",
-          "label": "Oceń bieżące zdarzenie argumentów",
+          "label": "Assess current argument event",
           "kind": "request",
-          "condition": "topic_supervision.enabled=true; temat przypisany lub aktywny kandydat"
+          "condition": "topic_supervision.enabled=true; assigned topic or active candidate"
         },
         {
           "step": 2,
           "from": "guardian",
           "to": "blackwall",
-          "label": "Zwróć werdykt dla zdarzenia",
+          "label": "Return event verdict",
           "kind": "response",
-          "condition": "Guardian został wywołany"
+          "condition": "Guardian was called"
         },
         {
           "step": 2,
           "from": "blackwall",
           "to": "jev",
-          "label": "Oceń zgodność proponowanej operacji",
+          "label": "Assess the proposed operation",
           "kind": "request",
-          "condition": "Bash zawsze; inne narzędzia według profiles.*.semantic_evaluate"
+          "condition": "Bash always; other tools follow profiles.*.semantic_evaluate"
         },
         {
           "step": 2,
           "from": "jev",
           "to": "blackwall",
-          "label": "Zwróć allow / deny / uncertain",
+          "label": "Return allow / deny / uncertain",
           "kind": "response",
-          "condition": "Jev został wywołany"
+          "condition": "Jev was called"
         },
         {
           "step": 2,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Złóż decyzję i utwórz grant available przy allow",
+          "label": "Assemble decision and create an available grant on allow",
           "kind": "self"
         },
         {
           "step": 3,
           "from": "blackwall",
           "to": "pi",
-          "label": "Zwróć allow i metadane grantu",
+          "label": "Return allow and grant metadata",
           "kind": "response"
         },
         {
           "step": 4,
           "from": "pi",
           "to": "blackwall",
-          "label": "POST /v1/tool-decisions/:id/consume z tymi samymi argumentami",
+          "label": "POST /v1/tool-decisions/:id/consume with the same arguments",
           "kind": "request"
         },
         {
           "step": 4,
           "from": "blackwall",
           "to": "pi",
-          "label": "Potwierdź claim grantu",
+          "label": "Confirm grant claim",
           "kind": "response",
-          "condition": "Kontrole consume przeszły"
+          "condition": "Consume checks passed"
         },
         {
           "step": 5,
@@ -1319,88 +1319,88 @@
           "step": 5,
           "from": "blackwall",
           "to": "pi",
-          "label": "Potwierdź zapis tool.started",
+          "label": "Confirm tool.started record",
           "kind": "response"
         },
         {
           "step": 6,
           "from": "pi",
           "to": "executor",
-          "label": "Uruchom lokalne narzędzie Pi",
+          "label": "Run local Pi tool",
           "kind": "request"
         },
         {
           "step": 7,
           "from": "executor",
           "to": "pi",
-          "label": "Zwróć lokalny wynik do wtyczki",
+          "label": "Return local result to the plugin",
           "kind": "response"
         },
         {
           "step": 8,
           "from": "pi",
           "to": "blackwall",
-          "label": "POST /v1/content/inspect z treścią i structured/details",
+          "label": "POST /v1/content/inspect with content and structured/details",
           "kind": "request"
         },
         {
           "step": 9,
           "from": "blackwall",
           "to": "pi",
-          "label": "Zwróć allow / redact / block",
+          "label": "Return allow / redact / block",
           "kind": "response"
         },
         {
           "step": 10,
           "from": "pi",
           "to": "blackwall",
-          "label": "POST /v1/execution-events: phase=completed albo failed",
+          "label": "POST /v1/execution-events: phase=completed or failed",
           "kind": "request"
         },
         {
           "step": 10,
           "from": "blackwall",
           "to": "pi",
-          "label": "Potwierdź receipt końcowy",
+          "label": "Confirm final receipt",
           "kind": "response"
         },
         {
           "step": 11,
           "from": "pi",
           "to": "pi",
-          "label": "Dołącz tylko sprawdzony wynik do dalszego kontekstu rozmowy",
+          "label": "Append only the checked result to further conversation context",
           "kind": "self"
         }
       ]
     },
     {
       "id": "tool-approval",
-      "title": "Operacja wymagająca zgody użytkownika",
-      "summary": "Nadpisanie istniejącego pliku albo kwalifikowane semantic uncertainty może zatrzymać pojedyncze żądanie i poprosić użytkownika o zgodę.",
-      "outcome": "Po zatwierdzeniu Core ponownie liczy decyzję; dopiero ponowny allow może utworzyć execution grant.",
+      "title": "Tool requires user approval",
+      "summary": "Overwriting an existing file or eligible semantic uncertainty can pause a single request and ask the user to approve it.",
+      "outcome": "After approval, Core recalculates the decision; only a renewed allow can create an execution grant.",
       "steps": [
         {
           "node": "pi",
           "edge": "tool-decision-request",
-          "title": "Wyślij operację",
-          "description": "Wtyczka pyta Core przed lokalnym wykonaniem.",
+          "title": "Submit operation",
+          "description": "The plugin asks Core before local execution.",
           "events": []
         },
         {
           "node": "blackwall",
           "edge": "user-approval-request",
-          "title": "Wymagana zgoda",
-          "description": "Core wymaga approvals.enabled i kwalifikacji wszystkich kodów powodów. Jeśli Pi nie udostępnia UI, wtyczka blokuje operację bez automatycznej zgody.",
+          "title": "Approval required",
+          "description": "Core requires approvals.enabled and every reason code to be eligible. If Pi has no UI, the plugin blocks the operation without automatic approval.",
           "events": [
             "approval.requested"
           ],
-          "condition": "Zgoda jest dostępna tylko przy approvals.enabled, kwalifikacji wszystkich wymaganych kodów i dostępnym interfejsie Pi; bez UI wtyczka blokuje operację i nie zatwierdza jej automatycznie."
+          "condition": "Approval is available only when approvals.enabled, all required codes are eligible, and Pi UI is available; without UI the plugin blocks and does not auto-approve."
         },
         {
           "node": "approval",
           "edge": "user-approval-resolution",
-          "title": "Użytkownik zatwierdza w Pi",
-          "description": "Potwierdzenie wiąże się z pokazanym narzędziem, argumentami i zakresem jednej operacji.",
+          "title": "User approves in Pi",
+          "description": "The confirmation is bound to the shown tool, arguments, and scope of one operation.",
           "events": [
             "approval.approved"
           ]
@@ -1408,8 +1408,8 @@
         {
           "node": "blackwall",
           "edge": "tool-decision-response",
-          "title": "Ponowna decyzja",
-          "description": "resolveApproval weryfikuje powiązanie i ponawia Core decision z zaakceptowanymi kodami.",
+          "title": "Re-evaluate decision",
+          "description": "resolveApproval verifies the binding and reruns the Core decision with the approved codes.",
           "events": [
             "decision.allowed"
           ]
@@ -1417,16 +1417,16 @@
         {
           "node": "pi",
           "edge": "consume-grant",
-          "title": "Zużyj nowy grant",
-          "description": "Bez nowego, zgodnego grantu executor nie startuje.",
+          "title": "Consume new grant",
+          "description": "Without a new matching grant, the executor does not start.",
           "events": [
             "execution.claimed"
           ]
         },
         {
           "node": "executor",
-          "title": "Wykonaj i sprawdź wynik",
-          "description": "Dalsza ścieżka jest taka sama jak dla zwykłej decyzji allow.",
+          "title": "Execute and inspect result",
+          "description": "The remaining path is the same as for an ordinary allow decision.",
           "events": [
             "tool.started",
             "tool.completed"
@@ -1445,23 +1445,23 @@
           "step": 1,
           "from": "blackwall",
           "to": "pi",
-          "label": "Zwróć require_approval i dane jednorazowej zgody",
+          "label": "Return require_approval and one-time approval data",
           "kind": "response",
-          "condition": "Wymagane kody są kwalifikowane przez politykę"
+          "condition": "Required codes are eligible under policy"
         },
         {
           "step": 2,
           "from": "pi",
           "to": "approval",
-          "label": "Pokaż użytkownikowi potwierdzenie operacji w UI Pi",
+          "label": "Show operation confirmation in Pi UI",
           "kind": "request",
-          "condition": "Pi ma dostępne UI; bez UI plugin blokuje"
+          "condition": "Pi UI is available; without UI the plugin blocks"
         },
         {
           "step": 2,
           "from": "approval",
           "to": "pi",
-          "label": "Zwróć approve albo reject",
+          "label": "Return approve or reject",
           "kind": "response"
         },
         {
@@ -1475,7 +1475,7 @@
           "step": 3,
           "from": "blackwall",
           "to": "pi",
-          "label": "Zwróć ponownie wyliczoną decyzję i nowy grant przy allow",
+          "label": "Return recalculated decision and new grant on allow",
           "kind": "response"
         },
         {
@@ -1489,7 +1489,7 @@
           "step": 4,
           "from": "blackwall",
           "to": "pi",
-          "label": "Potwierdź claim grantu",
+          "label": "Confirm grant claim",
           "kind": "response"
         },
         {
@@ -1503,21 +1503,21 @@
           "step": 4,
           "from": "blackwall",
           "to": "pi",
-          "label": "Potwierdź tool.started przed uruchomieniem",
+          "label": "Confirm tool.started before execution",
           "kind": "response"
         },
         {
           "step": 5,
           "from": "pi",
           "to": "executor",
-          "label": "Uruchom lokalne narzędzie",
+          "label": "Run local tool",
           "kind": "request"
         },
         {
           "step": 5,
           "from": "executor",
           "to": "pi",
-          "label": "Zwróć wynik do custom executora",
+          "label": "Return result to custom executor",
           "kind": "response"
         },
         {
@@ -1531,57 +1531,57 @@
           "step": 5,
           "from": "blackwall",
           "to": "pi",
-          "label": "Zwróć allow / redact / block",
+          "label": "Return allow / redact / block",
           "kind": "response"
         },
         {
           "step": 5,
           "from": "pi",
           "to": "blackwall",
-          "label": "Po inspekcji zgłoś phase=completed albo failed",
+          "label": "After inspection, report phase=completed or failed",
           "kind": "request"
         },
         {
           "step": 5,
           "from": "blackwall",
           "to": "pi",
-          "label": "Potwierdź receipt końcowy",
+          "label": "Confirm final receipt",
           "kind": "response"
         }
       ]
     },
     {
       "id": "hard-deny",
-      "title": "Odmowa deterministyczna",
-      "summary": "Narzędzie poza zakresem plików, sieci lub katalogu dozwolonych narzędzi odpada zanim powstanie grant.",
-      "outcome": "Pi blokuje tool_call, executor nie startuje; lista kwalifikowane zgody nie zamienia twardej odmowy w allow.",
+      "title": "Deterministic denial",
+      "summary": "A tool outside the file, network, or allowed-tool scope is rejected before a grant is created.",
+      "outcome": "Pi blocks the tool_call and the executor does not start; eligible approval codes do not turn a hard denial into an allow.",
       "steps": [
         {
           "node": "pi",
           "edge": "tool-decision-request",
-          "title": "Wyślij tool_call",
-          "description": "Każde wywołanie narzędzia trafia do Core.",
+          "title": "Submit tool_call",
+          "description": "Every tool call goes to Core.",
           "events": []
         },
         {
           "node": "blackwall",
-          "title": "Odmów na regule i zapisz powód",
-          "description": "W trybie enforce deterministyczna kontrola odrzuca propozycję. Core zapisuje decision.denied i kod przyczyny przed zwróceniem decyzji do API.",
+          "title": "Deny on rule and record reason",
+          "description": "In enforce mode, the deterministic check rejects the proposal. Core records decision.denied and the reason code before returning the API decision.",
           "events": [
             "decision.denied"
           ],
-          "condition": "Ta odmowa kończy się przed embedding/Guardian/Jev/approval dla argumentów narzędzia."
+          "condition": "This denial ends before embeddings/Guardian/Jev/approval for tool arguments."
         },
         {
           "node": "blackwall",
-          "title": "Zwróć deny bez grantu",
-          "description": "API zwraca Pi decyzję deny i przyczynę odmowy. Nie wydaje grantu wykonania. Embeddingi, Guardian i Jev nie były potrzebne na tej ścieżce.",
+          "title": "Return deny without grant",
+          "description": "The API returns the denial and reason to Pi. No execution grant is issued. Embeddings, Guardian, and Jev were not needed on this path.",
           "events": []
         },
         {
           "node": "pi",
-          "title": "Zatrzymaj wykonanie",
-          "description": "Bez decyzji allow i grantu wtyczka nie wywołuje lokalnego narzędzia.",
+          "title": "Stop execution",
+          "description": "Without an allow decision and grant, the plugin does not invoke the local tool.",
           "events": [
             "decision.denied"
           ]
@@ -1599,44 +1599,44 @@
           "step": 1,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Odrzuć operację na deterministycznej kontroli",
+          "label": "Reject operation at deterministic check",
           "kind": "self",
-          "condition": "Naruszono twardą regułę zakresu, stanu, budżetu lub narzędzia"
+          "condition": "A hard scope, state, budget, or tool rule was violated"
         },
         {
           "step": 1,
           "from": "blackwall",
           "to": "audit",
-          "label": "Zapisz decision.denied i kod przyczyny",
+          "label": "Record decision.denied and reason code",
           "kind": "audit"
         },
         {
           "step": 2,
           "from": "blackwall",
           "to": "pi",
-          "label": "Zwróć deny bez grantu wykonania",
+          "label": "Return deny without an execution grant",
           "kind": "response"
         },
         {
           "step": 3,
           "from": "pi",
           "to": "pi",
-          "label": "Zablokuj tool_call; nie uruchamiaj executora",
+          "label": "Block tool_call; do not run executor",
           "kind": "self"
         }
       ]
     },
     {
       "id": "topic-violation",
-      "title": "Guardian potwierdza naruszenie tematyczne",
-      "summary": "Przypisany temat albo kandydat z embeddingów uruchamia Guardian dla bieżącego eventu.",
-      "outcome": "Zweryfikowane violation kończy sesję; model lub executor nie otrzymuje dalszego zezwolenia.",
+      "title": "Guardian confirms topic violation",
+      "summary": "An assigned topic or embedding candidate triggers Guardian for the current event.",
+      "outcome": "A verified violation terminates the session; the model or executor receives no further authorization.",
       "steps": [
         {
           "node": "blackwall",
           "edge": "embedding-request",
-          "title": "Inspekcja eventu",
-          "description": "DLP przetwarza treść, a topic supervision uruchamia detector.",
+          "title": "Inspect event",
+          "description": "DLP processes the content and topic supervision invokes the detector.",
           "events": [
             "content.user_input",
             "topic.checked"
@@ -1645,8 +1645,8 @@
         {
           "node": "embeddings",
           "edge": "embedding-result",
-          "title": "Ustal kandydatów",
-          "description": "Detektor może dodać kandydata. Temat z konfiguracji użytkownika jest zaufanym przypisaniem zapisanym wcześniej, podczas tworzenia sesji.",
+          "title": "Find candidates",
+          "description": "The detector may add a candidate. A topic from user configuration is a trusted assignment recorded earlier, when the session was created.",
           "events": [
             "topic.candidate_detected"
           ]
@@ -1654,8 +1654,8 @@
         {
           "node": "blackwall",
           "edge": "guardian-event-review",
-          "title": "Wyślij bieżący event do Guardian",
-          "description": "Guardian dostaje aktywne klauzule policy, ograniczoną historię i untrusted current event.",
+          "title": "Send current event to Guardian",
+          "description": "Guardian receives active policy clauses, limited history, and the untrusted current event.",
           "events": [
             "guardian.started"
           ]
@@ -1663,8 +1663,8 @@
         {
           "node": "guardian",
           "edge": "guardian-verdict",
-          "title": "Zweryfikuj verdict",
-          "description": "Violation musi zawierać cytat z eventu i klauzulę forbidden; nieweryfikowalne oskarżenie staje się uncertain.",
+          "title": "Verify verdict",
+          "description": "A violation must include a quote from the event and a forbidden clause; an unverifiable accusation becomes uncertain.",
           "events": [
             "guardian.reviewed"
           ]
@@ -1672,8 +1672,8 @@
         {
           "node": "blackwall",
           "edge": "audit-decisions",
-          "title": "Zakończ sesję",
-          "description": "Przy prawidłowym violation Core terminuje sesję i blokuje dalsze wywołania.",
+          "title": "Terminate session",
+          "description": "On a valid violation, Core terminates the session and blocks further requests.",
           "events": [
             "session.terminated",
             "model.denied"
@@ -1685,7 +1685,7 @@
           "step": 0,
           "from": "blackwall",
           "to": "embeddings",
-          "label": "Oceń bieżące zdarzenie sesji",
+          "label": "Assess current session event",
           "kind": "request",
           "condition": "topic_supervision.enabled=true"
         },
@@ -1693,65 +1693,65 @@
           "step": 1,
           "from": "embeddings",
           "to": "blackwall",
-          "label": "Zwróć wektory embeddingów",
+          "label": "Return embedding vectors",
           "kind": "response"
         },
         {
           "step": 1,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Detektor: cosine + próg → kandydaci tematu",
+          "label": "Detector: cosine + threshold → topic candidates",
           "kind": "self"
         },
         {
           "step": 2,
           "from": "blackwall",
           "to": "guardian",
-          "label": "Przekaż bieżące zdarzenie, aktywne tematy i klauzule",
+          "label": "Pass current event, active topics, and clauses",
           "kind": "request",
-          "condition": "topic_supervision.enabled=true; temat przypisany lub aktywny kandydat"
+          "condition": "topic_supervision.enabled=true; assigned topic or active candidate"
         },
         {
           "step": 3,
           "from": "guardian",
           "to": "blackwall",
-          "label": "Zwróć violation z weryfikowalnym dowodem",
+          "label": "Return violation with verifiable evidence",
           "kind": "response"
         },
         {
           "step": 3,
           "from": "blackwall",
           "to": "audit",
-          "label": "Zapisz guardian.reviewed przed obsługą werdyktu",
+          "label": "Record guardian.reviewed before handling verdict",
           "kind": "audit"
         },
         {
           "step": 4,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Zakończ sesję i zablokuj dalszy ruch",
+          "label": "Terminate session and block further traffic",
           "kind": "self"
         },
         {
           "step": 4,
           "from": "blackwall",
           "to": "audit",
-          "label": "Zapisz session.terminated",
+          "label": "Record session.terminated",
           "kind": "audit"
         }
       ]
     },
     {
       "id": "topic-uncertain",
-      "title": "Guardian nie rozstrzyga",
-      "summary": "Niepewność nadzorcy pozostawia zdarzenie nierozliczone i blokuje dalsze narzędzia do przeglądu.",
-      "outcome": "Sesja ma status reviewing; administrator rozstrzyga no_violation lub violation, bez opcji obejścia zakazu.",
+      "title": "Guardian returns uncertain",
+      "summary": "An uncertain supervisor result leaves the event unresolved and blocks further tools pending review.",
+      "outcome": "The session is reviewing; an administrator resolves no_violation or violation, with no option to override a prohibition.",
       "steps": [
         {
           "node": "blackwall",
           "edge": "guardian-event-review",
-          "title": "Sprawdź event w kontekście",
-          "description": "Aktywny temat i bieżący tekst trafiają do Guardian.",
+          "title": "Review event in context",
+          "description": "The active topic and current text are sent to Guardian.",
           "events": [
             "guardian.started"
           ]
@@ -1759,8 +1759,8 @@
         {
           "node": "guardian",
           "edge": "guardian-verdict",
-          "title": "Wynik uncertain",
-          "description": "Brak wiarygodnej podstawy do pass lub violation nie jest allow.",
+          "title": "Uncertain result",
+          "description": "Lack of a reliable basis for pass or violation is not an allow.",
           "events": [
             "guardian.reviewed"
           ]
@@ -1768,8 +1768,8 @@
         {
           "node": "blackwall",
           "edge": "admin-review-request",
-          "title": "Wstrzymaj sesję",
-          "description": "Status reviewing blokuje czat i narzędzia; powstaje topic review.",
+          "title": "Pause session",
+          "description": "Reviewing state blocks chat and tools; a topic review is created.",
           "events": [
             "session.reviewing",
             "decision.denied"
@@ -1778,8 +1778,8 @@
         {
           "node": "approval",
           "edge": "admin-review-result",
-          "title": "Przegląd administratora",
-          "description": "Administrator wybiera no_violation, aby wznowić, albo violation, aby zakończyć sesję.",
+          "title": "Administrator review",
+          "description": "The administrator chooses no_violation to resume or violation to terminate the session.",
           "events": [
             "session.resumed",
             "session.terminated"
@@ -1791,29 +1791,29 @@
           "step": 0,
           "from": "blackwall",
           "to": "guardian",
-          "label": "Przekaż bieżące zdarzenie i zaufaną politykę",
+          "label": "Pass current event and trusted policy",
           "kind": "request",
-          "condition": "topic_supervision.enabled=true; temat przypisany lub aktywny kandydat"
+          "condition": "topic_supervision.enabled=true; assigned topic or active candidate"
         },
         {
           "step": 1,
           "from": "guardian",
           "to": "blackwall",
-          "label": "Zwróć uncertain",
+          "label": "Return uncertain",
           "kind": "response"
         },
         {
           "step": 2,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Ustaw sesję reviewing i utwórz topic review",
+          "label": "Set session to reviewing and create topic review",
           "kind": "self"
         },
         {
           "step": 2,
           "from": "blackwall",
           "to": "audit",
-          "label": "Zapisz session.reviewing i otwarte review",
+          "label": "Record session.reviewing and open review",
           "kind": "audit"
         },
         {
@@ -1827,50 +1827,50 @@
           "step": 2,
           "from": "blackwall",
           "to": "approval",
-          "label": "Zwróć sesje i open_reviews",
+          "label": "Return sessions and open_reviews",
           "kind": "response"
         },
         {
           "step": 3,
           "from": "approval",
           "to": "blackwall",
-          "label": "POST /v1/admin/topic-reviews/:id/resolve z no_violation albo violation",
+          "label": "POST /v1/admin/topic-reviews/:id/resolve with no_violation or violation",
           "kind": "request"
         },
         {
           "step": 3,
           "from": "blackwall",
           "to": "approval",
-          "label": "Zwróć zaktualizowany status sesji",
+          "label": "Return updated session status",
           "kind": "response"
         }
       ]
     },
     {
       "id": "publication",
-      "title": "Publikacja polityki runtime",
-      "summary": "Zmiana aktywnej polityki jest CAS-owana, sprawdzana, przygotowywana i przełączana jako wersjonowany snapshot.",
-      "outcome": "Publikacja unieważnia oczekujące zgody/review i granty available; narzędzie już claimed i uruchomione lokalnie w Pi może działać dalej.",
+      "title": "Runtime policy publication",
+      "summary": "The active policy change is compare-and-swapped, validated, prepared, and installed as a versioned snapshot.",
+      "outcome": "Publication invalidates pending approvals/reviews and available grants; a tool already claimed and running locally in Pi may continue.",
       "steps": [
         {
           "node": "policies",
           "edge": "runtime-publish",
-          "title": "Administrator wysyła patch",
-          "description": "Patch zawiera expected_version oraz dozwolone controls; feed ma osobną trasę i wersję.",
+          "title": "Administrator submits patch",
+          "description": "The patch includes expected_version and allowed controls; the feed uses a separate endpoint and version.",
           "events": []
         },
         {
           "node": "blackwall",
           "edge": "runtime-active-policy",
-          "title": "Waliduj i przygotuj kandydat",
-          "description": "Schema + semantic checks; katalog topics wymaga pełnych topics i topic_policies; detector jest inicjalizowany przed swapem.",
+          "title": "Validate and prepare candidate",
+          "description": "Schema and semantic checks run; a topic catalog must include both topics and topic_policies; the detector is initialized before the swap.",
           "events": []
         },
         {
           "node": "policies",
           "edge": "active-policy-crosscut",
-          "title": "Przełącz aktywną wersję",
-          "description": "PublicationGate czeka na zwolnienie aktywnych lease żądań HTTP. Transakcja zapisuje konfigurację, unieważnia approvals i tylko granty available, blokuje oczekujące sesje, odświeża policy_version i etykiety tematów. Już claimed narzędzie lokalne nie jest zatrzymywane przez ten gate.",
+          "title": "Switch active version",
+          "description": "PublicationGate waits for active HTTP request leases to drain. The transaction stores configuration, invalidates approvals and only available grants, blocks pending sessions, and refreshes policy_version and topic labels. A local tool already claimed is not stopped by this gate.",
           "events": [
             "policy.published",
             "feed.published"
@@ -1878,15 +1878,15 @@
         },
         {
           "node": "blackwall",
-          "title": "Nowa polityka na wszystkich ścieżkach",
-          "description": "Bramka, DLP/topic supervision, Jev/Guardian routing, deterministic tool gates i grant consume korzystają z obecnego Core i jego wersji. Status oczekujących sesji jest aktualizowany w bazie; nie powstaje osobne zdarzenie session.blocked. model.denied lub decision.denied może pojawić się dopiero przy kolejnym odrzuconym żądaniu.",
+          "title": "New policy applies to every path",
+          "description": "The gateway, DLP/topic supervision, Jev/Guardian routing, deterministic tool gates, and grant consume use the current Core and version. Pending-session status is updated in the database; no separate session.blocked event is emitted. model.denied or decision.denied may appear only on a later denied request.",
           "events": []
         },
         {
           "node": "audit",
           "edge": "audit-runtime-publication",
-          "title": "Utrwal wersję i źródło publikacji",
-          "description": "Zapis publikacji jest widoczny w audycie wraz z numerem policy/feed version.",
+          "title": "Persist version and publication source",
+          "description": "The publication is visible in the audit with policy/feed version numbers.",
           "events": [
             "policy.published",
             "feed.published"
@@ -1898,89 +1898,89 @@
           "step": 0,
           "from": "approval",
           "to": "blackwall",
-          "label": "POST /v1/admin/policies z expected_version i changes",
+          "label": "POST /v1/admin/policies with expected_version and changes",
           "kind": "request"
         },
         {
           "step": 1,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Waliduj schemat i semantykę; przygotuj Core i detector kandydata",
+          "label": "Validate schema and semantics; prepare candidate Core and detector",
           "kind": "self"
         },
         {
           "step": 2,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "PublicationGate czeka na lease aktywnych żądań HTTP",
+          "label": "PublicationGate waits for active HTTP request leases",
           "kind": "self"
         },
         {
           "step": 2,
           "from": "blackwall",
           "to": "audit",
-          "label": "Transakcja zapisuje konfigurację, unieważnia zgody/granty available i zapisuje policy.published",
+          "label": "Transaction stores configuration, invalidates approvals/available grants, and records policy.published",
           "kind": "audit"
         },
         {
           "step": 3,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Podmień aktywny Core; claimed lokalny executor może dokończyć",
+          "label": "Swap active Core; a claimed local executor may finish",
           "kind": "self"
         },
         {
           "step": 3,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Kolejne kontrole korzystają z nowej wersji",
+          "label": "Subsequent checks use the new version",
           "kind": "policy"
         },
         {
           "step": 4,
           "from": "blackwall",
           "to": "approval",
-          "label": "Zwróć policy_version i feed_version",
+          "label": "Return policy_version and feed_version",
           "kind": "response"
         }
       ]
     },
     {
       "id": "jev-deny",
-      "title": "Jev odrzuca operację",
-      "summary": "Po deterministycznym allow i nadzór zdarzeń Jev ocenia zgodność konkretnej proponowanej operacji z zaufanym zadaniem.",
-      "outcome": "Deny lub niewystarczający wynik nie tworzy execution grant, więc narzędzie nie startuje.",
+      "title": "Jev denies operation",
+      "summary": "After deterministic allow and event supervision, Jev checks whether a specific proposed operation aligns with the trusted task.",
+      "outcome": "A denial or insufficient result creates no execution grant, so the tool does not start.",
       "steps": [
         {
           "node": "pi",
           "edge": "tool-decision-request",
-          "title": "Prześlij propozycję",
-          "description": "Modelowy tool_call wraca przez Pi do niezależnej bramki narzędzi.",
+          "title": "Submit proposal",
+          "description": "The model tool_call returns through Pi to the separate tool gateway.",
           "events": []
         },
         {
           "node": "blackwall",
           "edge": "jev-operation-review",
-          "title": "Warunkowo wywołaj Jev",
-          "description": "Jev ocenia task alignment i policy violation (plus purpose dla bash); nie wykrywa topicu z tekstu.",
+          "title": "Call Jev conditionally",
+          "description": "Jev evaluates task alignment and policy violation (plus purpose for bash); it does not detect topics from text.",
           "events": [
             "judge.evaluated"
           ],
-          "condition": "Bash zawsze; inne narzędzia zależą od profiles.*.semantic_evaluate."
+          "condition": "Bash always; other tools depend on profiles.*.semantic_evaluate."
         },
         {
           "node": "jev",
           "edge": "jev-verdict",
-          "title": "Zwróć deny",
-          "description": "Not authorized albo violation kończy decyzję Core odmową.",
+          "title": "Return deny",
+          "description": "Not authorized or violation ends the Core decision as deny.",
           "events": [
             "decision.denied"
           ]
         },
         {
           "node": "pi",
-          "title": "Nie uruchamiaj executor",
-          "description": "Żądanie nie otrzymuje grant consume; wykonanie nie startuje.",
+          "title": "Do not run executor",
+          "description": "The request receives no grant to consume; execution does not start.",
           "events": [
             "decision.denied"
           ]
@@ -1998,14 +1998,14 @@
           "step": 1,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Sprawdź stan, budżet, narzędzie, deterministic gate, sekrety i feed",
+          "label": "Check state, budget, tool, deterministic gate, secrets, and feed",
           "kind": "self"
         },
         {
           "step": 1,
           "from": "blackwall",
           "to": "embeddings",
-          "label": "Oceń bieżące zdarzenie argumentów",
+          "label": "Assess current argument event",
           "kind": "request",
           "condition": "topic_supervision.enabled=true"
         },
@@ -2013,7 +2013,7 @@
           "step": 1,
           "from": "embeddings",
           "to": "blackwall",
-          "label": "Zwróć wektory embeddingów",
+          "label": "Return embedding vectors",
           "kind": "response",
           "condition": "topic_supervision.enabled=true"
         },
@@ -2021,7 +2021,7 @@
           "step": 1,
           "from": "blackwall",
           "to": "blackwall",
-          "label": "Detektor: cosine + próg → kandydaci tematu",
+          "label": "Detector: cosine + threshold → topic candidates",
           "kind": "self",
           "condition": "topic_supervision.enabled=true"
         },
@@ -2029,52 +2029,52 @@
           "step": 1,
           "from": "blackwall",
           "to": "guardian",
-          "label": "Oceń bieżące zdarzenie",
+          "label": "Assess current event",
           "kind": "request",
-          "condition": "topic_supervision.enabled=true; temat przypisany lub aktywny kandydat"
+          "condition": "topic_supervision.enabled=true; assigned topic or active candidate"
         },
         {
           "step": 1,
           "from": "guardian",
           "to": "blackwall",
-          "label": "Zwróć werdykt Guardian",
+          "label": "Return Guardian verdict",
           "kind": "response",
-          "condition": "Guardian został wywołany"
+          "condition": "Guardian was called"
         },
         {
           "step": 1,
           "from": "blackwall",
           "to": "jev",
-          "label": "Oceń propozycję względem zaufanego zadania",
+          "label": "Assess proposal against trusted task",
           "kind": "request",
-          "condition": "Bash zawsze; pozostałe według profilu"
+          "condition": "Bash always; others depend on the profile"
         },
         {
           "step": 2,
           "from": "jev",
           "to": "blackwall",
-          "label": "Zwróć deny z kodami powodów",
+          "label": "Return deny with reason codes",
           "kind": "response"
         },
         {
           "step": 2,
           "from": "blackwall",
           "to": "audit",
-          "label": "Zapisz judge.evaluated i decision.denied",
+          "label": "Record judge.evaluated and decision.denied",
           "kind": "audit"
         },
         {
           "step": 3,
           "from": "blackwall",
           "to": "pi",
-          "label": "Zwróć deny bez execution grant",
+          "label": "Return deny without execution grant",
           "kind": "response"
         },
         {
           "step": 3,
           "from": "pi",
           "to": "pi",
-          "label": "Nie uruchamiaj executora",
+          "label": "Do not run executor",
           "kind": "self"
         }
       ]
@@ -2155,18 +2155,18 @@
     }
   ],
   "notes": [
-    "Pi obsługuje czat i wykonanie narzędzi osobnymi bramkami serwera: ruch modelu przechodzi przez /v1/chat/completions, a każde tool_call jest niezależnie sprawdzane, zanim Pi uruchomi narzędzie.",
-    "Podobieństwo embeddingów tworzy kandydata tematu, a samo w sobie nie stanowi naruszenia. Guardian nadzoruje bieżące zdarzenia sesji tylko wtedy, gdy temat jest przypisany lub istnieje aktywny kandydat. Jev ocenia proponowane operacje narzędzi według odrębnych reguł routingu.",
-    "Guardian i model agenta pełnią różne role i są wywoływane osobno. Mogą korzystać z tego samego aliasu modelu, choć demonstracja używa osobnego aliasu Guardian. Kod obsługuje dostawcę OpenAI lub Anthropic dla Guardian.",
-    "Odpowiedź modelu jest buforowana przed inspekcją. Jeśli żądano strumieniowania, serwer wysyła syntetyczne fragmenty SSE dopiero po sprawdzeniu całej odpowiedzi.",
-    "Publikacja runtime przebiega przekrojowo: walidacja kandydata i inicjalizacja detektora poprzedzają chronioną bramką podmianę aktywnego Core. Transakcja aktualizuje sesje, zgody, granty i etykiety tematów.",
-    "Główne scenariusze zakładają mode=enforce. W trybie observe miękka odmowa może dopuścić i wykonać operację, zapisując observed_effect; hard denial i USER_REJECTED pozostają blokadami. Dlatego observe wpływa na wykonanie, a nie tylko na audyt.",
-    "Opcjonalna ścieżka BLACKWALL_GATEWAY_TOOLS=1 pozwala bramce poprosić Core o decyzję dla wywołań narzędzi modelu u klientów bez wtyczki. Zwraca wyłącznie decyzję: nie zużywa grantu i nie uruchamia narzędzia. Wykonanie pozostaje po stronie klienta. Pi używa własnej wymaganej ścieżki: decyzja, zużycie grantu i lokalny executor.",
-    "W Pi narzędzie działa lokalnie we wtyczce po udanym zużyciu grantu. Wtyczka zgłasza wykonanie do Blackwall i inspektuje wynik przed jego pokazaniem; executor nie łączy się bezpośrednio z Blackwall.",
-    "PublicationGate synchronizuje lease żądań HTTP serwera, nie wykonanie lokalne Pi. Publikacja unieważnia granty available; grant już claimed i executor już działający mogą dokończyć pracę.",
-    "Executor powłoki działa z uprawnieniami procesu Pi. Deklaracja require_isolation i limit czasu nie tworzą sandboxa systemu operacyjnego.",
-    "Polityki na diagramie oznaczają lokalny snapshot konfiguracji w pamięci Core, nie usługę HTTP. Publikację przez API inicjuje uwierzytelniony administrator. OpenAI zwraca wektory; podobieństwa i kandydatów oblicza lokalny detektor Blackwalla."
+    "Pi handles chat and tool execution through separate server gateways: model traffic goes through /v1/chat/completions, and every tool_call is checked independently before Pi starts the tool.",
+    "Embedding similarity creates a topic candidate; it is not itself a violation. Guardian supervises current session events only when a topic is assigned or an active candidate exists. Jev reviews proposed tool operations under separate routing rules.",
+    "Guardian and the agent model have different roles and are called separately. They may use the same model alias, although the demo uses a separate Guardian alias. The code supports OpenAI or Anthropic as Guardian provider.",
+    "The model response is buffered before inspection. If streaming was requested, the server sends synthetic SSE chunks only after checking the full response.",
+    "Runtime publication applies across paths: candidate validation and detector initialization happen before the active Core is swapped under PublicationGate. The transaction updates sessions, approvals, grants, and topic labels.",
+    "Main scenarios assume mode=enforce. In observe mode, a soft denial may allow and execute an operation while recording observed_effect; hard denials and USER_REJECTED remain blocking. Observe therefore affects execution, not just the audit.",
+    "The optional BLACKWALL_GATEWAY_TOOLS=1 path lets the gateway ask Core for decisions on model tool calls from clients without the plugin. It returns a decision only: it does not consume a grant or run a tool. Execution remains with the client. Pi uses its required path: decision, grant consumption, and local executor.",
+    "In Pi, the tool runs locally in the plugin after a successful grant consume. The plugin reports execution to Blackwall and inspects the result before showing it; the executor does not connect directly to Blackwall.",
+    "PublicationGate synchronizes server-side HTTP request leases, not local Pi execution. Publication invalidates available grants; a grant already claimed and an executor already running may finish.",
+    "The shell executor runs with the Pi process’s permissions. The require_isolation declaration and timeout do not create an operating-system sandbox.",
+    "Policies in the diagram mean a local configuration snapshot in Core memory, not an HTTP service. Authenticated administrators initiate publication through the API. OpenAI returns vectors; Blackwall’s local detector computes similarity and selects candidates."
   ],
   "diagramType": "sequence",
-  "sequenceConvention": "Czas biegnie od góry do dołu. Uczestnicy są w kolumnach. Linie przerywane oznaczają odpowiedzi. Komunikaty z warunkiem są opcjonalne i nie oznaczają, że każde wywołanie wykonuje wszystkie kontrole. Polityki są lokalną konfiguracją, a nie osobną usługą HTTP."
+  "sequenceConvention": "Time flows from top to bottom. Participants are columns. Dashed lines are responses. Conditional messages are optional; they do not mean every request runs every check. Policies are local configuration, not a separate HTTP service."
 }

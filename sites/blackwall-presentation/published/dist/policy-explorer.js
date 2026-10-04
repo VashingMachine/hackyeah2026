@@ -44,27 +44,27 @@
     const video = evidence?.videos?.find(v => v.id === reference.videoId);
     const screen = evidence?.media?.screens?.find(s => s.id === reference.screenId);
     if (video && safeAsset(video.file)) {
-      container.append(element('span', 'micro-label', 'NAGRANIE POWIĄZANEJ FUNKCJI'));
+      container.append(element('span', 'micro-label', 'ORIGINAL RECORDING · POLISH UI'));
       const player = element('video');
       player.controls = true; player.muted = true; player.playsInline = true; player.preload = 'none';
       player.setAttribute('aria-label', video.title);
       if (safeAsset(video.poster)) player.poster = video.poster;
       player.src = video.file;
-      const fallback = element('p', 'media-fallback', 'Nagranie jest chwilowo niedostępne. Wyjaśnienie pola pozostaje powyżej.');
+      const fallback = element('p', 'media-fallback', 'The recording is temporarily unavailable. The field explanation remains above.');
       fallback.hidden = true;
       player.addEventListener('error', () => { fallback.hidden = false; });
       container.append(player, element('p', '', video.title), fallback);
     } else if (screen && safeAsset(screen.file)) {
-      container.append(element('span', 'micro-label', 'SCREEN Z RZECZYWISTEGO DEMO'));
-      const image = element('img'); image.src = screen.file; image.alt = field.title + ' — szczegóły w dashboardzie';
+      container.append(element('span', 'micro-label', 'ORIGINAL SCREENSHOT · POLISH UI'));
+      const image = element('img'); image.src = screen.file; image.alt = field.title + ' — details in the dashboard';
       image.loading = 'lazy'; image.width = screen.width; image.height = screen.height;
       image.addEventListener('error', () => {
         image.hidden = true;
-        container.append(element('p', 'media-fallback', 'Screen jest chwilowo niedostępny. Wyjaśnienie pola pozostaje powyżej.'));
+        container.append(element('p', 'media-fallback', 'The screenshot is temporarily unavailable. The field explanation remains above.'));
       });
       container.append(image);
     }
-    container.append(element('p', 'evidence-note', reference.note || 'Wyjaśnienie na podstawie schematu i kodu aplikacji. Brak osobnego nagrania tego pola.'));
+    container.append(element('p', 'evidence-note', reference.note || 'Explanation based on the schema and application code. There is no dedicated recording for this field.'));
   }
   function selectField(field) {
     if (!field) return;
@@ -72,15 +72,15 @@
     byId('policy-detail').hidden = false;
     byId('policy-field-path').textContent = field.path;
     byId('policy-field-title').textContent = field.title;
-    byId('policy-type').textContent = 'Typ: ' + field.type;
+    byId('policy-type').textContent = 'Type: ' + field.type;
     byId('policy-description').textContent = field.description;
     byId('policy-effect').textContent = field.effect;
     byId('policy-example').textContent = JSON.stringify(field.example, null, 2);
     byId('policy-limits').textContent = field.limits;
-    byId('policy-editable').textContent = field.runtimeEditable ? 'Publikacja bez restartu' : 'Konfiguracja przy uruchomieniu';
+    byId('policy-editable').textContent = field.runtimeEditable ? 'Published without restart' : 'Startup configuration';
     byId('policy-editable').dataset.editable = String(field.runtimeEditable);
     byId('policy-aliases').hidden = !field.aliases?.length;
-    byId('policy-aliases').textContent = field.aliases?.length ? 'Ta sama reguła dla: ' + field.aliases.join(', ') : '';
+    byId('policy-aliases').textContent = field.aliases?.length ? 'Same rule applies to: ' + field.aliases.join(', ') : '';
     const chips = byId('policy-detail-features'); chips.replaceChildren();
     (field.featureIds || []).forEach(id => {
       const chip = element('button', 'feature-chip', window.BlackwallFeatures?.[id] || id);
@@ -100,15 +100,15 @@
   }
   function renderFields() {
     if (!guide) return;
-    const query = byId('policy-search').value.trim().toLocaleLowerCase('pl');
+    const query = byId('policy-search').value.trim().toLocaleLowerCase('en');
     const group = byId('policy-group').value, scope = byId('policy-scope').value;
     visibleFields = guide.fields.filter(f => (group === 'all' || f.group === group)
       && (scope === 'all' || f.runtimeEditable === (scope === 'runtime'))
-      && (!query || query === '*' || [f.path, f.title, f.description, f.effect, ...(f.aliases || [])].join(' ').toLocaleLowerCase('pl').includes(query)));
+      && (!query || query === '*' || [f.path, f.title, f.description, f.effect, ...(f.aliases || [])].join(' ').toLocaleLowerCase('en').includes(query)));
     const list = byId('policy-fields'); list.replaceChildren();
     visibleFields.forEach(field => {
       const button = element('button', 'policy-field'); bindField(button, field); button.setAttribute('role', 'option');
-      button.append(element('span', 'field-mode' + (field.runtimeEditable ? '' : ' startup'), field.runtimeEditable ? 'runtime' : 'start'), element('code', '', field.path), element('small', '', field.title));
+      button.append(element('span', 'field-mode' + (field.runtimeEditable ? '' : ' startup'), field.runtimeEditable ? 'runtime' : 'startup'), element('code', '', field.path), element('small', '', field.title));
       list.append(button);
     });
     byId('policy-field-count').textContent = visibleFields.length + '/' + guide.fields.length;
@@ -171,7 +171,7 @@
       const data = await response.json();
       if (!Array.isArray(data.fields) || !data.fields.length || !Array.isArray(data.groups) || !data.examples?.length || !data.fields.every(f => f.id && f.path && f.description && f.effect)) throw new Error('Invalid guide');
       guide = data; evidence = mediaResponse.ok ? await mediaResponse.json() : null;
-      byId('policy-group').replaceChildren(element('option', '', 'Wszystkie obszary'));
+      byId('policy-group').replaceChildren(element('option', '', 'All areas'));
       byId('policy-group').firstChild.value = 'all';
       data.groups.forEach(group => { const option = element('option', '', group.title); option.value = group.id; byId('policy-group').append(option); });
       byId('policy-json-example').replaceChildren();
@@ -179,12 +179,12 @@
       selected = data.fields.find(f => f.path === 'global.files.read_roots') || data.fields[0];
       byId('policy-evidence').dataset.field = '';
       renderFields(); renderJSON();
-      byId('policy-source-note').textContent = `${data.fields.length} objaśnień wygenerowanych na podstawie schematu i kodu Blackwalla. Gwiazdka w ścieżce oznacza nazwę użytkownika, profilu, tematu lub aliasu. Nagrania pokazują powiązaną funkcję; opis pod materiałem wskazuje zakres dowodu.`;
+      byId('policy-source-note').textContent = `${data.fields.length} explanations based on the Blackwall schema and code. A wildcard in a path stands for a user, profile, topic, or alias name. Original Polish recordings show related behavior; the note below each item describes what the evidence supports.`;
       controls.forEach(id => { byId(id).disabled = false; });
       if (pendingFeature) { const feature = pendingFeature; pendingFeature = null; selectFeature(feature); }
     } catch {
       guide = null; selected = null; byId('policy-detail').hidden = true;
-      byId('policy-fields').replaceChildren(element('p', 'loading-copy', 'Opis pól jest chwilowo niedostępny.'));
+      byId('policy-fields').replaceChildren(element('p', 'loading-copy', 'Field descriptions are temporarily unavailable.'));
       byId('policy-load-error').hidden = false;
     }
   }

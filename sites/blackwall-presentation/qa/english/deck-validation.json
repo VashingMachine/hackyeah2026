@@ -1,0 +1,42 @@
+{
+  "scope": "English translation of the existing 9-slide deck; original embedded Polish screenshots retained with English disclosure captions.",
+  "sha256": "30cbd888ad906550b9e26481d611eb0519ef974ddb2ca07f8cdd2d45bda870d0",
+  "slideCount": 9,
+  "nativeTables": 4,
+  "packageIntegrity": "PASS",
+  "firstPartyImport": "PASS",
+  "layoutFindingCount": 0,
+  "layoutWarnings": [
+    {
+      "available_bottom_in": 6.3125,
+      "columns": 3,
+      "declared_bottom_in": 5.8333,
+      "estimated_native_bottom_in": 6.4493,
+      "footer_object_ids": [
+        "4"
+      ],
+      "kind": "native_table_overflow",
+      "overflow_in": 0.1368,
+      "rows": 4,
+      "slide": 3,
+      "table_id": "9"
+    },
+    {
+      "available_bottom_in": 6.1771,
+      "columns": 3,
+      "declared_bottom_in": 5.0833,
+      "estimated_native_bottom_in": 6.3383,
+      "footer_object_ids": [
+        "5",
+        "7"
+      ],
+      "kind": "native_table_overflow",
+      "overflow_in": 0.1613,
+      "rows": 6,
+      "slide": 8,
+      "table_id": "13"
+    }
+  ],
+  "visualReview": "All 9 slides inspected by guide_qa; root inspected slides 3 and 8 with table warnings. No visible clipping.",
+  "nativePowerPointVerified": false
+}

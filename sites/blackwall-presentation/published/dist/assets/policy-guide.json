@@ -18,123 +18,123 @@
   "groups": [
     {
       "id": "identity",
-      "title": "Tożsamość i tryb",
-      "description": "Identyfikator, wersja oraz tryb działania aktywnej polityki."
+      "title": "Identity and mode",
+      "description": "Active policy identifier, version, and operating mode."
     },
     {
       "id": "profiles",
-      "title": "Profile i reakcja na ryzyko",
-      "description": "Progi oceny semantycznej oraz domyślne reakcje na niepewność."
+      "title": "Profiles and risk responses",
+      "description": "Semantic-evaluation thresholds and default responses to uncertainty."
     },
     {
       "id": "approval",
-      "title": "Zgody i odmowy",
-      "description": "Warunki zgód użytkownika i zachowanie po odmowie."
+      "title": "Approvals and denials",
+      "description": "Conditions for user approval and behavior after a denial."
     },
     {
       "id": "scope",
-      "title": "Zakres narzędzi i danych",
-      "description": "Ograniczenia operacji, plików, sieci, powłoki i budżetów."
+      "title": "Tool and data scope",
+      "description": "Limits on operations, files, network access, shell use, and budgets."
     },
     {
       "id": "topics",
-      "title": "Tematy i nadzór",
-      "description": "Katalog tematów, polityk tematycznych, embeddingów i nadzorcy."
+      "title": "Topics and supervision",
+      "description": "Catalog of topics, topic policies, embeddings, and the guardian."
     },
     {
       "id": "models",
-      "title": "Modele i koszty",
-      "description": "Aliasowanie modeli, limity kontekstu i stawki używane do limitów kosztu."
+      "title": "Models and costs",
+      "description": "Model aliases, context limits, and rates used for cost budgets."
     },
     {
       "id": "operations",
-      "title": "Konfiguracja operacyjna",
-      "description": "Ścieżki feedu zagrożeń i bazy audytu."
+      "title": "Operational configuration",
+      "description": "Threat-feed and audit-database paths."
     }
   ],
   "fields": [
     {
       "id": "schema-version",
       "path": "schema_version",
-      "title": "Wersja formatu",
+      "title": "Schema version",
       "group": "identity",
       "type": "integer",
-      "description": "Wersja struktury konfiguracji; obecnie loader przyjmuje wyłącznie wersję 1.",
+      "description": "Configuration schema version; the loader currently accepts only version 1.",
       "example": 1,
-      "effect": "Nieprawidłowa wersja odrzuca konfigurację.",
-      "limits": "Stała 1.",
+      "effect": "An invalid version causes the configuration to be rejected.",
+      "limits": "Fixed at 1.",
       "runtimeEditable": false,
       "featureIds": [
         "policy_publication"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "policy-id",
       "path": "policy_id",
-      "title": "Identyfikator polityki",
+      "title": "Policy identifier",
       "group": "identity",
       "type": "string",
-      "description": "Stabilna nazwa tej polityki w audycie i konfiguracji.",
+      "description": "Stable name for this policy in configuration and audit records.",
       "example": "demo-finance",
-      "effect": "Pojawia się w kontekście audytowym.",
-      "limits": "Dowolny niepusty tekst nie jest wymuszony przez schemat.",
+      "effect": "Appears in audit context.",
+      "limits": "Any non-empty text; the schema does not enforce this.",
       "runtimeEditable": false,
       "featureIds": [
         "policy_publication"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "version",
       "path": "version",
-      "title": "Wersja aktywnej polityki",
+      "title": "Active policy version",
       "group": "identity",
       "type": "integer",
-      "description": "Licznik wersji polityki; publikacja runtime ustawia go po kontroli expected_version.",
+      "description": "Policy version counter. Runtime publication increments it after checking expected_version.",
       "example": 3,
-      "effect": "Umożliwia wykrycie konfliktu wersji przy publikacji.",
-      "limits": "Liczba całkowita dodatnia; nie jest edytowalna bezpośrednio.",
+      "effect": "Helps detect version conflicts during publication.",
+      "limits": "Positive integer; cannot be edited directly.",
       "runtimeEditable": false,
       "featureIds": [
         "policy_publication"
       ],
       "evidence": {
         "videoId": "runtime-publication",
-        "note": "Nagranie pokazuje publikację runtime; wersję v3 potwierdza podsumowanie przebiegu."
+        "note": "Original Polish recording: shows runtime publication; the run summary confirms version v3."
       }
     },
     {
       "id": "mode",
       "path": "mode",
-      "title": "Tryb egzekwowania",
+      "title": "Enforcement mode",
       "group": "identity",
       "type": "enum",
-      "description": "enforce stosuje odmowy; observe rejestruje część miękkich odmów jako obserwacje.",
+      "description": "`enforce` applies denials; `observe` records some soft denials as observations.",
       "example": "enforce",
-      "effect": "W enforce odmowa blokuje operację. W observe niektóre odmowy są raportowane jako obserwowane; twarde blokady nadal działają.",
+      "effect": "In `enforce`, a denial blocks the operation. In `observe`, some denials are recorded as observed; hard blocks still apply.",
       "limits": "enforce | observe",
       "runtimeEditable": true,
       "featureIds": [
         "session_state"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "profile",
       "path": "profile",
-      "title": "Aktywny profil",
+      "title": "Active profile",
       "group": "profiles",
       "type": "enum",
-      "description": "Wybiera zestaw progów i reakcji z profiles.",
+      "description": "Selects a set of thresholds and responses from `profiles`.",
       "example": "standard",
-      "effect": "Użyty dla ocen semantycznych i kontroli treści.",
+      "effect": "Used for semantic evaluations and content checks.",
       "limits": "permissive | standard | strict",
       "runtimeEditable": true,
       "featureIds": [
@@ -142,18 +142,18 @@
         "output_control"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "profiles-semantic-evaluate",
       "path": "profiles.*.semantic_evaluate",
-      "title": "Zakres oceny semantycznej",
+      "title": "Semantic evaluation scope",
       "group": "profiles",
       "type": "enum",
-      "description": "Określa, które klasy operacji poza powłoką wymagają dodatkowej oceny Jev. Każde dozwolone wywołanie powłoki i tak jest oceniane.",
+      "description": "Specifies which non-shell operation classes require an additional Jev review. Every allowed shell call is reviewed regardless.",
       "example": "mutating_and_outbound",
-      "effect": "Dotyczy profilu wskazanego przez profile; wpływa na ocenę semantyczną i kontrolę wyjścia.",
+      "effect": "Applies to the selected profile; affects semantic evaluation and output checks.",
       "limits": "none | shell_and_outbound | mutating_and_outbound | all",
       "runtimeEditable": true,
       "featureIds": [
@@ -161,293 +161,293 @@
       ],
       "evidence": {
         "videoId": "shell-jev-review",
-        "note": "Nagranie Jev pokazuje ocenę powłoki; pozostałe warianty są konfiguracją kodu."
+        "note": "Original Polish recording: Jev evaluates a shell request; the other options are code configuration."
       }
     },
     {
       "id": "profiles-min-allow-probability",
       "path": "profiles.*.min_allow_probability",
-      "title": "Minimalne prawdopodobieństwo zezwolenia",
+      "title": "Minimum allow probability",
       "group": "profiles",
       "type": "number",
-      "description": "Minimalne prawdopodobieństwo wymagane do zaakceptowania odpowiedzi Jev.",
+      "description": "Minimum probability required to accept a Jev response.",
       "example": 0.7,
-      "effect": "Dotyczy profilu wskazanego przez profile; wpływa na ocenę semantyczną i kontrolę wyjścia.",
-      "limits": "0–1 włącznie",
+      "effect": "Applies to the selected profile; affects semantic evaluation and output checks.",
+      "limits": "Inclusive range 0–1.",
       "runtimeEditable": true,
       "featureIds": [
         "semantic_review"
       ],
       "evidence": {
         "videoId": "runtime-publication",
-        "note": "Klip ilustruje publikację runtime w UI; nie twierdzi, że zmieniono ten konkretny próg. Odpowiedź konfliktu 400/409 potwierdza podsumowanie weryfikacji."
+        "note": "The original Polish UI recording illustrates runtime publication; it does not show this specific threshold being changed. The verification summary confirms a 400/409 conflict response."
       }
     },
     {
       "id": "profiles-min-confidence",
       "path": "profiles.*.min_confidence",
-      "title": "Minimalna pewność oceny",
+      "title": "Minimum evaluation confidence",
       "group": "profiles",
       "type": "number",
-      "description": "Minimalna pewność Jev; zbyt niepewny wynik podlega on_uncertain.",
+      "description": "Minimum Jev confidence. Results below this confidence follow `on_uncertain`.",
       "example": 0.65,
-      "effect": "Dotyczy profilu wskazanego przez profile; wpływa na ocenę semantyczną i kontrolę wyjścia.",
-      "limits": "0–1 włącznie",
+      "effect": "Applies to the selected profile; affects semantic evaluation and output checks.",
+      "limits": "Inclusive range 0–1.",
       "runtimeEditable": true,
       "featureIds": [
         "semantic_review"
       ],
       "evidence": {
-        "note": "Nagranie Jev pokazuje ocenę powłoki; pozostałe warianty są konfiguracją kodu."
+        "note": "Original Polish recording: Jev evaluates a shell request; the other options are code configuration."
       }
     },
     {
       "id": "profiles-secrets",
       "path": "profiles.*.secrets",
-      "title": "Obsługa sekretów",
+      "title": "Secret handling",
       "group": "profiles",
       "type": "enum",
-      "description": "block odrzuca wykryte sekrety; redact maskuje je przed dalszą obsługą.",
+      "description": "`block` rejects detected secrets; `redact` masks them before further processing.",
       "example": "block",
-      "effect": "Dotyczy profilu wskazanego przez profile; wpływa na ocenę semantyczną i kontrolę wyjścia.",
+      "effect": "Applies to the selected profile; affects semantic evaluation and output checks.",
       "limits": "block | redact",
       "runtimeEditable": true,
       "featureIds": [
         "output_control"
       ],
       "evidence": {
-        "note": "Nagranie Jev pokazuje ocenę powłoki; pozostałe warianty są konfiguracją kodu."
+        "note": "Original Polish recording: Jev evaluates a shell request; the other options are code configuration."
       }
     },
     {
       "id": "profiles-pii",
       "path": "profiles.*.pii",
-      "title": "Obsługa danych osobowych",
+      "title": "Personal data handling",
       "group": "profiles",
       "type": "enum",
-      "description": "off wyłącza skan PII; redact maskuje; block odrzuca.",
+      "description": "`off` disables PII scanning; `redact` masks detected data; `block` rejects it.",
       "example": "redact",
-      "effect": "Dotyczy profilu wskazanego przez profile; wpływa na ocenę semantyczną i kontrolę wyjścia.",
+      "effect": "Applies to the selected profile; affects semantic evaluation and output checks.",
       "limits": "off | redact | block",
       "runtimeEditable": true,
       "featureIds": [
         "output_control"
       ],
       "evidence": {
-        "note": "Nagranie Jev pokazuje ocenę powłoki; pozostałe warianty są konfiguracją kodu."
+        "note": "Original Polish recording: Jev evaluates a shell request; the other options are code configuration."
       }
     },
     {
       "id": "profiles-on-uncertain",
       "path": "profiles.*.on_uncertain",
-      "title": "Reakcja na niepewną ocenę",
+      "title": "Response to uncertain evaluations",
       "group": "profiles",
       "type": "enum",
-      "description": "Wybiera odmowę albo żądanie zgody, gdy ocena semantyczna nie rozstrzyga operacji.",
+      "description": "Chooses whether to deny or request approval when semantic evaluation is inconclusive.",
       "example": "require_approval",
-      "effect": "Dotyczy profilu wskazanego przez profile; ustala reakcję przy niepewnym wyniku.",
+      "effect": "Applies to the selected profile; determines the response to an uncertain result.",
       "limits": "require_approval | deny",
       "runtimeEditable": true,
       "featureIds": [
         "output_control"
       ],
       "evidence": {
-        "note": "Nagranie Jev pokazuje ocenę powłoki; pozostałe warianty są konfiguracją kodu."
+        "note": "Original Polish recording: Jev evaluates a shell request; the other options are code configuration."
       }
     },
     {
       "id": "default-effect",
       "path": "default_effect",
-      "title": "Domyślny skutek",
+      "title": "Default effect",
       "group": "identity",
       "type": "enum",
-      "description": "Polityka wymaga odmowy jako domyślnego skutku; brak alternatywnej wartości.",
+      "description": "The policy requires denial as the default effect; no alternative value is supported.",
       "example": "deny",
-      "effect": "Nieznane lub niezaakceptowane operacje nie uzyskują zgody.",
-      "limits": "Stała deny.",
+      "effect": "Unknown or unapproved operations are denied by default.",
+      "limits": "Fixed at `deny`.",
       "runtimeEditable": false,
       "featureIds": [
         "session_state"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "denials-default-session-action",
       "path": "denials.default_session_action",
-      "title": "Stan sesji po odmowie",
+      "title": "Session state after denial",
       "group": "approval",
       "type": "enum",
-      "description": "Określa, czy zwykła odmowa blokuje dalszą pracę sesji, czy pozwala ją kontynuować.",
+      "description": "Determines whether a standard denial blocks the session or allows it to continue.",
       "example": "continue",
-      "effect": "block ustawia stan blokady; continue pozwala na dalsze żądania zgodnie z polityką.",
+      "effect": "`block` blocks the session; `continue` permits further requests subject to policy.",
       "limits": "block | continue",
       "runtimeEditable": true,
       "featureIds": [
         "session_state"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "denials-allow-correction-for",
       "path": "denials.allow_correction_for",
-      "title": "Kody dopuszczające korektę",
+      "title": "Correction-eligible reason codes",
       "group": "approval",
       "type": "string[]",
-      "description": "Kody powodów, dla których system może poprosić o poprawione żądanie.",
+      "description": "Reason codes for which the system may ask for a corrected request.",
       "example": [
         "ARGUMENTS_INVALID"
       ],
-      "effect": "Może uruchomić ścieżkę korekty dla wskazanych odmów.",
-      "limits": "Lista kodów; dopuszczalne puste []",
+      "effect": "May start the correction flow for the specified denials.",
+      "limits": "List of reason codes; an empty `[]` is allowed.",
       "runtimeEditable": true,
       "featureIds": [
         "session_state"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "denials-max-correction-attempts",
       "path": "denials.max_correction_attempts",
-      "title": "Maksymalna liczba korekt",
+      "title": "Maximum correction attempts",
       "group": "approval",
       "type": "integer",
-      "description": "Limit prób poprawienia odrzuconego żądania.",
+      "description": "Maximum number of attempts to correct a denied request.",
       "example": 1,
-      "effect": "Po wyczerpaniu limitu system nie przyjmuje dalszych korekt w tej ścieżce.",
-      "limits": "Liczba całkowita ≥ 0",
+      "effect": "No further corrections are accepted through this flow once the limit is reached.",
+      "limits": "Non-negative integer.",
       "runtimeEditable": true,
       "featureIds": [
         "session_state"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "approvals-enabled",
       "path": "approvals.enabled",
-      "title": "Włączone zgody",
+      "title": "Approvals enabled",
       "group": "approval",
       "type": "boolean",
-      "description": "Pozwala na prośby o zgodę tam, gdzie reguła dopuszcza taki skutek.",
+      "description": "Allows approval requests where a rule permits that effect.",
       "example": true,
-      "effect": "Gdy wyłączone, wymagająca zgody operacja nie może przejść przez tę ścieżkę.",
+      "effect": "When disabled, an operation requiring approval cannot proceed through this flow.",
       "limits": "true | false",
       "runtimeEditable": true,
       "featureIds": [
         "approval"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "approvals-eligible-reason-codes",
       "path": "approvals.eligible_reason_codes",
-      "title": "Powody kwalifikujące do zgody",
+      "title": "Approval-eligible reason codes",
       "group": "approval",
       "type": "string[]",
-      "description": "Jawna allowlista kodów powodów, dla których wolno wystawić prośbę o zgodę.",
+      "description": "Explicit allowlist of reason codes eligible for an approval request.",
       "example": [
         "OVERWRITE_EXISTING_FILE"
       ],
-      "effect": "Core wystawia prośbę tylko wtedy, gdy approvals.enabled=true i każdy wymagany powód znajduje się na tej liście; w przeciwnym razie odrzuca żądanie.",
-      "limits": "Nie omija twardych odmów (HARD), m.in. stanu sesji, przekroczonego budżetu ani niedostępności guardiana, sędziego lub embeddingów. Uwierzytelnienie API jest sprawdzane wcześniej; ta lista go nie zastępuje.",
+      "effect": "Core creates an approval request only when `approvals.enabled=true` and every required reason is on this list; otherwise, it denies the request.",
+      "limits": "Does not override hard denials (`HARD`), including session state, exhausted budgets, or unavailable guardian, judge, or embeddings. API authentication is checked earlier; this list does not replace it.",
       "runtimeEditable": true,
       "featureIds": [
         "approval"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "approvals-ttl-seconds",
       "path": "approvals.ttl_seconds",
-      "title": "Czas ważności zgody",
+      "title": "Approval TTL",
       "group": "approval",
       "type": "integer",
-      "description": "Liczba sekund, po których oczekująca zgoda wygasa.",
+      "description": "Number of seconds before a pending approval expires.",
       "example": 300,
-      "effect": "Po wygaśnięciu sesja jest blokowana, a operacja nie jest wykonywana.",
-      "limits": "Liczba całkowita dodatnia",
+      "effect": "When approval expires, the session is blocked and the operation is not executed.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "approval"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "global-tools-allow",
       "path": "global.tools.allow",
-      "title": "Dozwolone narzędzia",
+      "title": "Allowed tools",
       "group": "scope",
       "type": "string[]",
-      "description": "Narzędzia dostępne w tym zakresie.",
+      "description": "Tools available within this scope.",
       "example": [
         "read",
         "write",
         "http_request"
       ],
-      "effect": "Żądanie narzędzia spoza efektywnej listy zostaje odrzucone.",
-      "limits": "tool allowlista; przecina się z deny i zakresem globalnym.",
+      "effect": "A tool request outside the effective allowlist is denied.",
+      "limits": "Tool allowlist; intersected with `deny` and the global scope.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-tools-deny",
       "path": "global.tools.deny",
-      "title": "Zablokowane narzędzia",
+      "title": "Denied tools",
       "group": "scope",
       "type": "string[]",
-      "description": "Narzędzia jawnie wyłączone w tym zakresie.",
+      "description": "Tools explicitly disabled within this scope.",
       "example": [
         "bash"
       ],
-      "effect": "Żądanie wskazanego narzędzia zostaje odrzucone.",
-      "limits": "Odmowa ma pierwszeństwo; lista zakresu użytkownika łączy się z globalną.",
+      "effect": "A request for the specified tool is denied.",
+      "limits": "Denials take precedence; the user scope combines with the global scope.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-files-read-roots",
       "path": "global.files.read_roots",
-      "title": "Dozwolone korzenie odczytu",
+      "title": "Allowed read roots",
       "group": "scope",
       "type": "string[]",
-      "description": "Ścieżki, z których można czytać lub listować pliki. To samo ograniczenie może wystąpić w konfiguracji użytkownika (users.*.files.read_roots), która zawęża zakres globalny.",
+      "description": "Paths from which files may be read or listed. The same restriction may appear in a user configuration (`users.*.files.read_roots`) and narrow the global scope.",
       "example": [
         "./workspace"
       ],
-      "effect": "Odczyt poza dozwolonym zakresem jest odrzucany.",
-      "limits": "Efektywne read_roots są przecięciem global.files i users.*.files; korzenie użytkownika mogą zawężać.",
+      "effect": "Reads outside the allowed scope are denied.",
+      "limits": "Effective `read_roots` are the intersection of `global.files` and `users.*.files`; user roots can narrow access.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       },
       "aliases": [
         "users.*.files.read_roots"
@@ -456,76 +456,76 @@
     {
       "id": "global-files-write-roots",
       "path": "global.files.write_roots",
-      "title": "Dozwolone korzenie zapisu",
+      "title": "Allowed write roots",
       "group": "scope",
       "type": "string[]",
-      "description": "Ścieżki, w których można tworzyć lub modyfikować pliki.",
+      "description": "Paths where files may be created or modified.",
       "example": [
         "./workspace/drafts"
       ],
-      "effect": "Zapis poza zakresem jest odrzucany.",
-      "limits": "Zakres użytkownika zawęża globalny.",
+      "effect": "Writes outside the allowed scope are denied.",
+      "limits": "The user scope narrows the global scope.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-files-deny-basenames",
       "path": "global.files.deny_basenames",
-      "title": "Zablokowane nazwy plików",
+      "title": "Denied file basenames",
       "group": "scope",
       "type": "string[]",
-      "description": "Nazwy bazowe plików, których operacje są zabronione.",
+      "description": "Basenames of files on which operations are prohibited.",
       "example": [
         ".env"
       ],
-      "effect": "Operacja na wskazanym basename jest odrzucana.",
-      "limits": "Porównanie nazwy pliku.",
+      "effect": "Operations on a listed basename are denied.",
+      "limits": "Matched against the file basename.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-files-allowed-extensions",
       "path": "global.files.allowed_extensions",
-      "title": "Dozwolone rozszerzenia",
+      "title": "Allowed file extensions",
       "group": "scope",
       "type": "string[]",
-      "description": "Rozszerzenia akceptowane przy dostępie do plików.",
+      "description": "File extensions accepted for file access.",
       "example": [
         ".md",
         ".txt"
       ],
-      "effect": "Inne rozszerzenia nie przechodzą kontroli plików.",
-      "limits": "Podaj rozszerzenia z kropką zgodnie z konwencją aplikacji.",
+      "effect": "Other extensions fail the file-access check.",
+      "limits": "Include the leading dot, following the application’s convention.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-files-reject-symlinks",
       "path": "global.files.reject_symlinks",
-      "title": "Odrzucanie dowiązań",
+      "title": "Reject symlinks",
       "group": "scope",
       "type": "boolean",
-      "description": "Odrzuca ścieżki zawierające dowiązania symboliczne.",
+      "description": "Rejects paths that contain symbolic links.",
       "example": true,
-      "effect": "Zapobiega przejściu przez symlink.",
+      "effect": "Prevents traversal through symbolic links.",
       "limits": "true | false",
       "runtimeEditable": true,
       "featureIds": [
@@ -533,40 +533,40 @@
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-files-max-bytes",
       "path": "global.files.max_bytes",
-      "title": "Limit rozmiaru pliku",
+      "title": "File size limit",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalny rozmiar treści zapisu w bajtach.",
+      "description": "Maximum file size for reads and maximum proposed write or edit size, in bytes.",
       "example": 65536,
-      "effect": "Większy zapis zostaje odrzucony.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Reads of files larger than this limit are denied. Writes are checked against the content byte length; edits are checked against a conservative estimate of the resulting file size before execution.",
+      "limits": "Positive integer. The edit estimate may retain unmatched old text, so it can exceed the eventual file size. This limit does not make opening or writing a file atomic.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-files-require-approval-roots",
       "path": "global.files.require_approval_roots",
-      "title": "Korzenie wymagające zgody",
+      "title": "Roots requiring approval",
       "group": "scope",
       "type": "string[]",
-      "description": "Zapis istniejącego pliku w tych lokalizacjach wymaga zgody.",
+      "description": "Writing an existing file in these locations requires approval.",
       "example": [
         "./workspace/reports"
       ],
-      "effect": "Może utworzyć oczekującą prośbę o zgodę przed zapisem.",
-      "limits": "Katalogi i pliki wewnątrz korzeni.",
+      "effect": "May create a pending approval request before a write.",
+      "limits": "Directories and files beneath the listed roots.",
       "runtimeEditable": true,
       "featureIds": [
         "approval"
@@ -574,21 +574,21 @@
       "evidence": {
         "videoId": "kyc-approved-write",
         "sessionId": "kyc-approval",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-network-allowed-schemes",
       "path": "global.network.allowed_schemes",
-      "title": "Dozwolone schematy URL",
+      "title": "Allowed URL schemes",
       "group": "scope",
       "type": "string[]",
-      "description": "Schematy protokołu akceptowane przez bramkę HTTP.",
+      "description": "Protocol schemes accepted by the HTTP gateway.",
       "example": [
         "https"
       ],
-      "effect": "Inny schemat URL zostaje odrzucony.",
-      "limits": "Np. https; walidacja adresu jest dodatkowa.",
+      "effect": "Other URL schemes are denied.",
+      "limits": "For example, `https`; address validation is separate.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -596,21 +596,21 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-network-allow-hosts",
       "path": "global.network.allow_hosts",
-      "title": "Dozwolone hosty",
+      "title": "Allowed hosts",
       "group": "scope",
       "type": "string[]",
-      "description": "Lista hostów, do których można kierować żądania.",
+      "description": "Hosts to which requests may be sent.",
       "example": [
         "api.example.test"
       ],
-      "effect": "Host poza listą jest odrzucany.",
-      "limits": "Lista użytkownika przecina się z globalną.",
+      "effect": "A host outside the list is denied.",
+      "limits": "The user list is intersected with the global list.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -618,18 +618,18 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-network-allow-subdomains",
       "path": "global.network.allow_subdomains",
-      "title": "Zezwól na subdomeny",
+      "title": "Allow subdomains",
       "group": "scope",
       "type": "boolean",
-      "description": "Pozwala dopasować subdomeny hostów z allow_hosts.",
+      "description": "Allows matching subdomains of hosts in `allow_hosts`.",
       "example": false,
-      "effect": "Rozszerza dopasowanie hosta według reguł bramki.",
+      "effect": "Extends host matching according to gateway rules.",
       "limits": "true | false",
       "runtimeEditable": true,
       "featureIds": [
@@ -638,21 +638,21 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-network-allowed-ports",
       "path": "global.network.allowed_ports",
-      "title": "Dozwolone porty",
+      "title": "Allowed ports",
       "group": "scope",
       "type": "integer[]",
-      "description": "Numery portów dozwolone w żądaniach.",
+      "description": "Port numbers allowed in requests.",
       "example": [
         443
       ],
-      "effect": "Port spoza listy zostaje odrzucony.",
-      "limits": "Liczby całkowite; poprawność zakresu portu sprawdza runtime.",
+      "effect": "A port outside the list is denied.",
+      "limits": "Integers; runtime validates the valid port range.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -660,21 +660,21 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-network-allowed-methods",
       "path": "global.network.allowed_methods",
-      "title": "Dozwolone metody HTTP",
+      "title": "Allowed HTTP methods",
       "group": "scope",
       "type": "string[]",
-      "description": "Metody HTTP akceptowane w tym zakresie.",
+      "description": "HTTP methods accepted within this scope.",
       "example": [
         "GET"
       ],
-      "effect": "Niedozwolona metoda zostaje odrzucona.",
-      "limits": "Nazwy metod, np. GET, POST.",
+      "effect": "Disallowed methods are denied.",
+      "limits": "Method names, such as `GET` and `POST`.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -682,19 +682,19 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-network-deny-non-public-ips",
       "path": "global.network.deny_non_public_ips",
-      "title": "Blokuj adresy niepubliczne",
+      "title": "Block non-public IPs",
       "group": "scope",
       "type": "boolean",
-      "description": "Wymaga, aby rozpoznane adresy IP hosta były publiczne.",
+      "description": "Requires the host’s resolved IP addresses to be public.",
       "example": true,
-      "effect": "Adres niepubliczny zostaje odrzucony po sprawdzeniu DNS.",
-      "limits": "Wyjątki testowe opisuje fixture_exceptions.",
+      "effect": "A non-public address is denied after DNS resolution.",
+      "limits": "Test exceptions are listed in `fixture_exceptions`.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -702,18 +702,18 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-network-follow-redirects",
       "path": "global.network.follow_redirects",
-      "title": "Podążaj za przekierowaniami",
+      "title": "Follow redirects",
       "group": "scope",
       "type": "boolean",
-      "description": "Ustawia obsługę przekierowań wykonawcy HTTP.",
+      "description": "Configures how the HTTP executor handles redirects.",
       "example": false,
-      "effect": "Wpływa na zachowanie po odpowiedzi przekierowującej.",
+      "effect": "Controls behavior after a redirect response.",
       "limits": "true | false",
       "runtimeEditable": true,
       "featureIds": [
@@ -722,21 +722,21 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-network-allow-endpoints",
       "path": "global.network.allow_endpoints",
-      "title": "Dozwolone ścieżki URL",
+      "title": "Allowed URL paths",
       "group": "scope",
       "type": "string[]",
-      "description": "Prefiksy ścieżek dopuszczone na dozwolonym hoście.",
+      "description": "Path prefixes permitted on an allowed host.",
       "example": [
         "/v1/status"
       ],
-      "effect": "Ścieżka spoza listy zostaje odrzucona.",
-      "limits": "Dopasowanie dokładne lub ścieżka potomna.",
+      "effect": "A path outside the list is denied.",
+      "limits": "Exact match or a descendant path.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -744,21 +744,21 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-network-fixture-exceptions",
       "path": "global.network.fixture_exceptions",
-      "title": "Wyjątki dla fixture testowych",
+      "title": "Test-fixture exceptions",
       "group": "scope",
       "type": "string[]",
-      "description": "Dokładne pary host:port wyłączone z blokady adresów niepublicznych; komentarz schematu oznacza je jako testowe.",
+      "description": "Exact host:port pairs exempt from non-public IP blocking. The schema comment marks them as test-only.",
       "example": [
         "mock.example.test:443"
       ],
-      "effect": "Wyjątek omija kontrolę publicznego IP dla dopasowanej pary.",
-      "limits": "Używać wyłącznie dla kontrolowanych fixture; nie jest allowlistą hostów.",
+      "effect": "The exception skips the public-IP check for the matching pair.",
+      "limits": "Use only with controlled fixtures; this is not a host allowlist.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -766,398 +766,398 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-budgets-session-total-tokens",
       "path": "global.budgets.session_total_tokens",
-      "title": "Limit tokenów sesji",
+      "title": "Session token budget",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalna liczba tokenów rezerwowana i zużywana w sesji.",
+      "description": "Maximum number of tokens reserved and spent in a session.",
       "example": 12000,
-      "effect": "Po osiągnięciu limitu kolejne działania zależne od budżetu zostają zablokowane.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Budget-dependent actions are blocked once the limit is reached.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-budgets-session-tool-attempts",
       "path": "global.budgets.session_tool_attempts",
-      "title": "Limit prób narzędzi",
+      "title": "Tool-attempt budget",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalna liczba prób wywołania narzędzi w sesji.",
+      "description": "Maximum number of tool-call attempts in a session.",
       "example": 30,
-      "effect": "Po wyczerpaniu limitu dalsze próby są odrzucane.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Further attempts are denied once the limit is exhausted.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-budgets-session-model-requests",
       "path": "global.budgets.session_model_requests",
-      "title": "Limit żądań modeli",
+      "title": "Model-request budget",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalna liczba żądań modelowych w sesji.",
+      "description": "Maximum number of model requests in a session.",
       "example": 20,
-      "effect": "Kolejne żądania modelu są blokowane po osiągnięciu limitu.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Further model requests are blocked once the limit is reached.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-budgets-session-wall-seconds",
       "path": "global.budgets.session_wall_seconds",
-      "title": "Limit czasu sesji",
+      "title": "Session time limit",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalny łączny czas ścienny sesji w sekundach.",
+      "description": "Maximum elapsed wall-clock time for a session, in seconds.",
       "example": 900,
-      "effect": "Sesja nie może kontynuować po przekroczeniu limitu.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "The session cannot continue after exceeding the limit.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-budgets-session-cost-usd-micros",
       "path": "global.budgets.session_cost_usd_micros",
-      "title": "Limit kosztu w mikro-USD",
+      "title": "Cost limit (micro-USD)",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalny koszt sesji wyrażony w milionowych częściach USD.",
+      "description": "Maximum session cost, expressed in millionths of a US dollar.",
       "example": 500000,
-      "effect": "Runtime blokuje koszt, którego nie potrafi wycenić; modele wymagają stawek.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Runtime blocks costs it cannot price; model aliases need rates.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-budgets-tool-timeout-seconds",
       "path": "global.budgets.tool_timeout_seconds",
-      "title": "Limit czasu narzędzia",
+      "title": "Tool timeout",
       "group": "scope",
       "type": "integer",
-      "description": "Górny limit czasu pojedynczej operacji narzędzia.",
+      "description": "Maximum timeout for a single tool operation.",
       "example": 30,
-      "effect": "Wykonawca otrzymuje timeout nie większy niż skonfigurowany limit.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "The executor receives a timeout no greater than the configured limit.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-shell-enabled",
       "path": "global.shell.enabled",
-      "title": "Włącz powłokę",
+      "title": "Enable shell",
       "group": "scope",
       "type": "boolean",
-      "description": "Pozwala na narzędzie bash w tym zakresie.",
+      "description": "Enables the `bash` tool within this scope.",
       "example": false,
-      "effect": "Wyłączona powłoka jest odrzucana.",
+      "effect": "Shell requests are denied when the shell is disabled.",
       "limits": "true | false",
       "runtimeEditable": true,
       "featureIds": [
         "execution_grant"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-shell-max-command-bytes",
       "path": "global.shell.max_command_bytes",
-      "title": "Maksymalny rozmiar polecenia",
+      "title": "Maximum command size",
       "group": "scope",
       "type": "integer",
-      "description": "Limit długości polecenia powłoki w bajtach.",
+      "description": "Maximum shell command length, in bytes.",
       "example": 4096,
-      "effect": "Większe polecenia są odrzucane.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Larger commands are denied.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "execution_grant"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-shell-timeout-seconds",
       "path": "global.shell.timeout_seconds",
-      "title": "Timeout powłoki",
+      "title": "Shell timeout",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalny czas uruchomienia polecenia.",
+      "description": "Maximum time allowed for a command to run.",
       "example": 20,
-      "effect": "Polecenie jest przerywane po upływie limitu wykonawcy.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "The executor terminates a command when the limit expires.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "execution_grant"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-shell-execution-profile",
       "path": "global.shell.execution_profile",
-      "title": "Profil wykonania",
+      "title": "Execution profile",
       "group": "scope",
       "type": "enum",
-      "description": "Wybiera tryb wykonania powłoki zadeklarowany w konfiguracji.",
+      "description": "Selects the shell execution profile declared in the configuration.",
       "example": "demo_prepared",
-      "effect": "Wartość isolated jest deklaracją profilu. Gdy require_isolation=true, runtime sprawdza wyłącznie tę wartość; nie wykrywa ani nie tworzy sandboxa systemu operacyjnego.",
+      "effect": "`isolated` is a declared profile value. When `require_isolation=true`, runtime checks only that value; it does not detect or create an operating-system sandbox.",
       "limits": "demo_prepared | isolated",
       "runtimeEditable": true,
       "featureIds": [
         "execution_grant"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-shell-require-isolation",
       "path": "global.shell.require_isolation",
-      "title": "Wymagaj profilu isolated",
+      "title": "Require the isolated profile",
       "group": "scope",
       "type": "boolean",
-      "description": "Odrzuca powłokę, jeśli execution_profile nie ma wartości isolated.",
+      "description": "Rejects shell operations unless `execution_profile` is set to `isolated`.",
       "example": true,
-      "effect": "Przy niespełnieniu warunku powłoka zostaje odrzucona.",
-      "limits": "To kontrola zgodności deklarowanej konfiguracji; nie dostarcza sandboxa OS.",
+      "effect": "Shell requests are denied if this condition is not met.",
+      "limits": "This checks the declared configuration only; it does not provide an OS sandbox.",
       "runtimeEditable": true,
       "featureIds": [
         "execution_grant"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-models-allow-aliases",
       "path": "global.models.allow_aliases",
-      "title": "Dozwolone aliasy modeli",
+      "title": "Allowed model aliases",
       "group": "scope",
       "type": "string[]",
-      "description": "Alias modelu musi być dopuszczony do użycia w tym zakresie.",
+      "description": "A model alias must be allowed within this scope.",
       "example": [
         "assistant"
       ],
-      "effect": "Alias spoza efektywnej listy zostaje odrzucony.",
-      "limits": "Zakres użytkownika zawęża globalny.",
+      "effect": "An alias outside the effective allowlist is denied.",
+      "limits": "The user scope narrows the global scope.",
       "runtimeEditable": true,
       "featureIds": [
         "semantic_review"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-models-max-input-tokens",
       "path": "global.models.max_input_tokens",
-      "title": "Maksymalny kontekst wejściowy",
+      "title": "Maximum input context",
       "group": "scope",
       "type": "integer",
-      "description": "Limit tokenów wejściowych dla żądania modelu.",
+      "description": "Maximum input tokens for a model request.",
       "example": 8000,
-      "effect": "Żądanie przekraczające limit jest odrzucane.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Requests that exceed the limit are denied.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-models-max-output-tokens",
       "path": "global.models.max_output_tokens",
-      "title": "Maksymalna odpowiedź modelu",
+      "title": "Maximum model output",
       "group": "scope",
       "type": "integer",
-      "description": "Limit tokenów wyjściowych modelu.",
+      "description": "Maximum output tokens for the model.",
       "example": 1500,
-      "effect": "Model otrzymuje ten limit generowania.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "The model receives this generation limit.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "global-content-max-inspection-bytes",
       "path": "global.content.max_inspection_bytes",
-      "title": "Limit skanowanej treści",
+      "title": "Content inspection limit",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalna liczba bajtów treści poddawanej kontroli.",
+      "description": "Maximum number of content bytes to inspect.",
       "example": 65536,
-      "effect": "Nadmiernie duża treść nie przechodzi inspekcji.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Content that exceeds the limit fails inspection.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "output_control"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-tools-allow",
       "path": "users.*.tools.allow",
-      "title": "Dozwolone narzędzia",
+      "title": "Allowed tools",
       "group": "scope",
       "type": "string[]",
-      "description": "Narzędzia dostępne w tym zakresie.",
+      "description": "Tools available within this scope.",
       "example": [
         "read",
         "write",
         "http_request"
       ],
-      "effect": "Żądanie narzędzia spoza efektywnej listy zostaje odrzucone.",
-      "limits": "tool allowlista; przecina się z deny i zakresem globalnym.",
+      "effect": "A tool request outside the effective allowlist is denied.",
+      "limits": "Tool allowlist; intersected with `deny` and the global scope.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-tools-deny",
       "path": "users.*.tools.deny",
-      "title": "Zablokowane narzędzia",
+      "title": "Denied tools",
       "group": "scope",
       "type": "string[]",
-      "description": "Narzędzia jawnie wyłączone w tym zakresie.",
+      "description": "Tools explicitly disabled within this scope.",
       "example": [
         "bash"
       ],
-      "effect": "Żądanie wskazanego narzędzia zostaje odrzucone.",
-      "limits": "Odmowa ma pierwszeństwo; lista zakresu użytkownika łączy się z globalną.",
+      "effect": "A request for the specified tool is denied.",
+      "limits": "Denials take precedence; the user scope combines with the global scope.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-files-write-roots",
       "path": "users.*.files.write_roots",
-      "title": "Dozwolone korzenie zapisu",
+      "title": "Allowed write roots",
       "group": "scope",
       "type": "string[]",
-      "description": "Ścieżki, w których można tworzyć lub modyfikować pliki.",
+      "description": "Paths where files may be created or modified.",
       "example": [
         "./workspace/drafts"
       ],
-      "effect": "Zapis poza zakresem jest odrzucany.",
-      "limits": "Zakres użytkownika zawęża globalny.",
+      "effect": "Writes outside the allowed scope are denied.",
+      "limits": "The user scope narrows the global scope.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-files-deny-basenames",
       "path": "users.*.files.deny_basenames",
-      "title": "Zablokowane nazwy plików",
+      "title": "Denied file basenames",
       "group": "scope",
       "type": "string[]",
-      "description": "Nazwy bazowe plików, których operacje są zabronione.",
+      "description": "Basenames of files on which operations are prohibited.",
       "example": [
         ".env"
       ],
-      "effect": "Operacja na wskazanym basename jest odrzucana.",
-      "limits": "Porównanie nazwy pliku.",
+      "effect": "Operations on a listed basename are denied.",
+      "limits": "Matched against the file basename.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-files-allowed-extensions",
       "path": "users.*.files.allowed_extensions",
-      "title": "Dozwolone rozszerzenia",
+      "title": "Allowed file extensions",
       "group": "scope",
       "type": "string[]",
-      "description": "Rozszerzenia akceptowane przy dostępie do plików.",
+      "description": "File extensions accepted for file access.",
       "example": [
         ".md",
         ".txt"
       ],
-      "effect": "Inne rozszerzenia nie przechodzą kontroli plików.",
-      "limits": "Podaj rozszerzenia z kropką zgodnie z konwencją aplikacji.",
+      "effect": "Other extensions fail the file-access check.",
+      "limits": "Include the leading dot, following the application’s convention.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-files-reject-symlinks",
       "path": "users.*.files.reject_symlinks",
-      "title": "Odrzucanie dowiązań",
+      "title": "Reject symlinks",
       "group": "scope",
       "type": "boolean",
-      "description": "Odrzuca ścieżki zawierające dowiązania symboliczne.",
+      "description": "Rejects paths that contain symbolic links.",
       "example": true,
-      "effect": "Zapobiega przejściu przez symlink.",
+      "effect": "Prevents traversal through symbolic links.",
       "limits": "true | false",
       "runtimeEditable": true,
       "featureIds": [
@@ -1165,40 +1165,40 @@
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-files-max-bytes",
       "path": "users.*.files.max_bytes",
-      "title": "Limit rozmiaru pliku",
+      "title": "File size limit",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalny rozmiar treści zapisu w bajtach.",
+      "description": "Maximum file size for reads and maximum proposed write or edit size, in bytes.",
       "example": 65536,
-      "effect": "Większy zapis zostaje odrzucony.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Reads of files larger than this limit are denied. Writes are checked against the content byte length; edits are checked against a conservative estimate of the resulting file size before execution.",
+      "limits": "Positive integer. The edit estimate may retain unmatched old text, so it can exceed the eventual file size. This limit does not make opening or writing a file atomic.",
       "runtimeEditable": true,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
         "screenId": "hr-guardian-violation",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-files-require-approval-roots",
       "path": "users.*.files.require_approval_roots",
-      "title": "Korzenie wymagające zgody",
+      "title": "Roots requiring approval",
       "group": "scope",
       "type": "string[]",
-      "description": "Zapis istniejącego pliku w tych lokalizacjach wymaga zgody.",
+      "description": "Writing an existing file in these locations requires approval.",
       "example": [
         "./workspace/reports"
       ],
-      "effect": "Może utworzyć oczekującą prośbę o zgodę przed zapisem.",
-      "limits": "Katalogi i pliki wewnątrz korzeni.",
+      "effect": "May create a pending approval request before a write.",
+      "limits": "Directories and files beneath the listed roots.",
       "runtimeEditable": true,
       "featureIds": [
         "approval"
@@ -1206,21 +1206,21 @@
       "evidence": {
         "videoId": "kyc-approved-write",
         "sessionId": "kyc-approval",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-network-allowed-schemes",
       "path": "users.*.network.allowed_schemes",
-      "title": "Dozwolone schematy URL",
+      "title": "Allowed URL schemes",
       "group": "scope",
       "type": "string[]",
-      "description": "Schematy protokołu akceptowane przez bramkę HTTP.",
+      "description": "Protocol schemes accepted by the HTTP gateway.",
       "example": [
         "https"
       ],
-      "effect": "Inny schemat URL zostaje odrzucony.",
-      "limits": "Np. https; walidacja adresu jest dodatkowa.",
+      "effect": "Other URL schemes are denied.",
+      "limits": "For example, `https`; address validation is separate.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -1228,21 +1228,21 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-network-allow-hosts",
       "path": "users.*.network.allow_hosts",
-      "title": "Dozwolone hosty",
+      "title": "Allowed hosts",
       "group": "scope",
       "type": "string[]",
-      "description": "Lista hostów, do których można kierować żądania.",
+      "description": "Hosts to which requests may be sent.",
       "example": [
         "api.example.test"
       ],
-      "effect": "Host poza listą jest odrzucany.",
-      "limits": "Lista użytkownika przecina się z globalną.",
+      "effect": "A host outside the list is denied.",
+      "limits": "The user list is intersected with the global list.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -1250,18 +1250,18 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-network-allow-subdomains",
       "path": "users.*.network.allow_subdomains",
-      "title": "Zezwól na subdomeny",
+      "title": "Allow subdomains",
       "group": "scope",
       "type": "boolean",
-      "description": "Pozwala dopasować subdomeny hostów z allow_hosts.",
+      "description": "Allows matching subdomains of hosts in `allow_hosts`.",
       "example": false,
-      "effect": "Rozszerza dopasowanie hosta według reguł bramki.",
+      "effect": "Extends host matching according to gateway rules.",
       "limits": "true | false",
       "runtimeEditable": true,
       "featureIds": [
@@ -1270,21 +1270,21 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-network-allowed-ports",
       "path": "users.*.network.allowed_ports",
-      "title": "Dozwolone porty",
+      "title": "Allowed ports",
       "group": "scope",
       "type": "integer[]",
-      "description": "Numery portów dozwolone w żądaniach.",
+      "description": "Port numbers allowed in requests.",
       "example": [
         443
       ],
-      "effect": "Port spoza listy zostaje odrzucony.",
-      "limits": "Liczby całkowite; poprawność zakresu portu sprawdza runtime.",
+      "effect": "A port outside the list is denied.",
+      "limits": "Integers; runtime validates the valid port range.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -1292,21 +1292,21 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-network-allowed-methods",
       "path": "users.*.network.allowed_methods",
-      "title": "Dozwolone metody HTTP",
+      "title": "Allowed HTTP methods",
       "group": "scope",
       "type": "string[]",
-      "description": "Metody HTTP akceptowane w tym zakresie.",
+      "description": "HTTP methods accepted within this scope.",
       "example": [
         "GET"
       ],
-      "effect": "Niedozwolona metoda zostaje odrzucona.",
-      "limits": "Nazwy metod, np. GET, POST.",
+      "effect": "Disallowed methods are denied.",
+      "limits": "Method names, such as `GET` and `POST`.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -1314,19 +1314,19 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-network-deny-non-public-ips",
       "path": "users.*.network.deny_non_public_ips",
-      "title": "Blokuj adresy niepubliczne",
+      "title": "Block non-public IPs",
       "group": "scope",
       "type": "boolean",
-      "description": "Wymaga, aby rozpoznane adresy IP hosta były publiczne.",
+      "description": "Requires the host’s resolved IP addresses to be public.",
       "example": true,
-      "effect": "Adres niepubliczny zostaje odrzucony po sprawdzeniu DNS.",
-      "limits": "Wyjątki testowe opisuje fixture_exceptions.",
+      "effect": "A non-public address is denied after DNS resolution.",
+      "limits": "Test exceptions are listed in `fixture_exceptions`.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -1334,18 +1334,18 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-network-follow-redirects",
       "path": "users.*.network.follow_redirects",
-      "title": "Podążaj za przekierowaniami",
+      "title": "Follow redirects",
       "group": "scope",
       "type": "boolean",
-      "description": "Ustawia obsługę przekierowań wykonawcy HTTP.",
+      "description": "Configures how the HTTP executor handles redirects.",
       "example": false,
-      "effect": "Wpływa na zachowanie po odpowiedzi przekierowującej.",
+      "effect": "Controls behavior after a redirect response.",
       "limits": "true | false",
       "runtimeEditable": true,
       "featureIds": [
@@ -1354,21 +1354,21 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-network-allow-endpoints",
       "path": "users.*.network.allow_endpoints",
-      "title": "Dozwolone ścieżki URL",
+      "title": "Allowed URL paths",
       "group": "scope",
       "type": "string[]",
-      "description": "Prefiksy ścieżek dopuszczone na dozwolonym hoście.",
+      "description": "Path prefixes permitted on an allowed host.",
       "example": [
         "/v1/status"
       ],
-      "effect": "Ścieżka spoza listy zostaje odrzucona.",
-      "limits": "Dopasowanie dokładne lub ścieżka potomna.",
+      "effect": "A path outside the list is denied.",
+      "limits": "Exact match or a descendant path.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -1376,21 +1376,21 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-network-fixture-exceptions",
       "path": "users.*.network.fixture_exceptions",
-      "title": "Wyjątki dla fixture testowych",
+      "title": "Test-fixture exceptions",
       "group": "scope",
       "type": "string[]",
-      "description": "Dokładne pary host:port wyłączone z blokady adresów niepublicznych; komentarz schematu oznacza je jako testowe.",
+      "description": "Exact host:port pairs exempt from non-public IP blocking. The schema comment marks them as test-only.",
       "example": [
         "mock.example.test:443"
       ],
-      "effect": "Wyjątek omija kontrolę publicznego IP dla dopasowanej pary.",
-      "limits": "Używać wyłącznie dla kontrolowanych fixture; nie jest allowlistą hostów.",
+      "effect": "The exception skips the public-IP check for the matching pair.",
+      "limits": "Use only with controlled fixtures; this is not a host allowlist.",
       "runtimeEditable": true,
       "featureIds": [
         "network_scope"
@@ -1398,470 +1398,470 @@
       "evidence": {
         "videoId": "client-scope-block",
         "sessionId": "client-path-gate",
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-budgets-session-total-tokens",
       "path": "users.*.budgets.session_total_tokens",
-      "title": "Limit tokenów sesji",
+      "title": "Session token budget",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalna liczba tokenów rezerwowana i zużywana w sesji.",
+      "description": "Maximum number of tokens reserved and spent in a session.",
       "example": 12000,
-      "effect": "Po osiągnięciu limitu kolejne działania zależne od budżetu zostają zablokowane.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Budget-dependent actions are blocked once the limit is reached.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-budgets-session-tool-attempts",
       "path": "users.*.budgets.session_tool_attempts",
-      "title": "Limit prób narzędzi",
+      "title": "Tool-attempt budget",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalna liczba prób wywołania narzędzi w sesji.",
+      "description": "Maximum number of tool-call attempts in a session.",
       "example": 30,
-      "effect": "Po wyczerpaniu limitu dalsze próby są odrzucane.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Further attempts are denied once the limit is exhausted.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-budgets-session-model-requests",
       "path": "users.*.budgets.session_model_requests",
-      "title": "Limit żądań modeli",
+      "title": "Model-request budget",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalna liczba żądań modelowych w sesji.",
+      "description": "Maximum number of model requests in a session.",
       "example": 20,
-      "effect": "Kolejne żądania modelu są blokowane po osiągnięciu limitu.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Further model requests are blocked once the limit is reached.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-budgets-session-wall-seconds",
       "path": "users.*.budgets.session_wall_seconds",
-      "title": "Limit czasu sesji",
+      "title": "Session time limit",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalny łączny czas ścienny sesji w sekundach.",
+      "description": "Maximum elapsed wall-clock time for a session, in seconds.",
       "example": 900,
-      "effect": "Sesja nie może kontynuować po przekroczeniu limitu.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "The session cannot continue after exceeding the limit.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-budgets-session-cost-usd-micros",
       "path": "users.*.budgets.session_cost_usd_micros",
-      "title": "Limit kosztu w mikro-USD",
+      "title": "Cost limit (micro-USD)",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalny koszt sesji wyrażony w milionowych częściach USD.",
+      "description": "Maximum session cost, expressed in millionths of a US dollar.",
       "example": 500000,
-      "effect": "Runtime blokuje koszt, którego nie potrafi wycenić; modele wymagają stawek.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Runtime blocks costs it cannot price; model aliases need rates.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-budgets-tool-timeout-seconds",
       "path": "users.*.budgets.tool_timeout_seconds",
-      "title": "Limit czasu narzędzia",
+      "title": "Tool timeout",
       "group": "scope",
       "type": "integer",
-      "description": "Górny limit czasu pojedynczej operacji narzędzia.",
+      "description": "Maximum timeout for a single tool operation.",
       "example": 30,
-      "effect": "Wykonawca otrzymuje timeout nie większy niż skonfigurowany limit.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "The executor receives a timeout no greater than the configured limit.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-shell-enabled",
       "path": "users.*.shell.enabled",
-      "title": "Włącz powłokę",
+      "title": "Enable shell",
       "group": "scope",
       "type": "boolean",
-      "description": "Pozwala na narzędzie bash w tym zakresie.",
+      "description": "Enables the `bash` tool within this scope.",
       "example": false,
-      "effect": "Wyłączona powłoka jest odrzucana.",
+      "effect": "Shell requests are denied when the shell is disabled.",
       "limits": "true | false",
       "runtimeEditable": true,
       "featureIds": [
         "execution_grant"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-shell-max-command-bytes",
       "path": "users.*.shell.max_command_bytes",
-      "title": "Maksymalny rozmiar polecenia",
+      "title": "Maximum command size",
       "group": "scope",
       "type": "integer",
-      "description": "Limit długości polecenia powłoki w bajtach.",
+      "description": "Maximum shell command length, in bytes.",
       "example": 4096,
-      "effect": "Większe polecenia są odrzucane.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Larger commands are denied.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "execution_grant"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-shell-timeout-seconds",
       "path": "users.*.shell.timeout_seconds",
-      "title": "Timeout powłoki",
+      "title": "Shell timeout",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalny czas uruchomienia polecenia.",
+      "description": "Maximum time allowed for a command to run.",
       "example": 20,
-      "effect": "Polecenie jest przerywane po upływie limitu wykonawcy.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "The executor terminates a command when the limit expires.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "execution_grant"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-shell-execution-profile",
       "path": "users.*.shell.execution_profile",
-      "title": "Profil wykonania",
+      "title": "Execution profile",
       "group": "scope",
       "type": "enum",
-      "description": "Wybiera tryb wykonania powłoki zadeklarowany w konfiguracji.",
+      "description": "Selects the shell execution profile declared in the configuration.",
       "example": "demo_prepared",
-      "effect": "Wartość isolated jest deklaracją profilu. Gdy require_isolation=true, runtime sprawdza wyłącznie tę wartość; nie wykrywa ani nie tworzy sandboxa systemu operacyjnego.",
+      "effect": "`isolated` is a declared profile value. When `require_isolation=true`, runtime checks only that value; it does not detect or create an operating-system sandbox.",
       "limits": "demo_prepared | isolated",
       "runtimeEditable": true,
       "featureIds": [
         "execution_grant"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-shell-require-isolation",
       "path": "users.*.shell.require_isolation",
-      "title": "Wymagaj profilu isolated",
+      "title": "Require the isolated profile",
       "group": "scope",
       "type": "boolean",
-      "description": "Odrzuca powłokę, jeśli execution_profile nie ma wartości isolated.",
+      "description": "Rejects shell operations unless `execution_profile` is set to `isolated`.",
       "example": true,
-      "effect": "Przy niespełnieniu warunku powłoka zostaje odrzucona.",
-      "limits": "To kontrola zgodności deklarowanej konfiguracji; nie dostarcza sandboxa OS.",
+      "effect": "Shell requests are denied if this condition is not met.",
+      "limits": "This checks the declared configuration only; it does not provide an OS sandbox.",
       "runtimeEditable": true,
       "featureIds": [
         "execution_grant"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-models-allow-aliases",
       "path": "users.*.models.allow_aliases",
-      "title": "Dozwolone aliasy modeli",
+      "title": "Allowed model aliases",
       "group": "scope",
       "type": "string[]",
-      "description": "Alias modelu musi być dopuszczony do użycia w tym zakresie.",
+      "description": "A model alias must be allowed within this scope.",
       "example": [
         "assistant"
       ],
-      "effect": "Alias spoza efektywnej listy zostaje odrzucony.",
-      "limits": "Zakres użytkownika zawęża globalny.",
+      "effect": "An alias outside the effective allowlist is denied.",
+      "limits": "The user scope narrows the global scope.",
       "runtimeEditable": true,
       "featureIds": [
         "semantic_review"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-models-max-input-tokens",
       "path": "users.*.models.max_input_tokens",
-      "title": "Maksymalny kontekst wejściowy",
+      "title": "Maximum input context",
       "group": "scope",
       "type": "integer",
-      "description": "Limit tokenów wejściowych dla żądania modelu.",
+      "description": "Maximum input tokens for a model request.",
       "example": 8000,
-      "effect": "Żądanie przekraczające limit jest odrzucane.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Requests that exceed the limit are denied.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-models-max-output-tokens",
       "path": "users.*.models.max_output_tokens",
-      "title": "Maksymalna odpowiedź modelu",
+      "title": "Maximum model output",
       "group": "scope",
       "type": "integer",
-      "description": "Limit tokenów wyjściowych modelu.",
+      "description": "Maximum output tokens for the model.",
       "example": 1500,
-      "effect": "Model otrzymuje ten limit generowania.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "The model receives this generation limit.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "users-content-max-inspection-bytes",
       "path": "users.*.content.max_inspection_bytes",
-      "title": "Limit skanowanej treści",
+      "title": "Content inspection limit",
       "group": "scope",
       "type": "integer",
-      "description": "Maksymalna liczba bajtów treści poddawanej kontroli.",
+      "description": "Maximum number of content bytes to inspect.",
       "example": 65536,
-      "effect": "Nadmiernie duża treść nie przechodzi inspekcji.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "Content that exceeds the limit fails inspection.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "output_control"
       ],
       "evidence": {
-        "note": "Nagrania pokazują wybrane przykłady egzekwowania; szczegóły wynikają z kodu bramki."
+        "note": "Original Polish recordings show selected enforcement examples; the gateway code defines the details."
       }
     },
     {
       "id": "model-aliases-provider",
       "path": "model_aliases.*.provider",
-      "title": "Dostawca modelu",
+      "title": "Model provider",
       "group": "models",
       "type": "enum",
-      "description": "Dostawca przypisany do aliasu.",
+      "description": "Provider assigned to this alias.",
       "example": "openai",
-      "effect": "Konfiguruje model wskazywany aliasem; nie jest edytowalne przez API publikacji polityki.",
+      "effect": "Configures the model behind this alias; the policy publication API cannot edit it.",
       "limits": "openai | anthropic",
       "runtimeEditable": false,
       "featureIds": [
         "semantic_review"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "model-aliases-model",
       "path": "model_aliases.*.model",
-      "title": "Nazwa modelu",
+      "title": "Model name",
       "group": "models",
       "type": "string",
-      "description": "Identyfikator modelu przekazywany dostawcy.",
+      "description": "Model identifier sent to the provider.",
       "example": "gpt-example",
-      "effect": "Konfiguruje model wskazywany aliasem; nie jest edytowalne przez API publikacji polityki.",
-      "limits": "Nazwa dostawcy; nie jest sprawdzana dostępność modelu przy walidacji struktury.",
+      "effect": "Configures the model behind this alias; the policy publication API cannot edit it.",
+      "limits": "Provider model name; structural validation does not check whether the model is available.",
       "runtimeEditable": false,
       "featureIds": [
         "semantic_review"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "model-aliases-reasoning-effort",
       "path": "model_aliases.*.reasoning_effort",
-      "title": "Poziom rozumowania",
+      "title": "Reasoning effort",
       "group": "models",
       "type": "enum",
-      "description": "Opcjonalny poziom effort dla dostawców, którzy go obsługują.",
+      "description": "Optional reasoning effort level for providers that support it.",
       "example": "low",
-      "effect": "Konfiguruje model wskazywany aliasem; nie jest edytowalne przez API publikacji polityki.",
+      "effect": "Configures the model behind this alias; the policy publication API cannot edit it.",
       "limits": "none | low | medium | high | xhigh | max",
       "runtimeEditable": false,
       "featureIds": [
         "semantic_review"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "model-aliases-input-usd-micros-per-mtok",
       "path": "model_aliases.*.input_usd_micros_per_mtok",
-      "title": "Stawka wejściowa",
+      "title": "Input rate",
       "group": "models",
       "type": "integer",
-      "description": "Koszt miliona tokenów wejściowych w mikro-USD.",
+      "description": "Cost per million input tokens, in micro-USD.",
       "example": 1000000,
-      "effect": "Konfiguruje model wskazywany aliasem; nie jest edytowalne przez API publikacji polityki.",
-      "limits": "Liczba całkowita ≥ 0; potrzebna do wyceny kosztu.",
+      "effect": "Configures the model behind this alias; the policy publication API cannot edit it.",
+      "limits": "Non-negative integer; required for cost calculation.",
       "runtimeEditable": false,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "model-aliases-output-usd-micros-per-mtok",
       "path": "model_aliases.*.output_usd_micros_per_mtok",
-      "title": "Stawka wyjściowa",
+      "title": "Output rate",
       "group": "models",
       "type": "integer",
-      "description": "Koszt miliona tokenów wyjściowych w mikro-USD.",
+      "description": "Cost per million output tokens, in micro-USD.",
       "example": 2000000,
-      "effect": "Konfiguruje model wskazywany aliasem; nie jest edytowalne przez API publikacji polityki.",
-      "limits": "Liczba całkowita ≥ 0; potrzebna do wyceny kosztu.",
+      "effect": "Configures the model behind this alias; the policy publication API cannot edit it.",
+      "limits": "Non-negative integer; required for cost calculation.",
       "runtimeEditable": false,
       "featureIds": [
         "budgets"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     },
     {
       "id": "semantic-provider",
       "path": "semantic.provider",
-      "title": "Dostawca sędziego semantycznego",
+      "title": "Semantic judge provider",
       "group": "models",
       "type": "enum",
-      "description": "Implementacja Jev używana do oceny operacji.",
+      "description": "Jev implementation used to evaluate operations.",
       "example": "jev",
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Obecnie wyłącznie jev.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Currently only `jev` is supported.",
       "runtimeEditable": false,
       "featureIds": [
         "semantic_review"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "semantic-model",
       "path": "semantic.model",
-      "title": "Model sędziego",
+      "title": "Judge model",
       "group": "models",
       "type": "string",
-      "description": "Nazwa modelu skonfigurowanego dostawcy Jev.",
+      "description": "Model name for the configured Jev provider.",
       "example": "jev-example",
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Wymaga poprawnego ustawienia dostawcy poza tym schematem.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Requires a valid provider configuration outside this schema.",
       "runtimeEditable": false,
       "featureIds": [
         "semantic_review"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "semantic-timeout-ms",
       "path": "semantic.timeout_ms",
-      "title": "Timeout sędziego",
+      "title": "Judge timeout",
       "group": "models",
       "type": "integer",
-      "description": "Czas oczekiwania na odpowiedź sędziego.",
+      "description": "How long to wait for the judge’s response.",
       "example": 20000,
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Positive integer.",
       "runtimeEditable": false,
       "featureIds": [
         "semantic_review"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "semantic-rubric-version",
       "path": "semantic.rubric_version",
-      "title": "Wersja rubryki",
+      "title": "Rubric version",
       "group": "models",
       "type": "integer",
-      "description": "Wersja rubryki używana przez sędziego.",
+      "description": "Rubric version used by the judge.",
       "example": 1,
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Liczba całkowita.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Integer.",
       "runtimeEditable": false,
       "featureIds": [
         "semantic_review"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-supervision-enabled",
       "path": "topic_supervision.enabled",
-      "title": "Włącz nadzór tematów",
+      "title": "Enable topic supervision",
       "group": "topics",
       "type": "boolean",
-      "description": "Uruchamia wykrywanie tematów i nadzorcę sesji.",
+      "description": "Enables topic detection and session supervision.",
       "example": true,
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
       "limits": "true | false",
       "runtimeEditable": false,
       "featureIds": [
         "guardian"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-supervision-embedding-provider",
       "path": "topic_supervision.embedding.provider",
-      "title": "Dostawca embeddingów",
+      "title": "Embedding provider",
       "group": "topics",
       "type": "enum",
-      "description": "Wybiera embedding OpenAI, lokalny model albo prosty matcher leksykalny.",
+      "description": "Selects OpenAI embeddings, a local model, or a simple lexical matcher.",
       "example": "openai",
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
       "limits": "openai | local | lexical",
       "runtimeEditable": false,
       "featureIds": [
@@ -1870,19 +1870,19 @@
       "evidence": {
         "videoId": "openai-embedding-candidate",
         "sessionId": "kyc-unseeded-embedding",
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-supervision-embedding-model",
       "path": "topic_supervision.embedding.model",
-      "title": "Model embeddingów",
+      "title": "Embedding model",
       "group": "topics",
       "type": "string",
-      "description": "Opcjonalna nazwa modelu embeddingów.",
+      "description": "Optional name of the embedding model.",
       "example": "text-embedding-example",
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Wymagana w praktyce dla wybranych dostawców; API publikacji tego pola nie udostępnia.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Required in practice for some providers; the publication API does not expose this field.",
       "runtimeEditable": false,
       "featureIds": [
         "embeddings"
@@ -1890,19 +1890,19 @@
       "evidence": {
         "videoId": "openai-embedding-candidate",
         "sessionId": "kyc-unseeded-embedding",
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-supervision-guardian-model-alias",
       "path": "topic_supervision.guardian_model_alias",
-      "title": "Alias modelu nadzorcy",
+      "title": "Guardian model alias",
       "group": "topics",
       "type": "string",
-      "description": "Alias modelu używany przez nadzorcę dla aktywnego tematu.",
+      "description": "Model alias used by the guardian for an active topic.",
       "example": "guardian",
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Musi wskazywać istniejący alias modelu; sprawdza to walidacja semantyczna konfiguracji.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Must refer to an existing model alias; configuration semantic validation checks this.",
       "runtimeEditable": false,
       "featureIds": [
         "guardian"
@@ -1910,201 +1910,201 @@
       "evidence": {
         "videoId": "hr-pl-first-violation",
         "sessionId": "hr-polish-violation",
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-supervision-chunk-chars",
       "path": "topic_supervision.chunk_chars",
-      "title": "Rozmiar fragmentu tekstu",
+      "title": "Text chunk size",
       "group": "topics",
       "type": "integer",
-      "description": "Liczba znaków analizowana w jednym fragmencie embeddingu.",
+      "description": "Number of characters analyzed in each embedding chunk.",
       "example": 1200,
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Positive integer.",
       "runtimeEditable": false,
       "featureIds": [
         "embeddings"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-supervision-overlap-chars",
       "path": "topic_supervision.overlap_chars",
-      "title": "Nakładanie fragmentów",
+      "title": "Chunk overlap",
       "group": "topics",
       "type": "integer",
-      "description": "Liczba znaków powtarzana między sąsiednimi fragmentami.",
+      "description": "Number of characters repeated between adjacent chunks.",
       "example": 150,
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Liczba całkowita ≥ 0; sensowny rozmiar względem chunk_chars sprawdza runtime.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Non-negative integer; runtime checks that it is sensible relative to `chunk_chars`.",
       "runtimeEditable": false,
       "featureIds": [
         "embeddings"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-supervision-max-history-events",
       "path": "topic_supervision.max_history_events",
-      "title": "Limit historii dla nadzorcy",
+      "title": "Guardian history limit",
       "group": "topics",
       "type": "integer",
-      "description": "Maksymalna liczba wcześniejszych zdarzeń przekazywana nadzorcy.",
+      "description": "Maximum number of earlier events included for the guardian.",
       "example": 12,
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Positive integer.",
       "runtimeEditable": false,
       "featureIds": [
         "guardian"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-supervision-on-error",
       "path": "topic_supervision.on_error",
-      "title": "Reakcja na błąd nadzorcy",
+      "title": "Guardian error response",
       "group": "topics",
       "type": "enum",
-      "description": "Konfiguracja wymusza blokadę przy błędzie nadzoru.",
+      "description": "Configuration requires a block when supervision fails.",
       "example": "block",
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Obecnie wyłącznie block.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Currently only `block` is supported.",
       "runtimeEditable": false,
       "featureIds": [
         "guardian"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-supervision-default-similarity-threshold",
       "path": "topic_supervision.default_similarity_threshold",
-      "title": "Domyślny próg podobieństwa",
+      "title": "Default similarity threshold",
       "group": "topics",
       "type": "number",
-      "description": "Próg podobieństwa stosowany, gdy temat nie ma własnego similarity_threshold.",
+      "description": "Similarity threshold used when a topic has no `similarity_threshold` of its own.",
       "example": 0.82,
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "0–1 włącznie.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Inclusive range 0–1.",
       "runtimeEditable": false,
       "featureIds": [
         "embeddings"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topics-description",
       "path": "topics.*.description",
-      "title": "Opis tematu",
+      "title": "Topic description",
       "group": "topics",
       "type": "string",
-      "description": "Krótki opis pomagający identyfikować obszar tematyczny.",
-      "example": "Obsługa klienta finansowego",
-      "effect": "Pole można aktualizować w publikacji katalogu.",
-      "limits": "Opis katalogowy; sam nie ustanawia zakazu.",
+      "description": "Short description to help identify the topic area.",
+      "example": "Financial customer support",
+      "effect": "This field can be updated when publishing the catalog.",
+      "limits": "Catalog description only; it does not establish a prohibition by itself.",
       "runtimeEditable": true,
       "featureIds": [
         "topic_assignment"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topics-policy-id",
       "path": "topics.*.policy_id",
-      "title": "Powiązana polityka tematyczna",
+      "title": "Linked topic policy",
       "group": "topics",
       "type": "string",
-      "description": "Identyfikator wpisu topic_policies przypisanego do tematu.",
+      "description": "Identifier of the `topic_policies` entry assigned to this topic.",
       "example": "client-data",
-      "effect": "Pole można aktualizować w publikacji katalogu.",
-      "limits": "Musi odwoływać się do istniejącej polityki tematycznej.",
+      "effect": "This field can be updated when publishing the catalog.",
+      "limits": "Must refer to an existing topic policy.",
       "runtimeEditable": true,
       "featureIds": [
         "topic_assignment"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topics-examples",
       "path": "topics.*.examples",
-      "title": "Przykłady tematu",
+      "title": "Topic examples",
       "group": "topics",
       "type": "string[]",
-      "description": "Przykładowe wypowiedzi używane do budowy reprezentacji tematu.",
+      "description": "Example statements used to build the topic representation.",
       "example": [
-        "status sprawy klienta"
+        "question about a customer’s case status"
       ],
-      "effect": "Pole można aktualizować w publikacji katalogu.",
-      "limits": "Co najmniej jeden przykład.",
+      "effect": "This field can be updated when publishing the catalog.",
+      "limits": "At least one example.",
       "runtimeEditable": true,
       "featureIds": [
         "embeddings"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topics-similarity-threshold",
       "path": "topics.*.similarity_threshold",
-      "title": "Próg podobieństwa tematu",
+      "title": "Topic similarity threshold",
       "group": "topics",
       "type": "number",
-      "description": "Opcjonalny próg dopasowania tego tematu, zastępujący próg domyślny.",
+      "description": "Optional match threshold for this topic, overriding the default.",
       "example": 0.87,
-      "effect": "Pole można aktualizować w publikacji katalogu.",
-      "limits": "0–1 włącznie.",
+      "effect": "This field can be updated when publishing the catalog.",
+      "limits": "Inclusive range 0–1.",
       "runtimeEditable": true,
       "featureIds": [
         "embeddings"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-policies-version",
       "path": "topic_policies.*.version",
-      "title": "Wersja polityki tematycznej",
+      "title": "Topic policy version",
       "group": "topics",
       "type": "integer",
-      "description": "Wersja konkretnego zestawu reguł dla tematu.",
+      "description": "Version of this topic’s rule set.",
       "example": 1,
-      "effect": "Pole można aktualizować w publikacji katalogu.",
-      "limits": "Liczba całkowita.",
+      "effect": "This field can be updated when publishing the catalog.",
+      "limits": "Integer.",
       "runtimeEditable": true,
       "featureIds": [
         "topic_assignment"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-policies-forbidden",
       "path": "topic_policies.*.forbidden",
-      "title": "Zakazane działanie",
+      "title": "Forbidden behavior",
       "group": "topics",
       "type": "string",
-      "description": "Opis zachowania, które nadzorca ma rozpoznać jako naruszenie.",
-      "example": "Ujawnienie danych klienta bez upoważnienia",
-      "effect": "Pole można aktualizować w publikacji katalogu.",
-      "limits": "Nadzorca wymaga dopasowania konkretnej klauzuli; nie jest to determinizm zwykłej reguły narzędzia.",
+      "description": "Description of behavior the guardian should identify as a violation.",
+      "example": "Disclosing client data without authorization",
+      "effect": "This field can be updated when publishing the catalog.",
+      "limits": "The guardian checks for a match to a specific clause; this is not a deterministic tool rule.",
       "runtimeEditable": true,
       "featureIds": [
         "guardian"
@@ -2112,205 +2112,205 @@
       "evidence": {
         "videoId": "hr-pl-first-violation",
         "sessionId": "hr-polish-violation",
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-policies-allowed",
       "path": "topic_policies.*.allowed",
-      "title": "Dozwolone działanie",
+      "title": "Allowed behavior",
       "group": "topics",
       "type": "string",
-      "description": "Opis działań wrażliwych tematycznie, które pozostają dozwolone.",
-      "example": "Ogólna informacja bez danych klienta",
-      "effect": "Pole można aktualizować w publikacji katalogu.",
-      "limits": "Pomaga odróżniać temat rozmowy od zabronionego działania.",
+      "description": "Description of topic-sensitive actions that remain allowed.",
+      "example": "General information without client data",
+      "effect": "This field can be updated when publishing the catalog.",
+      "limits": "Helps distinguish discussion of a topic from a prohibited action.",
       "runtimeEditable": true,
       "featureIds": [
         "guardian"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "topic-policies-reason-code",
       "path": "topic_policies.*.reason_code",
-      "title": "Kod powodu naruszenia",
+      "title": "Violation reason code",
       "group": "topics",
       "type": "string",
-      "description": "Kod audytowy przypisywany do naruszenia tej polityki.",
+      "description": "Audit reason code assigned when this policy is violated.",
       "example": "CLIENT_DATA_DISCLOSURE",
-      "effect": "Pole można aktualizować w publikacji katalogu.",
-      "limits": "Używany w decyzjach i audycie.",
+      "effect": "This field can be updated when publishing the catalog.",
+      "limits": "Used in decisions and audit records.",
       "runtimeEditable": true,
       "featureIds": [
         "guardian"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "users-token",
       "path": "users.*.token",
-      "title": "Token uwierzytelniający użytkownika",
+      "title": "User authentication token",
       "group": "scope",
       "type": "string",
-      "description": "Sekret uwierzytelniający przypisany do użytkownika.",
-      "example": "pominięto; nie pokazuj tokenu",
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Minimum 8 znaków. Nie publikuj prawdziwych tokenów; pole jest startup-only.",
+      "description": "Authentication secret assigned to the user.",
+      "example": "Omitted; do not show a token",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "At least 8 characters. Never publish real tokens; this is a startup-only field.",
       "runtimeEditable": false,
       "featureIds": [
         "policy_publication"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "users-description",
       "path": "users.*.description",
-      "title": "Opis użytkownika",
+      "title": "User description",
       "group": "scope",
       "type": "string",
-      "description": "Opcjonalna etykieta opisowa użytkownika.",
-      "example": "Analityk testowy",
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Informacyjny opis; startup-only.",
+      "description": "Optional descriptive label for the user.",
+      "example": "Test analyst",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Informational description; startup-only.",
       "runtimeEditable": false,
       "featureIds": [
         "topic_assignment"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "users-topic-ids",
       "path": "users.*.topic_ids",
-      "title": "Tematy przypisane użytkownikowi",
+      "title": "Topics assigned to the user",
       "group": "scope",
       "type": "string[]",
-      "description": "Zaufana konfiguracja przypisuje te tematy do nowych sesji użytkownika.",
+      "description": "Trusted configuration assigns these topics to the user’s new sessions.",
       "example": [
         "client_onboarding"
       ],
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Każdy identyfikator powinien istnieć w topics; API publikacji tego pola nie udostępnia.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Each ID should exist in `topics`; the publication API does not expose this field.",
       "runtimeEditable": false,
       "featureIds": [
         "topic_assignment"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "users-workdir",
       "path": "users.*.workdir",
-      "title": "Katalog startowy użytkownika",
+      "title": "User starting directory",
       "group": "scope",
       "type": "string",
-      "description": "Katalog, względem którego launcher rozwiązuje względne ścieżki narzędzi.",
+      "description": "Directory the launcher uses to resolve relative tool paths.",
       "example": "./workspace-demo",
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Pole startup-only; używaj przykładowej ścieżki względnej.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Startup-only field; use an illustrative relative path.",
       "runtimeEditable": false,
       "featureIds": [
         "file_scope"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "threat-feed-path",
       "path": "threat_feed.path",
-      "title": "Ścieżka feedu zagrożeń",
+      "title": "Threat feed path",
       "group": "operations",
       "type": "string",
-      "description": "Lokalizacja feedu ładowanego przy uruchomieniu.",
+      "description": "Location of the feed loaded at startup.",
       "example": "./config/threat-feed.json",
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Konfiguracja startup-only; zmiana wymaga przygotowania poprawnego feedu.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Startup-only setting; changing it requires preparing a valid feed.",
       "runtimeEditable": false,
       "featureIds": [
         "threat_feed"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "audit-db-path",
       "path": "audit.db_path",
-      "title": "Ścieżka bazy audytu",
+      "title": "Audit database path",
       "group": "operations",
       "type": "string",
-      "description": "Lokalizacja bazy zdarzeń i stanu sesji.",
+      "description": "Location of the event and session-state database.",
       "example": "./data/audit.sqlite",
-      "effect": "Pole jest konfiguracją uruchomieniową i nie podlega edycji przez publikację runtime.",
-      "limits": "Konfiguracja startup-only.",
+      "effect": "This is a startup setting and cannot be changed through runtime publication.",
+      "limits": "Startup-only setting.",
       "runtimeEditable": false,
       "featureIds": [
         "session_state"
       ],
       "evidence": {
-        "note": "Dowód medialny ilustruje przepływ; zachowanie pola określa schema i runtime."
+        "note": "Original Polish recording illustrates the flow; the schema and runtime define this field’s behavior."
       }
     },
     {
       "id": "expected-version",
       "path": "expected_version",
-      "title": "Oczekiwana wersja polityki",
+      "title": "Expected policy version",
       "group": "operations",
       "type": "integer",
-      "description": "Warunek publikacji: zmiana jest przyjęta wyłącznie, jeśli aktywna wersja nadal odpowiada tej wartości.",
+      "description": "Publication condition: the change is accepted only if the active version still matches this value.",
       "example": 3,
-      "effect": "Konflikt wersji powoduje odrzucenie publikacji.",
-      "limits": "Liczba całkowita dodatnia.",
+      "effect": "A version conflict causes publication to be rejected.",
+      "limits": "Positive integer.",
       "runtimeEditable": true,
       "featureIds": [
         "policy_publication"
       ],
       "evidence": {
         "videoId": "runtime-publication",
-        "note": "Klip pokazuje UI publikacji. Kontrola expected_version oraz odpowiedź konfliktu 400/409 są potwierdzone w podsumowaniu weryfikacji; nie muszą być widoczne w każdej klatce."
+        "note": "Original Polish recording shows the publication UI. The verification summary confirms the `expected_version` check and 400/409 conflict response; they may not appear in every frame."
       }
     },
     {
       "id": "changes",
       "path": "changes",
-      "title": "Zmiany publikowane atomowo",
+      "title": "Atomically published changes",
       "group": "operations",
       "type": "object",
-      "description": "Obiekt zmian dla API publikacji; pominięte pola zachowują dotychczasową wartość, obiekty scope są scalane, a tablice zastępują poprzednie.",
+      "description": "Change object for the publication API. Omitted fields keep their current values, scope objects are merged, and arrays replace existing arrays.",
       "example": {
         "mode": "enforce"
       },
-      "effect": "Zmiana jest walidowana, semantycznie sprawdzana i publikowana jako nowa wersja.",
-      "limits": "Dopuszcza wyłącznie pola z PolicyPublicationSchema.changes.",
+      "effect": "The change is validated, checked for semantic consistency, and published as a new version.",
+      "limits": "Accepts only fields defined in `PolicyPublicationSchema.changes`.",
       "runtimeEditable": true,
       "featureIds": [
         "policy_publication"
       ],
       "evidence": {
         "videoId": "runtime-publication",
-        "note": "Klip pokazuje edycję i publikację w UI. Kontrola wersji oraz odpowiedź konfliktu 400/409 są potwierdzone w podsumowaniu weryfikacji, niekoniecznie na klatkach nagrania."
+        "note": "Original Polish recording shows editing and publication in the UI. The verification summary confirms the version check and 400/409 conflict response; they may not appear in the recorded frames."
       }
     },
     {
       "id": "changes-topic-thresholds",
       "path": "changes.topic_thresholds.*",
-      "title": "Próg tematu w publikacji",
+      "title": "Published topic threshold",
       "group": "topics",
       "type": "number",
-      "description": "Runtime-only skrót do zmiany similarity_threshold dla istniejących tematów.",
+      "description": "Runtime-only shorthand for changing `similarity_threshold` on existing topics.",
       "example": 0.84,
-      "effect": "Nieznany topic id odrzuca publikację. Wartość aktualizuje topics[id].similarity_threshold.",
-      "limits": "0–1 włącznie; id musi istnieć.",
+      "effect": "An unknown topic ID causes publication to be rejected. The value updates `topics[id].similarity_threshold`.",
+      "limits": "Inclusive range 0–1; the ID must exist.",
       "runtimeEditable": true,
       "featureIds": [
         "embeddings",
@@ -2318,16 +2318,16 @@
       ],
       "evidence": {
         "videoId": "runtime-publication",
-        "note": "Klip pokazuje publikację nowego progu tematu oraz feedu; podsumowanie weryfikacji potwierdza wersję polityki v3 i feedu v2."
+        "note": "Original Polish recording shows publication of a new topic threshold and feed; the verification summary confirms policy version v3 and feed version v2."
       }
     },
     {
       "id": "changes-users",
       "path": "changes.users.*",
-      "title": "Zakres aktualizowany użytkownikowi",
+      "title": "User scope being updated",
       "group": "scope",
       "type": "object",
-      "description": "Publikacja runtime przyjmuje wyłącznie pola ScopeSchema; token, workdir i topic_ids nie są częścią tego obiektu.",
+      "description": "Runtime publication accepts only `ScopeSchema` fields; `token`, `workdir`, and `topic_ids` are not part of this object.",
       "example": {
         "files": {
           "read_roots": [
@@ -2335,23 +2335,23 @@
           ]
         }
       },
-      "effect": "Nieznany użytkownik odrzuca publikację. Obiekty są scalane; tablice w nich zastępują wcześniejsze listy.",
-      "limits": "Użytkownik musi już istnieć.",
+      "effect": "An unknown user causes publication to be rejected. Objects are merged; arrays replace existing arrays.",
+      "limits": "The user must already exist.",
       "runtimeEditable": true,
       "featureIds": [
         "policy_publication",
         "file_scope"
       ],
       "evidence": {
-        "note": "Opis oparty na schemacie i kodzie runtime; brak bezpośredniego klipu demonstracyjnego dla tego pola."
+        "note": "Based on the schema and runtime code; there is no dedicated demo clip for this field."
       }
     }
   ],
   "examples": [
     {
       "id": "tighten-read-scope",
-      "title": "Zawęź odczyt użytkownika",
-      "description": "Zastąp listę korzeni odczytu użytkownika pojedynczym katalogiem względnym. Tablice w patchu zastępują listę poprzednią.",
+      "title": "Narrow a user’s read scope",
+      "description": "Replace a user’s read-root list with a single relative directory. Arrays in a patch replace the previous list.",
       "patch": {
         "expected_version": 3,
         "changes": {
@@ -2372,8 +2372,8 @@
     },
     {
       "id": "set-topic-threshold",
-      "title": "Zmień próg istniejącego tematu",
-      "description": "Zaktualizuj próg podobieństwa tylko dla tematu już obecnego w katalogu.",
+      "title": "Change an existing topic threshold",
+      "description": "Update the similarity threshold only for a topic already in the catalog.",
       "patch": {
         "expected_version": 3,
         "changes": {
@@ -2388,17 +2388,17 @@
     },
     {
       "id": "publish-topic-catalog",
-      "title": "Opublikuj kompletny katalog tematów",
-      "description": "Zmiana topics wymaga równoczesnego topic_policies. Przykład ma charakter fikcyjny i nie zawiera sekretów.",
+      "title": "Publish a complete topic catalog",
+      "description": "Changing `topics` requires `topic_policies` in the same publication. This fictional example contains no secrets.",
       "patch": {
         "expected_version": 3,
         "changes": {
           "topics": {
             "client_onboarding": {
-              "description": "Obsługa klienta",
+              "description": "Customer support",
               "policy_id": "client-data",
               "examples": [
-                "pytanie o status sprawy"
+                "question about case status"
               ],
               "similarity_threshold": 0.84
             }
@@ -2406,8 +2406,8 @@
           "topic_policies": {
             "client-data": {
               "version": 1,
-              "forbidden": "Ujawnienie danych bez upoważnienia",
-              "allowed": "Ogólne informacje bez danych klienta",
+              "forbidden": "Disclosing data without authorization",
+              "allowed": "General information without client data",
               "reason_code": "CLIENT_DATA_DISCLOSURE"
             }
           }
@@ -2422,5 +2422,5 @@
       ]
     }
   ],
-  "scopeNote": "Przewodnik opisuje pola konfiguracji i zachowanie widoczne w kodzie. JSON Schema waliduje strukturę i proste zakresy, ale nie zastępuje kontroli semantycznych: odwołań między katalogami, istnienia aliasów, spójności progów z runtime, walidacji ścieżek, wersji publikacji ani semantycznej oceny Jev/guardian. Temat przypisany przez użytkownika z konfiguracji jest zaufanym kontekstem; wykrycie embeddingiem tworzy kandydata, a guardian osobno ocenia bieżące zdarzenie według zakazanych i dozwolonych klauzul. Profile isolated oraz require_isolation opisują wymóg konfiguracyjny, lecz nie dostarczają sandboxa systemu operacyjnego. threat_feed.path jest ustawiany przy uruchomieniu, a zawartość feedu można publikować przez API/UI. Aliasów modeli, dostawców, ścieżek bazy, tokenu, workdir ani przypisań topic_ids nie zmienia publikacja runtime. Pełna publikacja katalogu topics wymaga topic_policies. Obiekty zmian są scalane z aktywną konfiguracją, ale przekazane tablice zastępują poprzednie listy. Tryb observe nie wyłącza twardych blokad. Brak centralnego SSO nie jest funkcją tego schematu ani przewodnika."
+  "scopeNote": "This guide explains configuration fields and behavior visible in the code. JSON Schema validates structure and simple ranges, but does not replace semantic checks for catalog references, existing aliases, runtime threshold consistency, path validity, publication versions, or Jev/guardian semantic evaluation. A topic assigned to a user in configuration is trusted context; embedding detection creates a candidate, and the guardian separately reviews the current event against forbidden and allowed clauses. The `isolated` profile and `require_isolation` declare a configuration requirement, but do not provide an operating-system sandbox. `threat_feed.path` is set at startup; feed contents can be published through the API or UI. Runtime publication cannot change model aliases, providers, database paths, tokens, workdirs, or `topic_ids` assignments. Publishing a complete `topics` catalog requires `topic_policies`. Change objects merge into the active configuration, while arrays in a patch replace existing arrays. `observe` does not disable hard blocks. Central SSO is outside the scope of this schema and guide."
 }

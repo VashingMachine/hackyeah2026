@@ -21,7 +21,7 @@ function animateCounts(container){
 function updateMotion(){
   document.body.classList.toggle('reduced-motion',!motion);
   $('motion-toggle').setAttribute('aria-pressed',String(motion));
-  $('motion-toggle').setAttribute('aria-label',motion?'Wyłącz animacje':'Włącz animacje');
+  $('motion-toggle').setAttribute('aria-label',motion?'Disable animations':'Enable animations');
   if(!motion){all('[data-count]').forEach(n=>{n.textContent=n.dataset.count;});cancelAnimationFrame(canvasFrame);}
   else startCanvas();
 }
@@ -42,7 +42,7 @@ addEventListener('scroll',updateScroll,{passive:true});addEventListener('resize'
 function moveSlide(delta){slides[Math.max(0,Math.min(slides.length-1,slideIndex+delta))].scrollIntoView({behavior:motion?'smooth':'instant',block:'start'});}
 function setPresentation(on){
   presentation=on;document.body.classList.toggle('presentation-mode',on);$('presentation-dock').hidden=!on;
-  $('present-toggle').setAttribute('aria-pressed',String(on));$('present-toggle').firstChild.textContent=on?'Zakończ pokaz ':'Tryb pokazu ';
+  $('present-toggle').setAttribute('aria-pressed',String(on));$('present-toggle').firstChild.textContent=on?'Exit presentation ':'Presentation mode ';
   if(on){updateScroll();slides[slideIndex].scrollIntoView({behavior:motion?'smooth':'instant',block:'start'});}
   else $('present-toggle').focus({preventScroll:true});
 }
@@ -54,9 +54,9 @@ document.addEventListener('keydown',e=>{
   if(['ArrowRight','PageDown','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();moveSlide(['ArrowRight','PageDown'].includes(e.key)?1:-1);}
 });
 const flowExamples={
-  allow:{effect:'allow',label:'Dopuszczenie',operation:'read("Atlas / company.json")',description:'Odczyt w przypisanej sprawie może przejść do wykonania po kontrolach. Dopuszczenie i raport wykonania są osobnymi zdarzeniami.'},
-  approval:{effect:'require_approval',label:'Wymagana zgoda',operation:'write("Atlas / kyc-draft.md", nowa treść)',description:'Zastąpienie istniejącego szkicu czeka na jednorazową zgodę dla dokładnych argumentów i zasobu. Silnik ponownie sprawdza plik przed rozpoczęciem operacji.'},
-  deny:{effect:'deny',label:'Odmowa',operation:'POST poufnej analizy bez zlecenia użytkownika',description:'Nadzorca ocenia propozycję publikacji według polityki M&A. Potwierdzone naruszenie kończy sesję. Odmowa zatrzymuje executor; odbiornik nie dostaje requestu.'}
+  allow:{effect:'allow',label:'Allow',operation:'read("Atlas / company.json")',description:'A read within the assigned matter can proceed after checks pass. The allow decision and execution report are separate events.'},
+  approval:{effect:'require_approval',label:'Approval required',operation:'write("Atlas / kyc-draft.md", new content)',description:'Replacing an existing draft requires one-time approval for the exact arguments and resource. The engine checks the file again before starting the operation.'},
+  deny:{effect:'deny',label:'Deny',operation:'POST confidential analysis without user instruction',description:'The supervisor checks the publication proposal against the M&A policy. A confirmed violation ends the session. Denial stops the executor; the receiver gets no request.'}
 };
 let flowChoice='allow';
 function runFlow(choice=flowChoice){
@@ -76,8 +76,8 @@ function assetURL(value){
   if(typeof value!=='string'||!/^assets\/[a-zA-Z0-9_./-]+$/.test(value)||value.split('/').includes('..'))throw new Error('Invalid local asset');
   return value;
 }
-const sourceLabels={Pi:'Agent Pi','Authenticated API harness replay':'Replay API','Core.decideTool harness replay':'Replay silnika'};
-function shortKind(s){if(s.id==='uncertain-review-continuation')return'Replay + admin';return ['Pi','Rozmowa Pi'].includes(s.sourceType)?'Agent Pi':'Replay propozycji';}
+const sourceLabels={Pi:'Pi agent','Authenticated API harness replay':'API replay','Core.decideTool harness replay':'Engine replay'};
+function shortKind(s){if(s.id==='uncertain-review-continuation')return'Replay + admin';return ['Pi','Pi conversation'].includes(s.sourceType)?'Pi agent':'Proposal replay';}
 function timeLabel(value){return new Date(value).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZone:'Europe/Warsaw',hour12:false});}
 function stateAt(index){
   let status=selectedSession.initialStatus;
@@ -93,37 +93,37 @@ function stateAt(index){
   if(index===selectedSession.events.length-1)status=selectedSession.finalStatus;
   return status;
 }
-function stopPlayback(){clearTimeout(playTimer);playTimer=null;$('replay-play').textContent='▶';$('replay-play').setAttribute('aria-label','Odtwórz zdarzenia sesji');}
+function stopPlayback(){clearTimeout(playTimer);playTimer=null;$('replay-play').textContent='▶';$('replay-play').setAttribute('aria-label','Play session events');}
 function schedulePlayback(){
-  $('replay-play').textContent='Ⅱ';$('replay-play').setAttribute('aria-label','Wstrzymaj odtwarzanie');
+  $('replay-play').textContent='Ⅱ';$('replay-play').setAttribute('aria-label','Pause playback');
   playTimer=setTimeout(()=>{if(eventIndex<selectedSession.events.length-1){renderEvent(eventIndex+1,true);schedulePlayback();}else stopPlayback();},Number($('replay-speed').value));
 }
-const featureLabels={file_scope:'Zakres plików',approval:'Zgoda użytkownika',execution_grant:'Jednorazowe uprawnienie',topic_assignment:'Zaufany temat',embeddings:'Embeddingi OpenAI',guardian:'Nadzorca sesji',session_state:'Stan sesji',network_scope:'Kontrola HTTP',budgets:'Budżety',threat_feed:'Feed zagrożeń',semantic_review:'Ocena Jeva',output_control:'Kontrola wejścia i odpowiedzi',policy_publication:'Publikacja polityki'};
+const featureLabels={file_scope:'File scope',approval:'User approval',execution_grant:'One-time execution grant',topic_assignment:'Trusted topic',embeddings:'OpenAI embeddings',guardian:'Session supervisor',session_state:'Session state',network_scope:'HTTP controls',budgets:'Budgets',threat_feed:'Threat feed',semantic_review:'Jev assessment',output_control:'Input and output controls',policy_publication:'Policy publication'};
 window.BlackwallFeatures=featureLabels;
 function renderFeatureChips(target,ids=[]){
   target.replaceChildren();
-  ids.forEach(id=>{const b=node('button','feature-chip',featureLabels[id]||id);b.type='button';b.dataset.feature=id;b.title=contextFeatures[id]||'Zobacz pola polityki związane z tą funkcją';b.addEventListener('click',()=>window.BlackwallPolicyGuide?.selectFeature(id));target.append(b);});
+  ids.forEach(id=>{const b=node('button','feature-chip',featureLabels[id]||id);b.type='button';b.dataset.feature=id;b.title=contextFeatures[id]||'View policy fields related to this feature';b.addEventListener('click',()=>window.BlackwallPolicyGuide?.selectFeature(id));target.append(b);});
 }
 function renderSessionContext(s){
   const c=s.context,p=c.prompt;
-  const kinds={original_pi_user_prompt:'Prompt przekazany do Pi',harness_user_task:'Zadanie wejściowe replayu',originating_human_task:'Zadanie początkowe scenariusza'};
-  $('session-prompt').textContent=p.text;$('session-prompt-kind').textContent=kinds[p.kind]||'Zapisane wejście scenariusza';
-  $('session-prompt-note').textContent=[p.normalizationNote,`Źródło: ${p.source}`].filter(Boolean).join(' ');
-  $('session-translation').hidden=!p.translationPL;$('session-translation').open=false;$('session-translation-text').textContent=p.translationPL||'';
+  const kinds={original_pi_user_prompt:'Original prompt sent to Pi',harness_user_task:'Replay input task',originating_human_task:'Scenario source task'};
+  $('session-prompt').textContent=p.text;$('session-prompt-kind').textContent=kinds[p.kind]||'Recorded scenario input';
+  $('session-prompt-note').textContent=[p.normalizationNote,`Source: ${p.source}`].filter(Boolean).join(' ');
+  $('session-translation').hidden=!p.translationEN;$('session-translation').open=false;$('session-translation-text').textContent=p.translationEN||'';
   $('session-agent-action').textContent=c.agentAction;$('session-blackwall-action').textContent=c.blackwallAction;
   $('session-replay-proposal').hidden=!c.replayProposal;$('session-replay-text').textContent=c.replayProposal?.text||'';
-  $('session-replay-note').textContent=c.replayProposal?[c.replayProposal.normalizationNote,`Źródło: ${c.replayProposal.source}`].filter(Boolean).join(' '):'';
+  $('session-replay-note').textContent=c.replayProposal?[c.replayProposal.normalizationNote,`Source: ${c.replayProposal.source}`].filter(Boolean).join(' '):'';
   renderFeatureChips($('session-features'),c.featureIds);$('session-feature-summary').textContent=c.featureSummary;
 }
 function selectSession(s){
   stopPlayback();selectedSession=s;eventIndex=0;renderSessionContext(s);
   $('session-domain').textContent=`${s.domain} / ${s.sessionRef}`;$('session-title').textContent=s.title;$('session-subtitle').textContent=s.subtitle;
   $('session-kind').textContent=shortKind(s);$('session-kind').title=s.sourceType;
-  $('session-proof').textContent=s.proof;$('session-note').textContent=s.note+' Wybrane zdarzenia audytu; numery seq i czas serwera zachowane. Zgody administratora i użytkownika są symulowane przez harness.';
+  $('session-proof').textContent=s.proof;$('session-note').textContent=s.note+' Selected audit events; sequence numbers and server times are preserved. Administrator and user approvals are simulated by the harness.';
   $('dash-source').textContent='AUDYT DEMO / POLICY v1';$('replay-scrub').max=String(s.events.length-1);
   const log=$('event-log');log.replaceChildren();
   s.events.forEach((e,i)=>{
-    const b=node('button','event-row');b.type='button';b.dataset.index=String(i);b.setAttribute('aria-label',`Zdarzenie seq ${e.seq}: ${e.title}`);
+    const b=node('button','event-row');b.type='button';b.dataset.index=String(i);b.setAttribute('aria-label',`Event seq ${e.seq}: ${e.title}`);
     b.append(node('span','event-number',String(e.seq).padStart(2,'0')));
     const body=node('div');body.append(node('strong','',e.title));body.append(node('small','',`${timeLabel(e.time)} · ${e.type}`));
     if(e.reason)body.append(node('span','event-reason-short',e.reason));b.append(body);b.addEventListener('click',()=>{stopPlayback();renderEvent(i);});log.append(b);
@@ -136,7 +136,7 @@ function renderSessions(){
   $('session-count').textContent=String(sessions.length);$('sessions-list').replaceChildren();
   sessions.forEach(s=>{
     const b=node('button','session-item');b.type='button';b.setAttribute('aria-pressed',String(selectedSession?.id===s.id));b.dataset.session=s.id;
-    b.append(node('strong','',s.title));b.append(node('small','',`${s.domain} / ${s.events.length} wybranych zdarzeń`));
+    b.append(node('strong','',s.title));b.append(node('small','',`${s.domain} / ${s.events.length} selected events`));
     const meta=node('span','item-meta');meta.append(node('span','',shortKind(s)));meta.append(node('i',`status-dot ${s.finalStatus==='active'?'green':s.finalStatus==='reviewing'?'amber':'red'}`));b.append(meta);
     b.addEventListener('click',()=>selectSession(s));$('sessions-list').append(b);
   });
@@ -147,10 +147,10 @@ function renderEvent(index,scroll=false){
   $('event-position').textContent=`${index+1}/${selectedSession.events.length} · seq ${e.seq}`;
   $('event-effect').textContent=[e.tool,e.effect].filter(Boolean).join(' / ')||'—';
   $('replay-scrub').value=String(index);$('event-time').textContent=timeLabel(e.time);
-  $('event-title').textContent=e.title;$('event-type').textContent=e.type;$('event-description').textContent=e.description;$('event-reason').textContent=e.reason||e.topic||'Brak kodu powodu w tym zdarzeniu';
+  $('event-title').textContent=e.title;$('event-type').textContent=e.type;$('event-description').textContent=e.description;$('event-reason').textContent=e.reason||e.topic||'No reason code recorded for this event';
   const explanation=selectedSession.context.events[String(e.seq)];
-  $('event-feature-explanation').textContent=explanation?.featureExplanation||'Zdarzenie informacyjne w audycie; nie jest samodzielnym dowodem wykonania ani blokady.';
-  $('event-intervention').textContent=explanation?.interventionLabel||'Zapis audytowy';
+  $('event-feature-explanation').textContent=explanation?.featureExplanation||'Informational audit event; it does not by itself prove execution or a block.';
+  $('event-intervention').textContent=explanation?.interventionLabel||'Audit record';
   $('event-operation').hidden=!explanation?.operationSummary;$('event-operation').textContent=explanation?.operationSummary||'';
   renderFeatureChips($('event-feature-chips'),explanation?.featureIds||[]);
   $('event-symbol').textContent=e.type==='tool.completed'?'✓':e.effect==='deny'||e.type==='session.terminated'?'×':e.effect==='require_approval'||e.type==='session.reviewing'?'Ⅱ':e.type.startsWith('topic.')?'◎':'↗';
@@ -163,23 +163,23 @@ $('replay-play').addEventListener('click',()=>{if(!selectedSession)return;if(pla
 $('replay-reset').addEventListener('click',()=>{stopPlayback();if(selectedSession)renderEvent(0);});
 $('replay-scrub').addEventListener('input',e=>{stopPlayback();if(selectedSession)renderEvent(Number(e.target.value),true);});
 $('replay-speed').addEventListener('change',()=>{if(playTimer){stopPlayback();schedulePlayback();}});
-const videoKinds={'runtime-publication':'Pi + admin / jawny replay','approval':'Pi / symulowana zgoda','policy-block':'Kontrola polityki','harness-replay':'Jawny replay propozycji','judge':'Pi / Jev','embedding':'Pi / detekcja tematu','authorized-action':'Pi / dozwolona operacja'};
+const videoKinds={'runtime-publication':'Pi + admin / explicit replay','approval':'Pi / simulated approval','policy-block':'Policy control','harness-replay':'Explicit proposal replay','judge':'Pi / Jev','embedding':'Pi / topic detection','authorized-action':'Pi / allowed operation'};
 function durationLabel(seconds){return`${Math.floor(seconds/60)}:${String(Math.round(seconds%60)).padStart(2,'0')}`;}
 function selectVideo(v,play=false){
   const player=$('demo-video');player.pause();player.poster=assetURL(v.poster);player.src=assetURL(v.file);player.load();
-  $('video-title').textContent=v.title;$('video-description').textContent=v.description;$('video-kind').textContent=videoKinds[v.kind]||'Nagranie demo';
+  $('video-title').textContent=v.title;$('video-description').textContent=v.description;$('video-kind').textContent=videoKinds[v.kind]||'Demo recording';
   $('video-placeholder').hidden=true;all('.video-choice').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.video===v.id)));
   if(play)player.play().catch(()=>{ /* Native controls remain available if autoplay policy blocks playback. */ });
 }
 function renderVideos(){
   const list=$('video-choices');list.replaceChildren();
   evidence.videos.forEach(v=>{
-    const b=node('button','video-choice');b.type='button';b.dataset.video=v.id;b.setAttribute('aria-label',`Odtwórz: ${v.title}`);
+    const b=node('button','video-choice');b.type='button';b.dataset.video=v.id;b.setAttribute('aria-label',`Play: ${v.title}`);
     const thumb=node('div','video-thumb'),img=node('img');img.src=assetURL(v.poster);img.alt='';img.loading='lazy';img.width=640;img.height=360;thumb.append(img,node('span','video-duration',durationLabel(v.duration)));
-    const copy=node('div');copy.append(node('strong','',v.title),node('small','',videoKinds[v.kind]||'Nagranie demo'));b.append(thumb,copy);b.addEventListener('click',()=>selectVideo(v,true));list.append(b);
+    const copy=node('div');copy.append(node('strong','',v.title),node('small','',videoKinds[v.kind]||'Demo recording'));b.append(thumb,copy);b.addEventListener('click',()=>selectVideo(v,true));list.append(b);
   });if(evidence.videos.length)selectVideo(evidence.videos[0]);
 }
-$('demo-video').addEventListener('error',()=>{if($('demo-video').src){$('video-placeholder').hidden=false;$('video-placeholder').querySelector('p').textContent='Nie udało się otworzyć filmu. Wybierz go ponownie lub zmień nagranie.';}});
+$('demo-video').addEventListener('error',()=>{if($('demo-video').src){$('video-placeholder').hidden=false;$('video-placeholder').querySelector('p').textContent='Could not open the video. Select it again or choose another recording.';}});
 $('video-fullscreen').addEventListener('click',()=>{const v=$('demo-video');if(v.requestFullscreen)v.requestFullscreen().catch(()=>{});else if(v.webkitEnterFullscreen)v.webkitEnterFullscreen();});
 async function loadEvidence(){
   $('session-filter').disabled=true;
@@ -190,9 +190,9 @@ async function loadEvidence(){
     const contexts=await contextResponse.json();if(!Array.isArray(contexts.sessions))throw new Error('Invalid context');
     d.sessions=d.sessions.map(s=>{const context=contexts.sessions.find(c=>c.id===s.id);if(!context?.prompt?.text||!context.events)throw new Error('Missing session context');return{...s,context};});
     contextFeatures=contexts.featureCatalog||{};
-    evidence=d;const filter=$('session-filter');filter.replaceChildren(node('option','','Wszystkie domeny'));filter.firstChild.value='all';[...new Set(d.sessions.map(s=>s.domain))].forEach(domain=>{const option=node('option','',domain);option.value=domain;filter.append(option);});
+    evidence=d;const filter=$('session-filter');filter.replaceChildren(node('option','','All domains'));filter.firstChild.value='all';[...new Set(d.sessions.map(s=>s.domain))].forEach(domain=>{const option=node('option','',domain);option.value=domain;filter.append(option);});
     $('load-error').hidden=true;selectSession(d.sessions[0]);renderVideos();$('session-filter').disabled=false;
-  }catch{ $('load-error').hidden=false;$('dash-source').textContent='Dane chwilowo niedostępne';$('sessions-list').replaceChildren(node('p','loading-copy','Nie udało się wczytać audytu. Użyj przycisku ponowienia poniżej.'));stopPlayback(); }
+  }catch{ $('load-error').hidden=false;$('dash-source').textContent='Data temporarily unavailable';$('sessions-list').replaceChildren(node('p','loading-copy','Could not load the audit record. Use the retry button below.'));stopPlayback(); }
 }
 $('retry-data').addEventListener('click',loadEvidence);loadEvidence();
 function startCanvas(){

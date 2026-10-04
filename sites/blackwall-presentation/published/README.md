@@ -1,67 +1,59 @@
-# Blackwall — interaktywna prezentacja
+# Blackwall — interactive presentation
 
-Publiczna strona projektu w Sites. Polska prezentacja działającego lokalnego MVP: filmowy hero, animowany schemat decyzji, replay prawdziwych zdarzeń dashboardu, osiem nagrań, wyniki i ograniczenia oraz dziewięcioslajdowa prezentacja PPTX.
+The public Blackwall project website on Sites, in English. It presents a working local MVP through an animated hero, control examples, recorded dashboard sessions, a sequence diagram, a policy explorer, eight demo recordings, verification results, limitations and a nine-slide downloadable deck.
 
-## Podgląd
+## Preview
 
 ```sh
 python3 -m http.server 8790 --bind 127.0.0.1 --directory dist
 ```
 
-Wejdź na `http://127.0.0.1:8790/`. Strona jest buildless; nie wymaga instalacji pakietów. Replay pobiera JSON przez HTTP, więc otwarcie pliku przez `file://` nie wystarcza. Fonty Google mają systemowy fallback.
+Open `http://127.0.0.1:8790/`. This static site requires no package installation or build step. Replay data is fetched as JSON over HTTP, so opening an HTML file directly is insufficient. Google Fonts have system fallbacks.
 
-## Źródła
+## Source files
 
-- `dist/index.html` i identyczny `dist/presentation.html`: treść i semantyka.
-- `dist/presentation.css`: układ, animacje, desktop/mobile, ograniczenie ruchu.
-- `dist/presentation.js`: filtry, odtwarzanie, wybór nagrań, tryb pokazu.
-- `dist/policy-explorer.js`: mapa pól, filtry, interaktywny JSON i powiązane media.
-- `dist/process-diagram.js` i `dist/assets/process-flow.json`: Sequence Diagram dziesięciu uczestników, 114 komunikatów i ośmiu ścieżek; opisy danych, warunków, zdarzeń i źródeł w kodzie.
-- `dist/assets/session-contexts.json`: oryginalne prompty ze źródłami, osobne propozycje replayu i objaśnienia interwencji dla każdego zdarzenia. Wygenerowane ścieżki tymczasowego workspace oznaczono jako `<WORKSPACE>`; tłumaczenia są jawnie oddzielone od oryginału.
-- `dist/assets/policy-guide.json`: 119 objaśnień obejmujących wszystkie 116 pól PolicySchema, z aliasami i dodatkowymi polami publikacji. Wskazuje typy, przykłady, skutki, granice i możliwość publikacji runtime.
-- `dist/assets/policy.schema.json` i `policy-publication.schema.json`: schematy wygenerowane z eksportów Zod aplikacji; kontrole semantyczne pozostają w runtime.
-- `dist/assets/evidence.json`: wybrane rzeczywiste zdarzenia audytu i ich pochodzenie. Numery `seq` zawierają przerwy, ponieważ pominięto zdarzenia pośrednie. Dane nie zawierają tokenów ani prywatnych payloadów.
-- `dist/assets/videos/` i `posters/`: webowe kopie oryginalnych MP4, bez skracania ich długości, H.264 1280×720/25fps, bez audio.
-- `dist/assets/screens/`: czyste screeny dashboardu.
-- `dist/assets/blackwall-demo.pptx`: dziewięć zweryfikowanych slajdów.
-- `.openai/hosting.json`: zachowana tożsamość Site oraz static directory.
+- `dist/index.html` and identical `dist/presentation.html`: English content and semantics.
+- `dist/presentation.css`: layout, animation, responsive views and reduced motion.
+- `dist/presentation.js`: filters, replay, recording selection and presentation mode.
+- `dist/policy-explorer.js`: field catalogue, filters, interactive JSON and evidence media.
+- `dist/process-diagram.js` and `dist/assets/process-flow.json`: ten participants, eight paths, 48 steps and 114 sequence messages, with source references and policy links.
+- `dist/assets/session-contexts.json`: verbatim original prompts, provenance, separate replay proposals and event explanations. English translations are explicitly separated from original Polish prompts. Temporary workspace paths are represented as `<WORKSPACE>`.
+- `dist/assets/policy-guide.json`: 119 explanations covering all 116 PolicySchema leaves, aliases and additional publication fields. Each entry describes its type, example, effect, limits and runtime editability.
+- `dist/assets/policy.schema.json` and `policy-publication.schema.json`: schemas generated from the application's exported Zod definitions; additional semantic validation remains in the runtime.
+- `dist/assets/evidence.json`: selected recorded audit events and their provenance. Sequence numbers have gaps because intermediate events were omitted.
+- `dist/assets/videos/` and `posters/`: web copies of original recordings, with unchanged durations; H.264, 1280×720, 25 fps, no audio.
+- `dist/assets/screens/`: original dashboard screenshots.
+- `dist/assets/blackwall-demo.pptx`: nine English slides with original screenshots explicitly labeled as Polish UI.
+- `.openai/hosting.json`: retained Site identity and static directory.
 
-Oryginalne covery i dokumenty koncepcji pozostają w `assets/` i `docs/`. Dotychczasowe `app.js` i `styles.css` są historyczne; nowy dokument ich nie ładuje.
+The original recordings and screenshots remain in Polish and are labeled accordingly. English explanatory copy does not alter the underlying recorded evidence. `app.js` and `styles.css` are historical assets; the current HTML does not load them.
 
-## Zakres interakcji i dowodów
+## Interaction and evidence scope
 
-Replay działa wyłącznie w przeglądarce. Nie łączy się z Blackwallem, nie wykonuje narzędzi, nie pobiera danych użytkownika i nie wywołuje OpenAI/Jev. Stan pośredni jest rekonstruowany z typu wybranych zdarzeń; stan końcowy pochodzi z zakończonej sesji. Animacja używa skróconego czasu, zachowując rzeczywiste timestampy.
+Replay runs only in the browser. It does not connect to Blackwall, run tools, collect user data or invoke OpenAI/Jev. Intermediate states are reconstructed from selected audit events; final states come from completed sessions. Animation compresses playback time while retaining actual timestamps.
 
-KYC i HR zawierają jawne przypisanie tematów z `user_config`. Osobny przypadek KYC pokazuje wykrycie bez przypisania. Replay POST M&A jest propozycją harnessa, nie autonomicznym toolem Pi. Zgody użytkownika i administratora w testach są symulowane, a uwierzytelnione API administratora jest oznaczone osobno. Niepewny wynik zachowano bez kolejnego wywołania modelu.
+KYC and HR include explicit topic assignment from `user_config`. A separate KYC case demonstrates detection without an initial assignment. The M&A POST replay is a harness proposal rather than an autonomous Pi tool call. Test approvals and administrator decisions are simulated and explicitly labeled; authenticated administrator API actions are identified separately. The uncertain verdict is preserved without another model call.
 
-Weryfikacja aplikacji: 143 jednostkowe, 33 integracyjne/API i 12 Pi E2E, zero pominięć; demo 14 scenariuszy/68 checków plus 6 checków kontynuacji. Końcowy pełny follow-up unit/typecheck nastąpił po master verify. Wszystkie wartości opisują mały syntetyczny korpus, nie niezawodność produkcyjną. Brak sandboxa OS, centralnego control plane i pełnej wyceny kosztów pozostaje widoczny na stronie.
+Historical application evidence shown on this site: 143 unit tests, 33 real integration/API tests and 12 Pi E2E tests; 14 demo scenarios with 68 checks, plus six continuation checks. The site describes the recorded corpus, rather than implying that these are current repository test totals. The small synthetic corpus does not establish production reliability. Missing OS sandboxing, a central control plane and complete financial costing remain visible limitations.
 
-## Prezentowanie
+## Presentation mode
 
-„Tryb pokazu” dodaje nawigację rozdziałami. Strzałki lewo/prawo i PageUp/PageDown przechodzą między sekcjami; Escape wychodzi. Kontrolki formularza i wideo zachowują własne klawisze. Animacje można wyłączyć; preferencja systemowa ograniczenia ruchu jest respektowana.
+Presentation mode adds chapter navigation. Left/right arrows and PageUp/PageDown move between sections; Escape exits. Form and video controls retain their own keyboard behavior. Motion can be disabled; the operating system's reduced-motion preference is respected.
 
-Publikacja zachowuje publiczny dostęp istniejącego Site. Źródło i static assets przygotowuje helper Sites; żadne poświadczenia repozytorium ani API nie należą do tej strony.
+## Policy and session guide
 
-## Publikacja konfiguracji
+Each session presents the original prompt and its source, the agent or harness action, Blackwall's intervention and the responsible features. Events have specific explanations. Feature chips link to relevant policy fields. The guide supports hover, focus, click, touch and arrow keys. Recordings remain under user control. Fields without direct video evidence clearly state that their explanation is based on source code.
 
-Lokalne MVP publikuje reguły, profile/progi, katalog tematów i feed przez uwierzytelnione API/UI. Walidowany kandydat i detektor powstają przed przełączeniem; CAS chroni przed starą kartą. Publikacja czeka na trwające żądania, unieważnia niewykorzystane zgody/granty i zachowuje kontekst aktywnej rozmowy. Overlay SQLite przywraca się przy tym samym bazowym YAML. RE2 obsługuje wzorce feedu bez native-regex fallbacku. To lokalna administracja, bez organizacyjnego control plane/SSO.
+Three publication examples have interactive JSON keys and satisfy PolicyPublicationSchema. This is documentation rather than an administrator form: it neither saves configuration nor performs operations.
 
-Nowy klip publikacji pochodzi z pierwszego udanego przebiegu `00-53-27-385Z`, 11/11 checków, polityka v3/feed v2. Rzeczywisty Pi kończy odczyt i program przed edycjami; późniejsza odmowa jest jawnym replayem API w tej samej sesji. Wykonania odczytu/programu częściowo się nakładały. PPTX `final-v4`,9 slajdów, zawiera rzeczywiste panele publikacji oraz aktualne wyniki i ograniczenia. QA strony:31/31, desktop/mobile,8 filmów, odzyskanie danych po HTTP503.
+## Sequence diagram
 
-## Przewodnik po politykach i sesjach
+Participants occupy columns with vertical lifelines. Messages run from top to bottom. Requests use solid arrows, responses use dashed arrows and self-calls use loops. Guards identify optional messages. The diagram separates model traffic through the gateway from tool evaluation through Core. Participant details explain inputs, outputs, conditions, policy fields and source references. Message activation selects its parent step; playback and keyboard navigation step through the path. Scrolling remains inside the diagram, with sticky participant headers.
 
-Każda sesja pokazuje wejściowy prompt, jego źródło, działanie Pi lub harnessa, działanie Blackwalla i funkcje odpowiadające za interwencję. Zdarzenia otrzymują osobne wyjaśnienia. Kliknięcie funkcji przechodzi do powiązanej reguły. Przewodnik działa po najechaniu, kliknięciu, dotknięciu i użyciu klawiatury. Nagrania pozostają pod kontrolą użytkownika; pola bez bezpośredniego klipu mają jawnie oznaczone wyjaśnienie na podstawie kodu.
+The eight routes cover a safe model response, an allowed tool, user approval, a hard denial, a topic violation, an uncertain verdict, configuration publication and Jev denial. Embeddings propose topic candidates, the Guardian supervises content and Jev evaluates proposed operations. Trusted topic assignments come from user configuration when sessions are created.
 
-Trzy przykłady publikacji mają interaktywne klucze i przechodzą rzeczywisty PolicyPublicationSchema. Strona ma dziewięć rozdziałów; pobieralny PPTX zachowuje dziewięć slajdów. Przewodnik jest dokumentacją, nie formularzem administracyjnym: nie zapisuje konfiguracji ani nie wykonuje operacji.
+The diagram distinguishes an allow decision, consumption of a one-use execution grant, local execution start and result reporting. It describes the actual boundaries: no OS sandbox, observe behavior, Pi approval conditions and publication waiting for in-flight HTTP requests without stopping an already running local executor. Decision examples assume enforce mode.
 
-QA tej edycji: 90/90 sprawdzeń przewodnika i kontekstów sesji oraz 31/31 regresji dotychczasowej strony. Zweryfikowano hover, focus, kliknięcie, dotyk, strzałki klawiatury, filtry, interaktywny JSON, wszystkie schematy i odzyskanie po błędach HTTP/mediów. Niezależne audyty potwierdziły pochodzenie sześciu promptów, powiązanie 45 zdarzeń i pokrycie wszystkich 116 liści PolicySchema.
+## Publication
 
-## Sequence Diagram
-
-Sekcja `#proces` przedstawia Sequence Diagram: uczestnicy w kolumnach, pionowe linie życia i komunikaty w kolejności od góry do dołu. Żądania mają strzałki ciągłe, odpowiedzi przerywane, operacje własne mają pętle. Warunki opisują komunikaty opcjonalne. Schemat pokazuje osobno ruch modelu przez gateway i ocenę każdego narzędzia przez Core. Kliknięcie lub najechanie nagłówka uczestnika ujawnia dane wejściowe/wyjściowe, warunki, pola polityki i źródła. Ścieżki można odtwarzać, przechodzić krokami i obsługiwać klawiaturą. Diagram przewija się wewnątrz własnego panelu w obu osiach, z przyklejonymi nagłówkami; aktywny krok jest przewijany do widoku. Kliknięcie wiersza komunikatu wybiera jego krok. Pola polityki otwierają istniejący przewodnik. JSON diagramu jest dostępny do pobrania. Osiem scenariuszy zawiera 48 objaśnionych kroków i 114 komunikatów, zweryfikowane na podstawie 18 plików źródłowych.
-
-Osiem ścieżek obejmuje bezpieczną odpowiedź modelu, dozwolone narzędzie, zgodę użytkownika, twardą odmowę, naruszenie tematu, niepewny werdykt, publikację konfiguracji oraz odmowę Jev. Schemat jest objaśnieniem kodu MVP; nie jest nagraniem konkretnej sesji i nie wywołuje API. Embeddingi zgłaszają kandydatów tematów, Guardian nadzoruje treść, a Jev ocenia proponowaną operację. Zaufane przypisanie tematu pochodzi z konfiguracji użytkownika przy tworzeniu sesji.
-
-Diagram rozróżnia decyzję allow, jednorazowe consume grantu, rozpoczęcie lokalnego wykonania oraz odbiór wyniku. Opisuje rzeczywiste granice: brak sandboxa OS, zachowanie observe, warunki zgody w UI Pi oraz publikację czekającą na żądania HTTP, bez zatrzymywania już uruchomionego lokalnego executora. Przykłady decyzji zakładają tryb enforce.
-
-QA sekwencji: 126/126 sprawdzeń na desktopie i telefonie, 69/69 odnośników do polityk oraz ponowna regresja strony 31/31. Niezależny przegląd potwierdził wszystkie 114 komunikatów, 18 hashy źródeł i 56 odwołań do linii kodu.
+Updates retain the existing public Site audience and URL. The Sites workflow helper prepares and pushes source and static assets. Repository credentials and API secrets are never included in the site. The authenticated live session browser belongs to the application dashboard; the public presentation displays recorded evidence.

@@ -3,8 +3,9 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { chromium } from '/Users/dkwiatkowski/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
 
-const root = path.resolve(import.meta.dirname, '../source/dist');
-const out = import.meta.dirname;
+const root = process.env.SITE_QA_ROOT || path.resolve(import.meta.dirname, fs.existsSync(path.resolve(import.meta.dirname, '../source/dist')) ? '../source/dist' : '../published/dist');
+const out = process.env.SITE_QA_OUTPUT || import.meta.dirname;
+fs.mkdirSync(out, {recursive:true});
 const base = 'http://127.0.0.1:8790/presentation.html';
 const checks = [];
 const findings = [];
@@ -72,7 +73,7 @@ for (const session of sessions) {
     check(`harness-originated task is labeled as replay for ${session.id}`, /replay|harness|odtwor/i.test(promptKind) && /harness/i.test(agentAction));
   }
   if (expected?.prompt.kind === 'originating_human_task') {
-    check(`originating task kind is explained for ${session.id}`, /zapisane|scenariusz|pierwotn|zadanie/i.test(promptKind) && provenance.includes(expected.prompt.source));
+    check(`originating task kind is explained for ${session.id}`, /recorded|scenario|original|task/i.test(promptKind) && provenance.includes(expected.prompt.source));
   }
   promptSamples.push({ id: session.id, prompt, promptKind, provenance, agentAction, blackwallAction, features });
 }
@@ -177,19 +178,19 @@ for (let i = 0; i < await examples.count(); i++) {
 }
 
 // Compare high-risk copy directly with runtime behavior and retain any coverage gaps for review.
-check('policy guide explains that observe preserves hard blocks', /observe.*tward.{0,12}blokad/i.test(policyData.scopeNote || ''));
+check('policy guide explains that observe preserves hard blocks', /observe.*hard (?:blocks|denials)/i.test(policyData.scopeNote || ''));
 const approvalField = policyData.fields.find(field => field.path === 'approvals.eligible_reason_codes');
 const coreSource = fs.readFileSync(path.resolve(root, '../../../../blackwall/src/engine/core.ts'), 'utf8');
 const runtimeHasHardApprovalGate = /needed\.every\(\(r\) => this\.policy\.approvals\.eligible_reason_codes\.includes\(r\)\)/.test(coreSource);
-check('approval guidance states enabled and every required reason must be eligible', Boolean(approvalField && /approvals\.enabled\s*=\s*true/i.test(approvalField.effect) && /każdy wymagany powód.*tej liście/i.test(approvalField.effect)));
-check('approval guidance explicitly excludes hard refusals and earlier API authentication', Boolean(approvalField && /nie omija twardych odmów/i.test(approvalField.limits) && /uwierzytelnienie API jest sprawdzane wcześniej/i.test(approvalField.limits) && /ta lista go nie zastępuje/i.test(approvalField.limits)));
+check('approval guidance states enabled and every required reason must be eligible', Boolean(approvalField && /approvals\.enabled\s*=\s*true/i.test(approvalField.effect) && /every required reason.*(?:list|eligible)/i.test(approvalField.effect)));
+check('approval guidance explicitly excludes hard refusals and earlier API authentication', Boolean(approvalField && /(?:does not|cannot).*hard (?:denials|refusals)/i.test(approvalField.limits) && /API authentication.*(?:earlier|before)/i.test(approvalField.limits) && /(?:list.*does not replace|does not replace.*authentication)/i.test(approvalField.limits)));
 check('runtime applies the all-reasons approval gate and keeps hard blocks outside observe mode', runtimeHasHardApprovalGate && /const hard = reasons\.some\(\(r\) => HARD\.has\(r\)\)/.test(coreSource) && /effect !== 'allow' && !hard/.test(coreSource));
 if (approvalField) {
   await page.evaluate(id => window.BlackwallPolicyGuide.selectField(id), approvalField.id);
   check('approval detail displays the guarded eligibility scope', norm(await page.locator('#policy-effect').innerText()) === norm(approvalField.effect) && norm(await page.locator('#policy-limits').innerText()).includes(norm(approvalField.limits)));
 }
 const isolationFields = policyData.fields.filter(field => /execution_profile|require_isolation/.test(field.path));
-check('isolated profile copy does not claim to provide an OS sandbox', isolationFields.length >= 2 && isolationFields.every(field => /nie (?:dostarcza|tworzy|wykrywa)|deklaracj/i.test(`${field.description} ${field.effect} ${field.limits}`)));
+check('isolated profile copy does not claim to provide an OS sandbox', isolationFields.length >= 2 && isolationFields.every(field => /does not (?:provide|create|detect)|declar/i.test(`${field.description} ${field.effect} ${field.limits}`)));
 
 const policyDescription = norm(await page.locator('#policy-description').innerText());
 const policyEffect = norm(await page.locator('#policy-effect').innerText());

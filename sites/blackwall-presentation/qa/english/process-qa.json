@@ -1,0 +1,749 @@
+{
+  "generated_at": "2026-10-04T07:50:25.385Z",
+  "scope": "Local Sequence Diagram UI and static process-flow data only; no live model, API, or publishing.",
+  "checks": [
+    {
+      "name": "Source data hash matches the reviewed fixture",
+      "result": "PASS",
+      "detail": "851c39566cbed0c43ba8caa52c9614422e0a495ede0ac8fae149a93bc1a1f1aa"
+    },
+    {
+      "name": "sequence fixture has expected coverage totals",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "default scenario is tool-allow",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario selector and route count match fixture",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario model-safe: exact message rows and SVG groups",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario model-safe: actor lifelines match message endpoints",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario model-safe: endpoint labels, order, guards, and response styling",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario model-safe: exact step count",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step model-safe 1: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step model-safe 2: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step model-safe 3: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step model-safe 3: conditional detail remains visible",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step model-safe 4: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step model-safe 4: conditional detail remains visible",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step model-safe 5: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step model-safe 6: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step model-safe 7: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step model-safe 8: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario model-safe: full outcome appears only at final step",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario model-safe: reset, next, and previous controls",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario tool-allow: exact message rows and SVG groups",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario tool-allow: actor lifelines match message endpoints",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario tool-allow: endpoint labels, order, guards, and response styling",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario tool-allow: exact step count",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 1: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 2: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 3: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 3: conditional detail remains visible",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 4: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 5: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 6: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 7: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 8: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 9: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 10: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 11: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-allow 12: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario tool-allow: full outcome appears only at final step",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario tool-allow: reset, next, and previous controls",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario tool-approval: exact message rows and SVG groups",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario tool-approval: actor lifelines match message endpoints",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario tool-approval: endpoint labels, order, guards, and response styling",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario tool-approval: exact step count",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-approval 1: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-approval 2: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-approval 2: conditional detail remains visible",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-approval 3: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-approval 4: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-approval 5: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step tool-approval 6: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario tool-approval: full outcome appears only at final step",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario tool-approval: reset, next, and previous controls",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario hard-deny: exact message rows and SVG groups",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario hard-deny: actor lifelines match message endpoints",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario hard-deny: endpoint labels, order, guards, and response styling",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario hard-deny: exact step count",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step hard-deny 1: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step hard-deny 2: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step hard-deny 2: conditional detail remains visible",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step hard-deny 3: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step hard-deny 4: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario hard-deny: full outcome appears only at final step",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario hard-deny: reset, next, and previous controls",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario topic-violation: exact message rows and SVG groups",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario topic-violation: actor lifelines match message endpoints",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario topic-violation: endpoint labels, order, guards, and response styling",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario topic-violation: exact step count",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step topic-violation 1: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step topic-violation 2: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step topic-violation 3: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step topic-violation 4: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step topic-violation 5: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario topic-violation: full outcome appears only at final step",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario topic-violation: reset, next, and previous controls",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario topic-uncertain: exact message rows and SVG groups",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario topic-uncertain: actor lifelines match message endpoints",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario topic-uncertain: endpoint labels, order, guards, and response styling",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario topic-uncertain: exact step count",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step topic-uncertain 1: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step topic-uncertain 2: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step topic-uncertain 3: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step topic-uncertain 4: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario topic-uncertain: full outcome appears only at final step",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario topic-uncertain: reset, next, and previous controls",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario publication: exact message rows and SVG groups",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario publication: actor lifelines match message endpoints",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario publication: endpoint labels, order, guards, and response styling",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario publication: exact step count",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step publication 1: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step publication 2: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step publication 3: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step publication 4: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step publication 5: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario publication: full outcome appears only at final step",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario publication: reset, next, and previous controls",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario jev-deny: exact message rows and SVG groups",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario jev-deny: actor lifelines match message endpoints",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario jev-deny: endpoint labels, order, guards, and response styling",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario jev-deny: exact step count",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step jev-deny 1: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step jev-deny 2: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step jev-deny 2: conditional detail remains visible",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step jev-deny 3: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "step jev-deny 4: detail and every associated sequence message",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario jev-deny: full outcome appears only at final step",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "scenario jev-deny: reset, next, and previous controls",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "message-row activation selects its parent scenario step",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pointer focus on an actor selects its full detail",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "keyboard focus on an actor selects its detail",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "click selects the actor detail panel",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "arrow key moves across actor lifelines",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "arrow key advances selected scenario step",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "reduced motion removes active wire animation",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "desktop page has no horizontal overflow",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "desktop diagram scrolls vertically inside its own region",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "play advances the sequence timeline",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pause stops the sequence timeline",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "HTTP 503 displays retry and disables process controls",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "retry recovers all sequence routes",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "mobile page has no horizontal overflow",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "mobile sequence has contained horizontal and vertical scrolling",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "mobile diagram scrolls internally without page overflow",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "touching a sequence row selects its step",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "touching an actor selects its detail",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "no unexpected HTTP failures",
+      "result": "PASS",
+      "detail": "[]"
+    },
+    {
+      "name": "no uncaught browser exceptions",
+      "result": "PASS",
+      "detail": ""
+    }
+  ],
+  "findings": [],
+  "errors": [],
+  "failedResponses": [],
+  "componentCount": 10,
+  "scenarioCount": 8,
+  "stepCount": 48,
+  "messageCount": 114,
+  "conditionalMessageCount": 43,
+  "scenarioResults": [
+    {
+      "id": "model-safe",
+      "steps": 8,
+      "messages": 25,
+      "actors": [
+        "pi",
+        "blackwall",
+        "llm",
+        "embeddings",
+        "guardian"
+      ]
+    },
+    {
+      "id": "tool-allow",
+      "steps": 12,
+      "messages": 33,
+      "actors": [
+        "pi",
+        "blackwall",
+        "llm",
+        "embeddings",
+        "guardian",
+        "jev",
+        "policies",
+        "executor"
+      ]
+    },
+    {
+      "id": "tool-approval",
+      "steps": 6,
+      "messages": 16,
+      "actors": [
+        "pi",
+        "blackwall",
+        "approval",
+        "executor"
+      ]
+    },
+    {
+      "id": "hard-deny",
+      "steps": 4,
+      "messages": 5,
+      "actors": [
+        "pi",
+        "blackwall",
+        "audit"
+      ]
+    },
+    {
+      "id": "topic-violation",
+      "steps": 5,
+      "messages": 8,
+      "actors": [
+        "blackwall",
+        "embeddings",
+        "guardian",
+        "audit"
+      ]
+    },
+    {
+      "id": "topic-uncertain",
+      "steps": 4,
+      "messages": 8,
+      "actors": [
+        "blackwall",
+        "guardian",
+        "approval",
+        "audit"
+      ]
+    },
+    {
+      "id": "publication",
+      "steps": 5,
+      "messages": 7,
+      "actors": [
+        "blackwall",
+        "approval",
+        "audit"
+      ]
+    },
+    {
+      "id": "jev-deny",
+      "steps": 4,
+      "messages": 12,
+      "actors": [
+        "pi",
+        "blackwall",
+        "embeddings",
+        "guardian",
+        "jev",
+        "audit"
+      ]
+    }
+  ],
+  "processFlowSha256": "851c39566cbed0c43ba8caa52c9614422e0a495ede0ac8fae149a93bc1a1f1aa",
+  "expectedProcessFlowSha256": "851c39566cbed0c43ba8caa52c9614422e0a495ede0ac8fae149a93bc1a1f1aa",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "screenshots": [
+    "process-desktop.png",
+    "process-mobile.png"
+  ]
+}
